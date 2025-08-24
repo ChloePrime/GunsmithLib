@@ -33,7 +33,7 @@ public class MixinGunData implements EnhancedGunData {
     @Deprecated
     @SuppressWarnings("unused")
     @SerializedName("tacz_fire_control_extension:fire_control_system")
-    private @Unique OldFireControlData gunsmith$oldFireControlData;
+    private @Unique @Nullable OldFireControlData gunsmith$oldFireControlData;
 
     @Override
     public Optional<GunsmithLibGunDataExtension> gunsmith$getGunsmithLibExtension() {
