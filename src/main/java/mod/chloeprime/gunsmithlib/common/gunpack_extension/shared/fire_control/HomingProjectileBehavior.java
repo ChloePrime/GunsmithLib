@@ -1,7 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
 import mod.chloeprime.gunsmithlib.GunsmithLib;
-import mod.chloeprime.gunsmithlib.network.ModNetwork;
 import mod.chloeprime.gunsmithlib.network.S2CSyncLockedTarget;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +8,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3d;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class HomingProjectileBehavior {
         bullet.getPersistentData().putDouble(PDKEY_TORQUE, torque);
         if (!bullet.level().isClientSide) {
             bullet.getPersistentData().putUUID(PDKEY_TARGET, target.getUUID());
-            ModNetwork.sendToNearby(new S2CSyncLockedTarget(bullet.getId(), target.getId()), shooter);
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(shooter, new S2CSyncLockedTarget(bullet.getId(), target.getId()));
         }
     }
 

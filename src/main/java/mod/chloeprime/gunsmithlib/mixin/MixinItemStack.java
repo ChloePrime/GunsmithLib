@@ -4,15 +4,16 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunAttachmentAttributeAggregator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,30 +29,18 @@ public abstract class MixinItemStack {
         return original;
     }
 
-
     @Inject(
             method = "getTooltipLines",
             at = @At("RETURN"))
-    private void releaseCapturedTooltipLines(Player player, TooltipFlag isAdvanced, CallbackInfoReturnable<List<Component>> cir) {
+    private void releaseCapturedTooltipLines(Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag, CallbackInfoReturnable<List<Component>> cir) {
         gunsmithlib$capturedTooltipList = null;
     }
 
     @Inject(
             method = "getTooltipLines",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/world/item/ItemStack$TooltipPart;MODIFIERS:Lnet/minecraft/world/item/ItemStack$TooltipPart;"))
-    private void attachmentModifierTooltip(Player player, TooltipFlag isAdvanced, CallbackInfoReturnable<List<Component>> cir) {
-        if (shouldShowInTooltip(getHideFlags(), ItemStack.TooltipPart.MODIFIERS)) {
-            var self = (ItemStack) (Object) this;
-            GunAttachmentAttributeAggregator.attachmentAttributeModifierTooltip(self, gunsmithlib$capturedTooltipList);
-        }
+            at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/common/util/AttributeUtil;addAttributeTooltips(Lnet/minecraft/world/item/ItemStack;Ljava/util/function/Consumer;Lnet/neoforged/neoforge/common/util/AttributeTooltipContext;)V"))
+    private void attachmentModifierTooltip(Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag, CallbackInfoReturnable<List<Component>> cir) {
+        var self = (ItemStack) (Object) this;
+        GunAttachmentAttributeAggregator.attachmentAttributeModifierTooltip(self, gunsmithlib$capturedTooltipList);
     }
-
-
-
-    @Shadow
-    private static boolean shouldShowInTooltip(int pHideFlags, ItemStack.TooltipPart pPart) {
-        return true;
-    }
-
-    @Shadow protected abstract int getHideFlags();
 }

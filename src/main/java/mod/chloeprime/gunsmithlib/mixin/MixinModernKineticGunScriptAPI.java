@@ -24,7 +24,7 @@ public class MixinModernKineticGunScriptAPI implements AbstractGunScriptAPIExten
     // 换弹速度
     @ModifyReturnValue(method = "getReloadTime", at = @At("RETURN"))
     private long reloadSpeedScaler(long original) {
-        return shooter != null ? (long) (original * shooter.getAttributeValue(GunAttributes.RELOAD_SPEED.get())) : original;
+        return shooter != null ? (long) (original * shooter.getAttributeValue(GunAttributes.RELOAD_SPEED)) : original;
     }
 
     // 过热反馈

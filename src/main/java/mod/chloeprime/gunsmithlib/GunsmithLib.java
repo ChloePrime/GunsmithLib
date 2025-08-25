@@ -114,10 +114,7 @@ public class GunsmithLib {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         checkKnownIncompatibilities();
-        event.enqueueWork(() -> {
-            ModNetwork.init();
-            GunLootFunctions.init();
-        });
+        event.enqueueWork(GunLootFunctions::init);
     }
 
     private void checkKnownIncompatibilities() {

@@ -1,28 +1,31 @@
 package mod.chloeprime.gunsmithlib.network;
 
+import io.netty.buffer.ByteBuf;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.client.ClientNetworkHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 
 public record S2CSyncLockedTarget(
         int bulletId,
         int targetId
-) {
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeVarInt(bulletId);
-        buf.writeVarInt(targetId);
+) implements CustomPacketPayload {
+    public static final Type<S2CSyncLockedTarget> TYPE = new Type<>(GunsmithLib.loc("sync_locked_target"));
+    public static final StreamCodec<ByteBuf, S2CSyncLockedTarget> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, S2CSyncLockedTarget::bulletId, ByteBufCodecs.INT, S2CSyncLockedTarget::targetId, S2CSyncLockedTarget::new
+    );
+
+    public void handle(IPayloadContext ignored) {
+        ClientNetworkHandler.handleSyncLockedTarget(this);
     }
 
-    public static S2CSyncLockedTarget decode(FriendlyByteBuf buf) {
-        var bulletId = buf.readVarInt();
-        var targetId = buf.readVarInt();
-        return new S2CSyncLockedTarget(bulletId, targetId);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> ClientNetworkHandler.handleSyncLockedTarget(this));
-        context.get().setPacketHandled(true);
+    @Override
+    public @Nonnull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

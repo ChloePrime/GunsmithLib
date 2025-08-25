@@ -4,17 +4,23 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 
-public final class BulletCreateEvent extends Event {
+public final class BulletCreateEvent extends EntityEvent {
     @ApiStatus.Internal
     public BulletCreateEvent(@Nonnull Projectile bullet, @Nonnull LivingEntity shooter, @Nonnull GunInfo gun) {
+        super(bullet);
         this.bullet = bullet;
         this.shooter = shooter;
         this.gun = gun;
+    }
+
+    @Override
+    public @Nonnull Projectile getEntity() {
+        return bullet;
     }
 
     public @Nonnull Projectile getBullet() {

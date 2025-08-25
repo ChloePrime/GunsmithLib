@@ -5,8 +5,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +15,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientProxy {
     private static final boolean DEDICATED_SERVER = FMLLoader.getDist().isDedicatedServer();
     private static final AtomicBoolean GET_ENTITY_LOGGED = new AtomicBoolean(false);
+
+    public static float getPartialTick() {
+        return DEDICATED_SERVER ? 1 : ClientProxyImpl.getPartialTick();
+    }
 
     public static LogicalSide sideOf(Level level) {
         return level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;

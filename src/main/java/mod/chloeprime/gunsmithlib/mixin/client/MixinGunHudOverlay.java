@@ -10,7 +10,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
@@ -31,9 +30,9 @@ public class MixinGunHudOverlay {
                     from = @At(value = "INVOKE", target = "Lcom/tacz/guns/client/gui/overlay/GunHudOverlay;handleCacheCount(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/resource/pojo/data/gun/GunData;Lcom/tacz/guns/api/item/IGun;Z)V"),
                     to = @At(value = "INVOKE", remap = true, opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/SharedConstants;getCurrentVersion()Lnet/minecraft/WorldVersion;")
             ))
-    private int energyWeaponShowHeat(
+    private static int energyWeaponShowHeat(
             GuiGraphics gui, Font pFont, @Nullable String pText, float pX, float pY, int pColor, boolean pDropShadow, Operation<Integer> original,
-            ForgeGui forgeGui, GuiGraphics graphics, float partialTick, int width, int height
+            GuiGraphics graphics, float partialTick, int width, int height
     ) {
         return EnergyWeaponVisuals.HUD.modifyCurrentAmmoDisplay(gui, pX, pY, width, height, () -> original.call(gui, pFont, pText, pX, pY, pColor, pDropShadow));
     }

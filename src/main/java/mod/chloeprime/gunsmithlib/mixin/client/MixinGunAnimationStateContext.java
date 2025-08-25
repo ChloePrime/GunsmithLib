@@ -4,6 +4,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import mod.chloeprime.gunsmithlib.client.AbstractGunAnimationStateContextExtension;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +30,7 @@ public class MixinGunAnimationStateContext implements AbstractGunAnimationStateC
         }
         var gunItem = currentGunItem.getItem();
         var cooldowns = player.getCooldowns();
-        return cooldowns.getCooldownPercent(gunItem, MC.getPartialTick())
+        return cooldowns.getCooldownPercent(gunItem, ClientProxy.getPartialTick())
                 * GsHelper.getCooldownDuration(cooldowns, gunItem)
                 / 20;
     }
@@ -44,7 +45,7 @@ public class MixinGunAnimationStateContext implements AbstractGunAnimationStateC
         if (player == null) {
             return 0;
         }
-        return player.getCooldowns().getCooldownPercent(currentGunItem.getItem(), MC.getPartialTick());
+        return player.getCooldowns().getCooldownPercent(currentGunItem.getItem(), ClientProxy.getPartialTick());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
-import cpw.mods.modlauncher.api.INameMappingService;
 import mod.chloeprime.gunsmithlib.Config;
 import mod.chloeprime.gunsmithlib.mixin.interactkey.StairBlockAccessor;
 import net.minecraft.core.BlockPos;
@@ -12,24 +11,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 public class InteractKeyAutoInferencing {
     private static final InheritanceChecker<Block> BLOCK_INHERITANCE_CHECKER = new InheritanceChecker<>(
-            Block.class,
-            ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, "m_6227_"),
+            Block.class, "useWithoutItem",
             BlockState.class, Level.class, BlockPos.class, Player.class, InteractionHand.class, BlockHitResult.class
     );
 
     private static final InheritanceChecker<Entity> ENTITY_INHERITANCE_CHECKER = new InheritanceChecker<>(
-            Entity.class,
-            ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, "m_6096_"),
+            Entity.class, "interact",
             Player.class, InteractionHand.class
     );
 
     private static final InheritanceChecker<Mob> MOB_INHERITANCE_CHECKER = new InheritanceChecker<>(
-            Mob.class,
-            ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, "m_6071_"),
+            Mob.class, "mobInteract",
             Player.class, InteractionHand.class
     );
 
@@ -39,7 +34,7 @@ public class InteractKeyAutoInferencing {
         }
         var block = state.getBlock();
         return block instanceof StairBlockAccessor stair
-                ? BLOCK_INHERITANCE_CHECKER.isInherited(stair.invokeGetModelBlock().getClass())
+                ? BLOCK_INHERITANCE_CHECKER.isInherited(stair.getBaseState().getBlock().getClass())
                 : BLOCK_INHERITANCE_CHECKER.isInherited(block.getClass());
     }
 

@@ -1,7 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
 import mod.chloeprime.gunsmithlib.api.common.BulletCreateEvent;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal

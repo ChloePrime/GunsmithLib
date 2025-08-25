@@ -16,7 +16,7 @@ public class MixinHeatBarOverlay {
     @WrapOperation(
             method = "render",
             at = @At(value = "INVOKE", target = "Lcom/tacz/guns/api/item/IGun;hasHeatData(Lnet/minecraft/world/item/ItemStack;)Z"))
-    private boolean disableHeatBarIfConfigured(IGun gunInterface, ItemStack stack, Operation<Boolean> original) {
+    private static boolean disableHeatBarIfConfigured(IGun gunInterface, ItemStack stack, Operation<Boolean> original) {
         var isDisabled = TimelessAPI.getGunDisplay(stack)
                 .map(instance -> ((EnhancedGunDisplay) instance))
                 .flatMap(EnhancedGunDisplay::gunsmith$getGunsmithLibExtension)

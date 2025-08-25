@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.Config;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,13 +17,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.UUID;
-
 @Mixin(value = EntityKineticBullet.class, remap = false)
 public class AlternativeArmorPierceFormulaMixin {
     @Shadow
     private float armorIgnore;
-    private static final @Unique UUID gunsmithlib$AP_MODIFIER_ID = UUID.fromString("9a5f8d71-ac5c-4ad5-87c9-44c134bd7ceb");
+    private static final @Unique ResourceLocation gunsmithlib$AP_MODIFIER_ID = GunsmithLib.loc("bullet_armor_piercing");
 
     @WrapOperation(
             method = "tacAttackEntity",
@@ -40,7 +40,7 @@ public class AlternativeArmorPierceFormulaMixin {
         // 打中生物，开始穿甲
         var armor = victim.getAttribute(Attributes.ARMOR);
         var tough = victim.getAttribute(Attributes.ARMOR_TOUGHNESS);
-        var modifier = new AttributeModifier(gunsmithlib$AP_MODIFIER_ID, "Bullet's Armor Piercing", -this.armorIgnore, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        var modifier = new AttributeModifier(gunsmithlib$AP_MODIFIER_ID, -this.armorIgnore, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         try {
             if (armor != null) {
                 armor.addTransientModifier(modifier);

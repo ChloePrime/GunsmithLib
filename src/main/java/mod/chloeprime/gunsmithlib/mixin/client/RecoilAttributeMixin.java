@@ -16,7 +16,7 @@ public class RecoilAttributeMixin {
     )
     private static void modifyVRot(LocalPlayer player, float v, Operation<Void> original) {
         var delta = player.getXRot() - v;
-        delta *= (float) player.getAttributeValue(GunAttributes.V_RECOIL.get());
+        delta *= (float) player.getAttributeValue(GunAttributes.V_RECOIL);
         original.call(player, player.getXRot() - delta);
     }
 
@@ -26,7 +26,7 @@ public class RecoilAttributeMixin {
     )
     private static void modifyHRot(LocalPlayer player, float v, Operation<Void> original) {
         var delta = player.getYRot() - v;
-        delta *= (float) player.getAttributeValue(GunAttributes.H_RECOIL.get());
+        delta *= (float) player.getAttributeValue(GunAttributes.H_RECOIL);
         original.call(player, player.getYRot() - delta);
     }
 }

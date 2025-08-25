@@ -10,7 +10,7 @@ import com.tacz.guns.resource.pojo.data.gun.GunReloadData;
 import mod.chloeprime.gunsmithlib.common.util.GsHooks;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

@@ -19,6 +19,10 @@ class ClientProxyImpl {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final PoseStack POSE = new PoseStack();
 
+    static float getPartialTick() {
+        return MC.getTimer().getGameTimeDeltaPartialTick(false);
+    }
+
     static Vec3 bobCompensation(Vec3 original) {
         if (MC.options.getCameraType() != CameraType.FIRST_PERSON || !MC.options.bobView().get()) {
             return original;
@@ -28,7 +32,7 @@ class ClientProxyImpl {
             return original;
         }
 
-        var pPartialTicks = MC.getPartialTick();
+        var pPartialTicks = getPartialTick();
         float f = player.walkDist - player.walkDistO;
         float f1 = -(player.walkDist + f * pPartialTicks);
         float f2 = Mth.lerp(pPartialTicks, player.oBob, player.bob);
