@@ -160,7 +160,13 @@ configurations {
 
 dependencies {
     // TACZ
-    implementation 'com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.6-hotfix-r5'
+    implementation jarJar('com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.6-hotfix-r5') {
+        exclude group: '*', module: '*'
+        version {
+            strictly '[1.1.6,)'
+            prefer '1.1.6-hotfix-r5'
+        }
+    }
     compileOnly 'com.github.FiguraMC.luaj:luaj-core:3.0.8-figura'
     compileOnly 'com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura'
 
