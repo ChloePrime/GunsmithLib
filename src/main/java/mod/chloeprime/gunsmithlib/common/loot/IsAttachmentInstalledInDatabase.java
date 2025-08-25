@@ -1,12 +1,10 @@
 package mod.chloeprime.gunsmithlib.common.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tacz.guns.api.TimelessAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
@@ -18,6 +16,10 @@ import java.util.Objects;
 @ParametersAreNonnullByDefault
 public class IsAttachmentInstalledInDatabase implements LootItemCondition {
     private final ResourceLocation attachmentId;
+
+    public static final MapCodec<IsAttachmentInstalledInDatabase> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+            ResourceLocation.CODEC.fieldOf("attachment_id").forGetter(cond -> cond.attachmentId)
+    ).apply(builder, IsAttachmentInstalledInDatabase::new));
 
     public IsAttachmentInstalledInDatabase(ResourceLocation attachmentId) {
         this.attachmentId = attachmentId;
@@ -53,18 +55,5 @@ public class IsAttachmentInstalledInDatabase implements LootItemCondition {
     @Override
     public @Nonnull LootItemConditionType getType() {
         return Objects.requireNonNull(GunLootFunctions.IS_ATTACHMENT_INSTALLED_IN_DATABASE);
-    }
-
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<IsAttachmentInstalledInDatabase> {
-        @Override
-        public void serialize(JsonObject json, IsAttachmentInstalledInDatabase instance, JsonSerializationContext serializationContext) {
-            json.addProperty("attachment_id", instance.attachmentId.toString());
-        }
-
-        @Override
-        public @Nonnull IsAttachmentInstalledInDatabase deserialize(JsonObject json, JsonDeserializationContext deserializationContext) {
-            ResourceLocation attachmentId = new ResourceLocation(GsonHelper.getAsString(json, "attachment_id"));
-            return new IsAttachmentInstalledInDatabase(attachmentId);
-        }
     }
 }

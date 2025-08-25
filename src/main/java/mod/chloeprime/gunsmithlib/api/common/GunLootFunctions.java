@@ -1,11 +1,11 @@
 package mod.chloeprime.gunsmithlib.api.common;
 
+import com.mojang.serialization.MapCodec;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.common.loot.*;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -21,32 +21,32 @@ public final class GunLootFunctions {
     /**
      * 设置枪械 id 并初始化枪械 NBT（内部弹药量，开火模式，热量等）
      */
-    public static final LootItemFunctionType INIT_GUN_INFO = registerFunction("init_gun_info", new InitGunInfo.Serializer());
+    public static final LootItemFunctionType<InitGunInfo> INIT_GUN_INFO = registerFunction("init_gun_info", InitGunInfo.CODEC);
 
     /**
      * 设置子弹 id
      */
-    public static final LootItemFunctionType INIT_AMMO_INFO = registerFunction("init_ammo_info", new InitAmmoInfo.Serializer());
+    public static final LootItemFunctionType<InitAmmoInfo> INIT_AMMO_INFO = registerFunction("init_ammo_info", InitAmmoInfo.CODEC);
 
     /**
      * 设置配件 id
      */
-    public static final LootItemFunctionType INIT_ATTACHMENT_INFO = registerFunction("init_attachment_info", new InitAttachmentInfo.Serializer());
+    public static final LootItemFunctionType<InitAttachmentInfo> INIT_ATTACHMENT_INFO = registerFunction("init_attachment_info", InitAttachmentInfo.CODEC);
 
     /**
      * 检测某个枪械 id 是否存在（是否有对应的 index）
      */
-    public static final LootItemConditionType IS_GUN_INSTALLED = registerCondition("is_gun_installed", new IsGunInstalled.Serializer());
+    public static final LootItemConditionType IS_GUN_INSTALLED = registerCondition("is_gun_installed", IsGunInstalled.CODEC);
 
     /**
      * 检测某个子弹 id 是否存在（是否有对应的 index）
      */
-    public static final LootItemConditionType IS_AMMO_INSTALLED = registerCondition("is_ammo_installed", new IsAmmoInstalled.Serializer());
+    public static final LootItemConditionType IS_AMMO_INSTALLED = registerCondition("is_ammo_installed", IsAmmoInstalled.CODEC);
 
     /**
      * 检测某个配件 id 是否存在（是否有对应的 index）
      */
-    public static final LootItemConditionType IS_ATTACHMENT_INSTALLED_IN_DATABASE = registerCondition("is_gun_installed_in_database", new IsAttachmentInstalledInDatabase.Serializer());
+    public static final LootItemConditionType IS_ATTACHMENT_INSTALLED_IN_DATABASE = registerCondition("is_gun_installed_in_database", IsAttachmentInstalledInDatabase.CODEC);
 
     /**
      * 设置枪械 id，默认枪内没有子弹
@@ -111,17 +111,22 @@ public final class GunLootFunctions {
     private GunLootFunctions() {
     }
 
-    private static LootItemFunctionType registerFunction(String name, Serializer<? extends LootItemFunction> serializer) {
+    private static
+    <T extends LootItemFunction>
+    LootItemFunctionType<T> registerFunction(String name, MapCodec<T> serializer) {
         return Registry.register(
                 BuiltInRegistries.LOOT_FUNCTION_TYPE,
-                new ResourceLocation(GunsmithLib.MOD_ID, name),
-                new LootItemFunctionType(serializer));
+                GunsmithLib.loc(name),
+                new LootItemFunctionType<>(serializer));
     }
 
-    private static LootItemConditionType registerCondition(String name, Serializer<? extends LootItemCondition> serializer) {
+
+    private static
+    <T extends LootItemCondition>
+    LootItemConditionType registerCondition(String name, MapCodec<T> serializer) {
         return Registry.register(
                 BuiltInRegistries.LOOT_CONDITION_TYPE,
-                new ResourceLocation(GunsmithLib.MOD_ID, name),
+                GunsmithLib.loc(name),
                 new LootItemConditionType(serializer));
     }
 

@@ -8,7 +8,6 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.F
 import mod.chloeprime.gunsmithlib.common.entity.MagicLaser;
 import mod.chloeprime.gunsmithlib.common.util.AttackDamageMobEffect;
 import mod.chloeprime.gunsmithlib.common.util.PercentBasedAttribute;
-import mod.chloeprime.gunsmithlib.network.ModNetwork;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -97,13 +96,13 @@ public class GunsmithLib {
 
     public static class MobEffects {
         private static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, MOD_ID);
-        public static final Supplier<MobEffect> GUN_DAMAGE = REGISTRY.register("crossfire", () -> new AttackDamageMobEffect(MobEffectCategory.BENEFICIAL, Color.LIGHT_GRAY, Config.CROSSFIRE_BUFF_POWER::get)
+        public static final DeferredHolder<MobEffect, MobEffect> GUN_DAMAGE = REGISTRY.register("crossfire", () -> new AttackDamageMobEffect(MobEffectCategory.BENEFICIAL, Color.LIGHT_GRAY, Config.CROSSFIRE_BUFF_POWER::get)
                 .addAttributeModifier(GunAttributes.BULLET_DAMAGE, loc("crossfire_buff"), 0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
     }
 
     public static class SoundEvents {
         private static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
-        public static final Supplier<SoundEvent> SHIELD_BLOCKS_BULLET = REGISTRY.register("shield_blocks_bullet", () -> SoundEvent.createVariableRangeEvent(loc( "shield_blocks_bullet")));
+        public static final DeferredHolder<SoundEvent, SoundEvent> SHIELD_BLOCKS_BULLET = REGISTRY.register("shield_blocks_bullet", () -> SoundEvent.createVariableRangeEvent(loc( "shield_blocks_bullet")));
     }
 
     public static class EntityTypes {

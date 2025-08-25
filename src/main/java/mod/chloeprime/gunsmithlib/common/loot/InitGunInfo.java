@@ -1,14 +1,12 @@
 package mod.chloeprime.gunsmithlib.common.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -16,9 +14,11 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.Objects;
 
 @ParametersAreNonnullByDefault
@@ -26,10 +26,16 @@ public class InitGunInfo extends LootItemConditionalFunction {
     private final ResourceLocation gunId;
     private final NumberProvider ammo;
 
+    public static final MapCodec<InitGunInfo> CODEC = RecordCodecBuilder.mapCodec(builder -> commonFields(builder).and(builder.group(
+            ResourceLocation.CODEC.fieldOf("gun_id").forGetter(func -> func.gunId),
+            NumberProviders.CODEC.fieldOf("ammo").forGetter(func -> func.ammo)
+    )).apply(builder, InitGunInfo::new));
+
     public InitGunInfo(
-            LootItemCondition[] conditions,
+            List<LootItemCondition> conditions,
             ResourceLocation gunId,
-            NumberProvider ammoCount) {
+            NumberProvider ammoCount
+    ) {
         super(conditions);
         this.gunId = gunId;
         this.ammo = ammoCount;
@@ -72,21 +78,7 @@ public class InitGunInfo extends LootItemConditionalFunction {
     }
 
     @Override
-    public @Nonnull LootItemFunctionType getType() {
+    public @Nonnull LootItemFunctionType<InitGunInfo> getType() {
         return Objects.requireNonNull(GunLootFunctions.INIT_GUN_INFO);
-    }
-
-    public static class Serializer extends LootItemConditionalFunction.Serializer<InitGunInfo> {
-        public void serialize(JsonObject json, InitGunInfo instance, JsonSerializationContext serializationContext) {
-            super.serialize(json, instance, serializationContext);
-            json.addProperty("gun_id", instance.gunId.toString());
-            json.add("ammo", serializationContext.serialize(instance.ammo));
-        }
-
-        public @Nonnull InitGunInfo deserialize(JsonObject json, JsonDeserializationContext deserializationContext, LootItemCondition[] conditions) {
-            ResourceLocation gunId = new ResourceLocation(GsonHelper.getAsString(json, "gun_id"));
-            NumberProvider ammoCount = GsonHelper.getAsObject(json, "ammo", ConstantValue.exactly(0), deserializationContext, NumberProvider.class);
-            return new InitGunInfo(conditions, gunId, ammoCount);
-        }
     }
 }
