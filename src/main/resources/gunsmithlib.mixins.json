@@ -21,6 +21,8 @@
     "MixinModernKineticGunScriptAPI",
     "MixinPlayer",
     "MixinReloadProcedure",
+    "dfu.MixinGunPackLoader",
+    "dfu.MixinGunpackUpgrader",
     "interactkey.StairBlockAccessor",
     "interactkey.TacInteractKeyAutoInferenceMixin"
   ],
