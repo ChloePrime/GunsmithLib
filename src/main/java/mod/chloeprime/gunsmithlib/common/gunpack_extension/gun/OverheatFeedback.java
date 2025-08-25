@@ -6,22 +6,21 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import javax.annotation.Nonnull;
 
 /**
  * 过热的视听反馈，包含烟雾粒子和过热音效
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class OverheatFeedback {
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-        LivingEntity entity = event.getEntity();
+    public static void onLivingTick(EntityTickEvent.Post event) {
         // 只在客户端计算
-        if (!entity.level().isClientSide) {
+        if (!(event.getEntity() instanceof LivingEntity entity) || !entity.level().isClientSide) {
             return;
         }
 

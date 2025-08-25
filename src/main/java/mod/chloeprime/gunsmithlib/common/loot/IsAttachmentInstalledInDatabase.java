@@ -11,7 +11,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 public class IsAttachmentInstalledInDatabase implements LootItemCondition {
@@ -54,6 +53,6 @@ public class IsAttachmentInstalledInDatabase implements LootItemCondition {
 
     @Override
     public @Nonnull LootItemConditionType getType() {
-        return Objects.requireNonNull(GunLootFunctions.IS_ATTACHMENT_INSTALLED_IN_DATABASE);
+        return GunLootFunctions.IS_ATTACHMENT_INSTALLED_IN_DATABASE.get();
     }
 }

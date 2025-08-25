@@ -7,6 +7,7 @@ import com.tacz.guns.api.item.IGun;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,7 +17,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
@@ -25,7 +26,6 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Supplier;
 
 public class GsHelper {
     /**
@@ -47,7 +47,7 @@ public class GsHelper {
         return TimelessAPI.getCommonGunIndex(gunId).map(index -> new GunInfo(gunStack, gunItem, gunId, index));
     }
 
-    public static double getAttributeValueWithBase(LivingEntity holder, Attribute attribute, double base) {
+    public static double getAttributeValueWithBase(LivingEntity holder, Holder<Attribute> attribute, double base) {
         var instance = holder.getAttribute(attribute);
         if (instance == null) {
             return base;
@@ -154,39 +154,37 @@ public class GsHelper {
     private static final ThreadLocal<AttributeEvaluatorBuffer> BUFFER_BY_THREAD = ThreadLocal.withInitial(AttributeEvaluatorBuffer::new);
 
     public static double evaluateItemAttribute(
-            ItemStack item, Supplier<Attribute> attributeHolder, double baseValue
+            ItemStack item, Holder<Attribute> attributeHolder, double baseValue
     ) {
-        var attribute = attributeHolder.get();
-        var modifiers = item.getAttributeModifiers(EquipmentSlot.MAINHAND).get(attribute);
         var buffer = BUFFER_BY_THREAD.get();
 
         try {
-            for (var modifier : modifiers) {
-                if (modifier == null) {
-                    continue;
+            item.forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+                if (!attributeHolder.equals(attribute)) {
+                    return;
                 }
-                switch (modifier.getOperation()) {
-                    case ADDITION -> buffer.addition().add(modifier);
-                    case MULTIPLY_BASE -> buffer.mulBase().add(modifier);
-                    case MULTIPLY_TOTAL -> buffer.mulTotal().add(modifier);
+                switch (modifier.operation()) {
+                    case ADD_VALUE -> buffer.addition().add(modifier);
+                    case ADD_MULTIPLIED_BASE -> buffer.mulBase().add(modifier);
+                    case ADD_MULTIPLIED_TOTAL -> buffer.mulTotal().add(modifier);
                 }
-            }
+            });
 
             double afterAddition = baseValue;
             for(var modifier : buffer.addition()) {
-                afterAddition += modifier.getAmount();
+                afterAddition += modifier.amount();
             }
 
             double finalValue = afterAddition;
             for(var modifier : buffer.mulBase()) {
-                finalValue += afterAddition * modifier.getAmount();
+                finalValue += afterAddition * modifier.amount();
             }
 
             for(var modifier : buffer.mulTotal()) {
-                finalValue *= 1.0D + modifier.getAmount();
+                finalValue *= 1.0D + modifier.amount();
             }
 
-            return attribute.sanitizeValue(finalValue);
+            return attributeHolder.value().sanitizeValue(finalValue);
         } finally {
             buffer.addition().clear();
             buffer.mulBase().clear();

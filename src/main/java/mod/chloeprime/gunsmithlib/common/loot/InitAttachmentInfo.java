@@ -14,7 +14,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 public class InitAttachmentInfo extends LootItemConditionalFunction {
@@ -50,6 +49,6 @@ public class InitAttachmentInfo extends LootItemConditionalFunction {
 
     @Override
     public @Nonnull LootItemFunctionType<InitAttachmentInfo> getType() {
-        return Objects.requireNonNull(GunLootFunctions.INIT_ATTACHMENT_INFO);
+        return GunLootFunctions.INIT_ATTACHMENT_INFO.get();
     }
 }

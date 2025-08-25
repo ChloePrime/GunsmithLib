@@ -19,7 +19,6 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 public class InitGunInfo extends LootItemConditionalFunction {
@@ -79,6 +78,6 @@ public class InitGunInfo extends LootItemConditionalFunction {
 
     @Override
     public @Nonnull LootItemFunctionType<InitGunInfo> getType() {
-        return Objects.requireNonNull(GunLootFunctions.INIT_GUN_INFO);
+        return GunLootFunctions.INIT_GUN_INFO.get();
     }
 }

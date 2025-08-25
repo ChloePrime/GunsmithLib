@@ -1,126 +1,102 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAttachmentData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
+import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.common.util.AttributeUtil;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import static net.minecraft.world.item.ItemStack.ATTRIBUTE_MODIFIER_FORMAT;
-
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class GunAttachmentAttributeAggregator {
-    public static Multimap<Attribute, AttributeModifier> getGunIndexAttributeModifiers(CommonGunIndex index) {
+    public static ItemAttributeModifiers getGunIndexAttributeModifiers(CommonGunIndex index) {
         return ((EnhancedGunData) index.getGunData())
                 .gunsmith$getGunsmithLibExtension()
                 .map(GunsmithLibSharedDataExtension::getBakedAttributeModifiers)
-                .orElse(ImmutableMultimap.of());
+                .orElse(ItemAttributeModifiers.EMPTY);
     }
 
-    public static Multimap<Attribute, AttributeModifier> getAttachmentIndexAttributeModifiers(CommonAttachmentIndex index) {
+    public static ItemAttributeModifiers getAttachmentIndexAttributeModifiers(CommonAttachmentIndex index) {
         return ((EnhancedAttachmentData) index.getData())
                 .gunsmith$getGunsmithLibExtension()
                 .map(GunsmithLibSharedDataExtension::getBakedAttributeModifiers)
-                .orElse(ImmutableMultimap.of());
+                .orElse(ItemAttributeModifiers.EMPTY);
     }
 
-    @SuppressWarnings("deprecation")
-    public static Multimap<Attribute, AttributeModifier> getAttachmentAttributeModifiers(ItemStack stack) {
-        var fallback = ImmutableMultimap.<Attribute, AttributeModifier>of();
-        if (!stack.hasTag()) {
-            return fallback;
+    public static ItemAttributeModifiers getAttachmentAttributeModifiers(ItemStack stack) {
+        var override = stack.getOrDefault(GunsmithLib.DataComponents.ATTACHMENT_ATTRIBUTES, ItemAttributeModifiers.EMPTY);
+        if (!override.modifiers().isEmpty()) {
+            return override;
         }
-        CompoundTag tag = Objects.requireNonNull(stack.getTag());
-        if (!tag.contains("AttachmentAttributeModifiers", Tag.TAG_LIST)) {
-            var ati = Gunsmith.getAttachmentInfo(stack).orElse(null);
-            return ati != null ? getAttachmentIndexAttributeModifiers(ati.index()) : fallback;
-        }
-
-        var result = HashMultimap.<Attribute, AttributeModifier>create();
-        var modifierTagList = tag.getList("AttachmentAttributeModifiers", Tag.TAG_COMPOUND);
-
-        for (int i = 0; i < modifierTagList.size(); ++i) {
-            CompoundTag modifierTag = modifierTagList.getCompound(i);
-            Attribute attribute = BuiltInRegistries.ATTRIBUTE
-                    .getOptional(ResourceLocation.tryParse(modifierTag.getString("AttributeName")))
-                    .orElse(null);
-            if (attribute != null) {
-                var modifier = AttributeModifier.load(modifierTag);
-                if (modifier != null && modifier.getId().getLeastSignificantBits() != 0L && modifier.getId().getMostSignificantBits() != 0L) {
-                    result.put(attribute, modifier);
-                }
-            }
-        }
-
-        return result;
+        var ati = Gunsmith.getAttachmentInfo(stack).orElse(null);
+        return ati != null ? getAttachmentIndexAttributeModifiers(ati.index()) : ItemAttributeModifiers.EMPTY;
     }
 
     private static final AttachmentType[] ATTACHMENT_TYPE_REGISTRY = AttachmentType.values();
-    private static final Map<Pair<Attribute, AttributeModifier.Operation>, AttributeModifier> MERGE_BUFFER = new LinkedHashMap<>();
+    private static final ThreadLocal<Map<Pair<Holder<Attribute>, AttributeModifier.Operation>, AttributeModifier>> MERGE_BUFFER = ThreadLocal.withInitial(LinkedHashMap::new);
 
     @SubscribeEvent
     public static void onGunAttribute(ItemAttributeModifierEvent event) {
-        var slot = EquipmentSlot.MAINHAND;
-        if (event.getSlotType() != slot) {
-            return;
-        }
-
+        var slot = EquipmentSlotGroup.MAINHAND;
         var stack = event.getItemStack();
         var gun = Gunsmith.getGunInfo(stack).orElse(null);
         if (gun == null) {
             return;
         }
-        var buffer = MERGE_BUFFER;
+        var buffer = MERGE_BUFFER.get();
         try {
             buffer.clear();
             // 使用 AttributeModifiers 标签覆盖的情况
-            var hasOverride = stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("AttributeModifiers", Tag.TAG_LIST);
-            if (!hasOverride) {
-                getGunIndexAttributeModifiers(gun.index()).forEach((a, am) -> putMerge(buffer, a, am));
+            if (stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).modifiers().isEmpty()) {
+                getGunIndexAttributeModifiers(gun.index()).forEach(slot,  (a, am) -> putMerge(buffer, a, am));
             }
             // 叠加配件的modifiers
-            for (var attachmentType : ATTACHMENT_TYPE_REGISTRY) {
-                ItemStack attachment = gun.gunItem().getAttachment(gun.gunStack(), attachmentType);
-                getAttachmentAttributeModifiers(attachment).forEach((a, am) -> putMerge(buffer, a, am));
-            }
-            buffer.forEach((key, modifier) -> event.addModifier(key.getLeft(), modifier));
+            ClientProxy.getRegistryAccess().ifPresent(registryAccess -> {
+                for (var attachmentType : ATTACHMENT_TYPE_REGISTRY) {
+                    ItemStack attachment = gun.gunItem().getAttachment(registryAccess, gun.gunStack(), attachmentType);
+                    getAttachmentAttributeModifiers(attachment).forEach(slot, (a, am) -> putMerge(buffer, a, am));
+                }
+            });
+            buffer.forEach((key, modifier) -> event.addModifier(key.getLeft(), modifier, slot));
         } finally {
             buffer.clear();
         }
     }
 
     private static void putMerge(
-            Map<Pair<Attribute, AttributeModifier.Operation>, AttributeModifier> buffer,
-            Attribute attribute,
+            Map<Pair<Holder<Attribute>, AttributeModifier.Operation>, AttributeModifier> buffer,
+            Holder<Attribute> attribute,
             AttributeModifier modifier
     ) {
-        var operation = modifier.getOperation();
+        var operation = modifier.operation();
         var key = Pair.of(attribute, operation);
         var currentModifier = buffer.get(key);
         if (currentModifier == null) {
@@ -128,47 +104,37 @@ public class GunAttachmentAttributeAggregator {
             return;
         }
         var newAmount = switch (operation) {
-            case ADDITION, MULTIPLY_BASE -> currentModifier.getAmount() + modifier.getAmount();
-            case MULTIPLY_TOTAL -> (1 + currentModifier.getAmount()) * (1 + modifier.getAmount()) - 1;
+            case ADD_VALUE, ADD_MULTIPLIED_BASE -> currentModifier.amount() + modifier.amount();
+            case ADD_MULTIPLIED_TOTAL -> (1 + currentModifier.amount()) * (1 + modifier.amount()) - 1;
         };
-        var newModifier = new AttributeModifier(currentModifier.getId(), currentModifier.getName(), newAmount, operation);
+        var newModifier = new AttributeModifier(currentModifier.id(), newAmount, operation);
         buffer.put(key, newModifier);
     }
 
-    public static void attachmentAttributeModifierTooltip(ItemStack attachment, List<Component> tooltip) {
+    public static void attachmentAttributeModifierTooltip(ItemStack attachment, List<Component> tooltip, Player player, Item.TooltipContext context, TooltipFlag flag) {
         var ati = Gunsmith.getAttachmentInfo(attachment).orElse(null);
         if (ati == null) {
             return;
         }
         var modifiers = getAttachmentAttributeModifiers(attachment);
-        if (modifiers.isEmpty()) {
+        if (modifiers.modifiers().isEmpty()) {
             return;
         }
 
         tooltip.add(CommonComponents.EMPTY);
         tooltip.add(Component.translatable("gunsmithlib.item.modifiers.attachment").withStyle(ChatFormatting.GRAY));
+        AttributeUtil.applyTextFor(attachment, tooltip::add, getSortedModifiers(attachment, modifiers), AttributeTooltipContext.of(player, context, flag));
+    }
 
-        for (Map.Entry<Attribute, AttributeModifier> entry : modifiers.entries()) {
-            AttributeModifier attributemodifier = entry.getValue();
-            double amount = attributemodifier.getAmount();
-
-            double amountDisplay;
-            if (attributemodifier.getOperation() != AttributeModifier.Operation.MULTIPLY_BASE && attributemodifier.getOperation() != AttributeModifier.Operation.MULTIPLY_TOTAL) {
-                if (entry.getKey().equals(Attributes.KNOCKBACK_RESISTANCE)) {
-                    amountDisplay = amount * 10;
-                } else {
-                    amountDisplay = amount;
-                }
+    public static Multimap<Holder<Attribute>, AttributeModifier> getSortedModifiers(ItemStack stack, ItemAttributeModifiers modifiers) {
+        var map = LinkedListMultimap.<Holder<Attribute>, AttributeModifier>create();
+        modifiers.forEach(EquipmentSlotGroup.MAINHAND, (attr, modifier) -> {
+            if (attr != null && modifier != null) {
+                map.put(attr, modifier);
             } else {
-                amountDisplay = amount * 100;
+                GunsmithLib.LOGGER.debug("Detected broken attribute modifier entry on attachment {}.  Attr={}, Modif={}", stack, attr, modifier);
             }
-
-            if (amount > 0.0D) {
-                tooltip.add(Component.translatable("attribute.modifier.plus." + attributemodifier.getOperation().toValue(), ATTRIBUTE_MODIFIER_FORMAT.format(amountDisplay), Component.translatable(entry.getKey().getDescriptionId())).withStyle(ChatFormatting.BLUE));
-            } else if (amount < 0.0D) {
-                amountDisplay *= -1;
-                tooltip.add(Component.translatable("attribute.modifier.take." + attributemodifier.getOperation().toValue(), ATTRIBUTE_MODIFIER_FORMAT.format(amountDisplay), Component.translatable(entry.getKey().getDescriptionId())).withStyle(ChatFormatting.RED));
-            }
-        }
+        });
+        return map;
     }
 }

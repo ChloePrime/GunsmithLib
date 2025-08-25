@@ -2,17 +2,21 @@ package mod.chloeprime.gunsmithlib.common.entity;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class RangefinderMarker extends Projectile {
     public static final EntityType<RangefinderMarker> TYPE = EntityType.Builder
             .<RangefinderMarker>of(RangefinderMarker::new, MobCategory.MISC)
@@ -35,16 +39,16 @@ public class RangefinderMarker extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     @Override
-    public @Nonnull Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @Nonnull Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity tracker) {
         throw new IllegalStateException("%ss should never be sent".formatted(getClass().getSimpleName()));
     }
 
     @Override
-    protected boolean canAddPassenger(@Nonnull Entity passenger) {
+    protected boolean canAddPassenger(Entity passenger) {
         return false;
     }
 
@@ -60,7 +64,7 @@ public class RangefinderMarker extends Projectile {
     }
 
     @Override
-    protected void addPassenger(@Nonnull Entity crasher) {
+    protected void addPassenger(Entity crasher) {
         throw new IllegalStateException("Should never addPassenger without checking couldAcceptPassenger()");
     }
 

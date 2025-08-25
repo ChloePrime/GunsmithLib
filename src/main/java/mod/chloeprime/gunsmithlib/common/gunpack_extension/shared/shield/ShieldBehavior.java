@@ -6,14 +6,15 @@ import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -22,7 +23,7 @@ import java.util.function.Predicate;
 /**
  * @since 3.4.0
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class ShieldBehavior {
     /**
      * 判断手持一把枪的玩家是否能格挡原版伤害。<p>
@@ -63,7 +64,7 @@ public class ShieldBehavior {
             ItemStack weapon,
             Function<ShieldData, Double> angleField) {
         Predicate<ShieldData> condition = getConditionPredicate(user);
-        return getUsedShield(weapon, data -> condition.test(data) ? angleField.apply(data) : 0);
+        return getUsedShield(user.registryAccess(), weapon, data -> condition.test(data) ? angleField.apply(data) : 0);
     }
 
     private static boolean canBlockDamage(
@@ -76,7 +77,7 @@ public class ShieldBehavior {
         }
         Predicate<ShieldData> condition = getConditionPredicate(user);
         // 单位为弧度
-        var angle = getTotalAngle(weapon, data -> condition.test(data) ? angleField.apply(data) : 0);
+        var angle = getTotalAngle(user.registryAccess(), weapon, data -> condition.test(data) ? angleField.apply(data) : 0);
         if (angle <= 1e-4) {
             return false;
         }
@@ -112,7 +113,7 @@ public class ShieldBehavior {
         };
     }
 
-    private static Optional<ShieldData> getUsedShield(ItemStack weapon, Function<ShieldData, Double> field) {
+    private static Optional<ShieldData> getUsedShield(HolderLookup.Provider registryAccess, ItemStack weapon, Function<ShieldData, Double> field) {
         var gun = Gunsmith.getGunInfo(weapon).orElse(null);
         if (gun == null) {
             return Optional.empty();
@@ -121,7 +122,7 @@ public class ShieldBehavior {
         double maxAngle = result != null ? field.apply(result) : 0;
 
         for (var attachmentType : AttachmentType.values()) {
-            ItemStack attachment = gun.gunItem().getAttachment(gun.gunStack(), attachmentType);
+            ItemStack attachment = gun.gunItem().getAttachment(registryAccess, gun.gunStack(), attachmentType);
             ShieldData data = ShieldData.fromAttachment(attachment).orElse(null);
             if (data == null) {
                 continue;
@@ -135,8 +136,8 @@ public class ShieldBehavior {
         return Optional.ofNullable(result);
     }
 
-    private static double getTotalAngle(ItemStack weapon, Function<ShieldData, Double> field) {
-        return getUsedShield(weapon, field).map(field).orElse(0.0);
+    private static double getTotalAngle(HolderLookup.Provider registryAccess, ItemStack weapon, Function<ShieldData, Double> field) {
+        return getUsedShield(registryAccess, weapon, field).map(field).orElse(0.0);
     }
 
     public static Vec3 getBetterSourcePosition(DamageSource source) {

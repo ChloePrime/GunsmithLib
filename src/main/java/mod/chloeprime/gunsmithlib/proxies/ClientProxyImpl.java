@@ -5,22 +5,40 @@ import com.mojang.math.Axis;
 import mod.chloeprime.gunsmithlib.mixin.LevelAccessor;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
+@EventBusSubscriber(Dist.CLIENT)
 class ClientProxyImpl {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final PoseStack POSE = new PoseStack();
+    private static RegistryAccess fallbackRegistryAccess;
 
     static float getPartialTick() {
         return MC.getTimer().getGameTimeDeltaPartialTick(false);
+    }
+
+    public static Optional<RegistryAccess> getRegistryAccess() {
+        var result = Optional.ofNullable(MC.level).map(Level::registryAccess).orElse(fallbackRegistryAccess);
+        return Optional.ofNullable(result);
+    }
+
+    @SubscribeEvent
+    private static void updateFallbackRegistryAccessOnResourceReload(AddReloadListenerEvent event) {
+        fallbackRegistryAccess = event.getRegistryAccess();
     }
 
     static Vec3 bobCompensation(Vec3 original) {

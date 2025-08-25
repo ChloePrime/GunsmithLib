@@ -2,8 +2,8 @@ package mod.chloeprime.gunsmithlib.api.common;
 
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -28,16 +28,10 @@ public class GunReloadFeedEvent extends LivingEvent {
         this.willLoadBarrel = willLoadBarrel;
     }
 
-    @Cancelable
-    public static class Pre extends GunReloadFeedEvent {
+    public static class Pre extends GunReloadFeedEvent implements ICancellableEvent {
         @ApiStatus.Internal
         public Pre(LivingEntity entity, GunInfo gunInfo, boolean willLoadBarrel) {
             super(entity, gunInfo, willLoadBarrel);
-        }
-
-        @Override
-        public boolean isCancelable() {
-                return true;
         }
     }
 

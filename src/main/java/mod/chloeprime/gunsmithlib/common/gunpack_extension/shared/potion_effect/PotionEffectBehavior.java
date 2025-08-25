@@ -10,14 +10,14 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSha
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class PotionEffectBehavior {
     private static final AttachmentType[] ATTACH_TYPE_REGISTRY = AttachmentType.values();
     private static final ArrayList<PotionEffectData> BUFFER = new ArrayList<>(50);

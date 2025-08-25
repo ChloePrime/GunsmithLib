@@ -5,12 +5,12 @@ import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.OptionalDouble;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class FireControlBehavior {
     @SubscribeEvent
     public static void onBulletCreate(InternalBulletCreateEvent eventWrapper) {

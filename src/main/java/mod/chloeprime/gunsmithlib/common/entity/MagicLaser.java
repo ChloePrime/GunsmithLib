@@ -2,6 +2,7 @@ package mod.chloeprime.gunsmithlib.common.entity;
 
 import mod.chloeprime.gunsmithlib.client.laser.LaserInstance;
 import net.minecraft.commands.arguments.EntityAnchorArgument.Anchor;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class MagicLaser extends Projectile {
@@ -63,7 +65,7 @@ public class MagicLaser extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(@Nonnull SynchedEntityData.Builder builder) {
     }
 
     public @Nullable LivingEntity getShooter() {

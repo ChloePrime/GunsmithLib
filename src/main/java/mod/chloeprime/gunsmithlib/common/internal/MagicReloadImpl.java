@@ -10,9 +10,10 @@ import com.tacz.guns.util.AttachmentDataUtils;
 import mod.chloeprime.gunsmithlib.api.util.MagicReloadOptions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class MagicReloadImpl {
     public static int magicReload(LivingEntity shooter, ItemStack gun, int reloadCount, MagicReloadOptions... options) {
@@ -71,7 +72,7 @@ public class MagicReloadImpl {
                 return agi.findAndExtractDummyAmmo(gun, reloadCount);
             }
             if (reloadCount > 0) {
-                return shooter.getCapability(ForgeCapabilities.ITEM_HANDLER, null)
+                return Optional.ofNullable(shooter.getCapability(Capabilities.ItemHandler.ENTITY))
                         .map(inventory -> agi.findAndExtractInventoryAmmo(inventory, gun, reloadCount))
                         .orElse(0);
             }

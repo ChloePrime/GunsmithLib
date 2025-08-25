@@ -1,12 +1,16 @@
 package mod.chloeprime.gunsmithlib.proxies;
 
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +22,14 @@ public class ClientProxy {
 
     public static float getPartialTick() {
         return DEDICATED_SERVER ? 1 : ClientProxyImpl.getPartialTick();
+    }
+
+    public static Optional<RegistryAccess> getRegistryAccess() {
+        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+            return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer()).map(MinecraftServer::registryAccess);
+        } else {
+            return ClientProxyImpl.getRegistryAccess();
+        }
     }
 
     public static LogicalSide sideOf(Level level) {

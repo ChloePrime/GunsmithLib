@@ -41,11 +41,11 @@ public class TargetSearcher {
             return Optional.empty();
         }
         var baseAngularRange = Math.max(0, data != null ? data.getAngularRange() : getOldAimConeSizeOfGun(gun));
-        var angularRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_ANGLE.get(), baseAngularRange);
+        var angularRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_ANGLE, baseAngularRange);
         if (angularRange < 0.5) {
             return Optional.empty();
         }
-        var modifiedRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_RANGE.get(), baseRange);
+        var modifiedRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_RANGE, baseRange);
         return search(shooter, Math.min(modifiedRange, MAX_DISTANCE), Math.toRadians(angularRange / 2), partialTicks);
     }
 

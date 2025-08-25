@@ -11,7 +11,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 public class IsGunInstalled implements LootItemCondition {
@@ -57,7 +56,7 @@ public class IsGunInstalled implements LootItemCondition {
 
     @Override
     public @Nonnull LootItemConditionType getType() {
-        return Objects.requireNonNull(GunLootFunctions.IS_GUN_INSTALLED);
+        return GunLootFunctions.IS_GUN_INSTALLED.get();
     }
 
 }

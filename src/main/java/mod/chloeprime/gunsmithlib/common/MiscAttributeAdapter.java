@@ -1,11 +1,10 @@
 package mod.chloeprime.gunsmithlib.common;
 
+import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.GunDamageSourcePart;
-import com.tacz.guns.resource.modifier.custom.AmmoSpeedModifier;
 import com.tacz.guns.resource.modifier.custom.EffectiveRangeModifier;
-import com.tacz.guns.resource.modifier.custom.RpmModifier;
 import com.tacz.guns.resource.pojo.data.gun.FeedType;
 import com.tacz.guns.util.AttachmentDataUtils;
 import mod.chloeprime.gunsmithlib.Config;
@@ -14,24 +13,24 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.F
 import mod.chloeprime.gunsmithlib.common.internal.GunAttributeSyncState;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static mod.chloeprime.gunsmithlib.api.common.GunAttributes.*;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class MiscAttributeAdapter {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void bulletDamage(EntityHurtByGunEvent.Pre event) {
@@ -48,7 +47,7 @@ public class MiscAttributeAdapter {
         }
         // 左键近战武器分散增益
         var coefficient = GsHelper.getBuffCoefficient(event.getGunId(), isMelee);
-        var attribute = isMelee ? Attributes.ATTACK_DAMAGE : BULLET_DAMAGE.get();
+        var attribute = isMelee ? Attributes.ATTACK_DAMAGE : BULLET_DAMAGE;
         var oldDamage = event.getBaseAmount() / coefficient;
         var newDamage = (!isMelee && Config.USE_ATTACK_DAMAGE.get())
                 ? GsHelper.getAttributeValueWithBase(attacker, attribute, GsHelper.getAttributeValueWithBase(attacker, Attributes.ATTACK_DAMAGE, oldDamage))
@@ -65,7 +64,8 @@ public class MiscAttributeAdapter {
         var bullet = event.getImpl().getBullet();
 
         var oldMotion = bullet.getDeltaMovement();
-        var attribute = BULLET_SPEED.get();
+        @SuppressWarnings("UnnecessaryLocalVariable")
+        var attribute = BULLET_SPEED;
         var oldSpeed = oldMotion.length();
         var newSpeed = GsHelper.getAttributeValueWithBase(attacker, attribute, oldSpeed);
         // 速度沒有被Attribute修改的情況
@@ -77,8 +77,7 @@ public class MiscAttributeAdapter {
     }
 
     public static double rpm(LivingEntity attacker) {
-        var attribute = RPM.get();
-        return attacker.getAttributeValue(attribute);
+        return attacker.getAttributeValue(RPM);
     }
 
     public static int ammoCapacity(int original, ItemStack gunItem) {
@@ -93,9 +92,12 @@ public class MiscAttributeAdapter {
         return (int) Math.round(GsHelper.evaluateItemAttribute(gunItem, AMMO_CAPACITY, original));
     }
 
-    @SubscribeEvent
-    public static void defaultValues(LivingEvent.LivingTickEvent event) {
-        var user = event.getEntity();
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SuppressWarnings("UnstableApiUsage")
+    public static void defaultValues(EntityTickEvent.Pre event) {
+        if (!(event.getEntity() instanceof LivingEntity user)) {
+            return;
+        }
         if (user.level().isClientSide) {
             return;
         }
@@ -112,41 +114,40 @@ public class MiscAttributeAdapter {
             double damage = AttachmentDataUtils.getDamageWithAttachment(newMH, gun.index().getGunData()) / gun.index().getBulletData().getBulletAmount();
             float speed = (cache == null
                     ? gun.index().getBulletData().getSpeed()
-                    : cache.<Float>getCache(AmmoSpeedModifier.ID)) / 20;
+                    : cache.getCache(GunProperties.AMMO_SPEED)) / 20;
             int rpm = cache == null
                     ? gun.index().getGunData().getRoundsPerMinute(gun.getFireMode())
-                    : cache.<Integer>getCache(RpmModifier.ID);
+                    : cache.getCache(GunProperties.ROUNDS_PER_MINUTE);
 
             double lockRange = cache != null && cache.getCache(EffectiveRangeModifier.ID) instanceof Number range
                     ? range.doubleValue()
                     : FireControlAttributes.AIM_LOCK_RANGE.get().getDefaultValue();
 
-            setBaseValue(user, BULLET_DAMAGE.get(), damage);
-            setBaseValue(user, BULLET_SPEED.get(), speed);
-            setBaseValue(user, RPM.get(), rpm);
-            setBaseValue(user, FireControlAttributes.AIM_LOCK_RANGE.get(), lockRange);
+            setBaseValue(user, BULLET_DAMAGE, damage);
+            setBaseValue(user, BULLET_SPEED, speed);
+            setBaseValue(user, RPM, rpm);
+            setBaseValue(user, FireControlAttributes.AIM_LOCK_RANGE, lockRange);
         }, () -> {
             if (!syncState.gunsmith$isInGunMode()) {
                 return;
             }
             syncState.gunsmith$setInGunMode(false);
-            resetBaseValue(user, BULLET_DAMAGE.get());
-            resetBaseValue(user, BULLET_SPEED.get());
-            resetBaseValue(user, RPM.get());
-            resetBaseValue(user, FireControlAttributes.AIM_LOCK_RANGE.get());
+            resetBaseValue(user, BULLET_DAMAGE);
+            resetBaseValue(user, BULLET_SPEED);
+            resetBaseValue(user, RPM);
+            resetBaseValue(user, FireControlAttributes.AIM_LOCK_RANGE);
         });
     }
 
-    private static void setBaseValue(LivingEntity owner, Attribute attribute, double value) {
-        Optional.ofNullable(owner.getAttribute(attribute))
-                .ifPresent(ai -> ai.setBaseValue(value));
+    private static void setBaseValue(LivingEntity owner, Holder<Attribute> attribute, double value) {
+        Optional.ofNullable(owner.getAttribute(attribute)).ifPresent(ai -> ai.setBaseValue(value));
     }
 
-    private static void resetBaseValue(LivingEntity owner, Attribute attribute) {
-        setBaseValue(owner, attribute, attribute.getDefaultValue());
+    private static void resetBaseValue(LivingEntity owner, Holder<Attribute> attribute) {
+        setBaseValue(owner, attribute, attribute.value().getDefaultValue());
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber
     public static class AttributeAttacher {
         @SubscribeEvent
         public static void onAttachAttributes(EntityAttributeModificationEvent event) {
@@ -161,9 +162,10 @@ public class MiscAttributeAdapter {
         }
 
         @SafeVarargs
-        private static void addAll(EntityType<? extends LivingEntity> type, BiConsumer<EntityType<? extends LivingEntity>, Attribute> add, RegistryObject<? extends Attribute>... attribs) {
-            for (RegistryObject<? extends Attribute> a : attribs)
-                add.accept(type, a.get());
+        private static void addAll(EntityType<? extends LivingEntity> type, BiConsumer<EntityType<? extends LivingEntity>, Holder<Attribute>> add, Holder<Attribute>... attribs) {
+            for (var holder : attribs) {
+                add.accept(type, holder);
+            }
         }
     }
 }

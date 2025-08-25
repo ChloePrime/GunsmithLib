@@ -1,14 +1,16 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect;
 
 import com.google.common.base.Suppliers;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -63,9 +65,11 @@ public class PotionEffectData {
     private int max_stack_level;
 
     // 下面是代码
-    private transient Supplier<Optional<MobEffect>> effect = Suppliers.memoize(() -> Optional.ofNullable(ForgeRegistries.MOB_EFFECTS.getValue(effect_id)));
+    private transient Supplier<Optional<Holder<MobEffect>>> effect = Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT
+            .getHolder(effect_id)
+            .map(Function.identity()));
 
-    public final Optional<MobEffect> getEffect() {
+    public final Optional<Holder<MobEffect>> getEffect() {
         return effect.get();
     }
 
@@ -120,7 +124,7 @@ public class PotionEffectData {
         }
     }
 
-    private MobEffectInstance createInstance(MobEffect effect, int level) {
+    private MobEffectInstance createInstance(Holder<MobEffect> effect, int level) {
         return new MobEffectInstance(effect, getDuration(), Math.max(0, level - 1), isAmbient(), isVisible(), willShowIcon());
     }
 }

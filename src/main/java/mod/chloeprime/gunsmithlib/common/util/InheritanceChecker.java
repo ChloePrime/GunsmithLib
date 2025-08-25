@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -89,7 +90,7 @@ public class InheritanceChecker<T> {
         }
 
         try {
-            return realBaseType.getDeclaredMethod(methodName, paramTypes);
+            return Objects.requireNonNull(temp).getDeclaredMethod(methodName, paramTypes);
         }
         catch (NoSuchMethodException e) {
             // No way

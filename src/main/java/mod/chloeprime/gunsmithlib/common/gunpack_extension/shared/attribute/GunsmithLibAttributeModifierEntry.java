@@ -1,5 +1,8 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute;
 
+import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.common.util.AttributeOperationConversion;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -10,6 +13,8 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * 参见 <a href="https://zh.minecraft.wiki/w/%E5%B1%9E%E6%80%A7">Minecraft Wiki 上的 Attribute</a>
@@ -48,11 +53,12 @@ public class GunsmithLibAttributeModifierEntry {
      * 可选，默认为加法
      */
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
-    private AttributeModifier.Operation operation = AttributeModifier.Operation.ADDITION;
+    private AttributeOperationConversion.ClassicName operation = AttributeOperationConversion.ClassicName.ADDITION;
 
     // 下面是代码
-    private transient Pair<Attribute, AttributeModifier> bakedResult;
+    private transient Pair<Holder<Attribute>, AttributeModifier> bakedResult;
     private transient int valid = 0;
+    private transient final AtomicReference<ResourceLocation> id121 = new AtomicReference<>();
 
     public final ResourceLocation getAttributeId() {
         return attribute;
@@ -60,6 +66,10 @@ public class GunsmithLibAttributeModifierEntry {
 
     public final UUID getModifierId() {
         return id;
+    }
+
+    public final ResourceLocation getModifierIdForMC121() {
+        return id121.updateAndGet(_cache -> _cache != null ? _cache : generateResourceLocationFromUUID(id));
     }
 
     public final String getModifierName() {
@@ -71,15 +81,14 @@ public class GunsmithLibAttributeModifierEntry {
     }
 
     public final AttributeModifier.Operation getOperation() {
-        return operation;
+        return AttributeOperationConversion.upgrade(operation);
     }
 
-    @SuppressWarnings("deprecation")
-    public final Optional<Attribute> getAttribute() {
-        return BuiltInRegistries.ATTRIBUTE.getOptional(getAttributeId());
+    public final Optional<Holder<Attribute>> getAttribute() {
+        return BuiltInRegistries.ATTRIBUTE.getHolder(getAttributeId()).map(Function.identity());
     }
 
-    public Optional<Pair<Attribute, AttributeModifier>> getModifier() {
+    public Optional<Pair<Holder<Attribute>, AttributeModifier>> getModifier() {
         if (valid == -1) {
             return Optional.empty();
         }
@@ -91,7 +100,11 @@ public class GunsmithLibAttributeModifierEntry {
         return Optional.ofNullable(bakedResult);
     }
 
-    private @Nullable Pair<Attribute, AttributeModifier> bake() {
+    private static ResourceLocation generateResourceLocationFromUUID(UUID uuid) {
+        return GunsmithLib.loc(uuid.toString().replace('-', '_'));
+    }
+
+    private @Nullable Pair<Holder<Attribute>, AttributeModifier> bake() {
         if (id == null) {
             return null;
         }
@@ -99,6 +112,6 @@ public class GunsmithLibAttributeModifierEntry {
         if (attribute == null) {
             return null;
         }
-        return Pair.of(attribute, new AttributeModifier(getModifierId(), getModifierName(), getAmount(), getOperation()));
+        return Pair.of(attribute, new AttributeModifier(getModifierIdForMC121(), getAmount(), getOperation()));
     }
 }

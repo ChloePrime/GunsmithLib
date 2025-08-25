@@ -4,7 +4,7 @@ import com.tacz.guns.api.item.IGun;
 import mod.chloeprime.gunsmithlib.api.common.GunReloadFeedEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class GsHooks {
     public static void onReloadFeed(IGun gun, LivingEntity shooter, ItemStack gunItem, boolean loadBarrel, Runnable canceller) {
@@ -13,13 +13,13 @@ public class GsHooks {
             return;
         }
         // pre
-        var canceled = MinecraftForge.EVENT_BUS.post(new GunReloadFeedEvent.Pre(shooter, gunInfo, loadBarrel));
+        var canceled = NeoForge.EVENT_BUS.post(new GunReloadFeedEvent.Pre(shooter, gunInfo, loadBarrel)).isCanceled();
         if (canceled) {
             canceller.run();
             return;
         }
 
         // Post
-        MinecraftForge.EVENT_BUS.post(new GunReloadFeedEvent.Post(shooter, gunInfo, loadBarrel));
+        NeoForge.EVENT_BUS.post(new GunReloadFeedEvent.Post(shooter, gunInfo, loadBarrel));
     }
 }

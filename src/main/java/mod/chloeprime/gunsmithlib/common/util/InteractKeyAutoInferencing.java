@@ -15,7 +15,7 @@ import net.minecraft.world.phys.BlockHitResult;
 public class InteractKeyAutoInferencing {
     private static final InheritanceChecker<Block> BLOCK_INHERITANCE_CHECKER = new InheritanceChecker<>(
             Block.class, "useWithoutItem",
-            BlockState.class, Level.class, BlockPos.class, Player.class, InteractionHand.class, BlockHitResult.class
+            BlockState.class, Level.class, BlockPos.class, Player.class, BlockHitResult.class
     );
 
     private static final InheritanceChecker<Entity> ENTITY_INHERITANCE_CHECKER = new InheritanceChecker<>(

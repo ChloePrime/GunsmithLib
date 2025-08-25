@@ -1,12 +1,10 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunsmithLibAttributeModifierEntry;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -43,14 +41,14 @@ public class GunsmithLibSharedDataExtension {
 
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];
     private static final PotionEffectData[] EMPTY_MOB_EFFECT_ARRAY = new PotionEffectData[0];
-    private transient Multimap<Attribute, AttributeModifier> bakedAttributeModifiers;
+    private transient ItemAttributeModifiers bakedAttributeModifiers;
 
     @NotNull
-    public Multimap<Attribute, AttributeModifier> getBakedAttributeModifiers() {
+    public ItemAttributeModifiers getBakedAttributeModifiers() {
         if (bakedAttributeModifiers == null) {
-            var builder = ImmutableMultimap.<Attribute, AttributeModifier>builder();
+            var builder = ItemAttributeModifiers.builder();
             for (GunsmithLibAttributeModifierEntry pojo : getAttributeModifiers()) {
-                pojo.getModifier().ifPresent(builder::put);
+                pojo.getModifier().ifPresent(pair -> builder.add(pair.getLeft(), pair.getRight(), EquipmentSlotGroup.MAINHAND));
             }
             bakedAttributeModifiers = builder.build();
         }
