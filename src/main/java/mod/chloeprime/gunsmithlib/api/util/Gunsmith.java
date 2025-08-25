@@ -98,6 +98,6 @@ public class Gunsmith {
         if (info == null) {
             return false;
         }
-        return !info.gunItem().getAttachment(info.gunStack(), AttachmentType.SCOPE).isEmpty();
+        return !info.gunItem().getAttachment(shooter.registryAccess(), info.gunStack(), AttachmentType.SCOPE).isEmpty();
     }
 }
