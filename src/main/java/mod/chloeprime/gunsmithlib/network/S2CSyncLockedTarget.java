@@ -3,7 +3,6 @@ package mod.chloeprime.gunsmithlib.network;
 import io.netty.buffer.ByteBuf;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.client.ClientNetworkHandler;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
