@@ -2,12 +2,12 @@ package mod.chloeprime.gunsmithlib.client;
 
 import com.tacz.guns.client.model.papi.PapiManager;
 import mod.chloeprime.gunsmithlib.client.papi.RangefinderPapi;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(Dist.CLIENT)
 public class GunsmithLibClient {
     public static void initClient() {
         PapiManager.addPapi(RangefinderPapi.NAME, RangefinderPapi.INSTANCE);

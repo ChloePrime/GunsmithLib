@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.Optional;
@@ -45,6 +45,7 @@ public final class EnergyWeaponVisuals {
         public static final ResourceLocation BATTERY_BG = GunsmithLib.loc("textures/gui/battery_hud_back.png");
         public static final ResourceLocation BATTERY_FG = GunsmithLib.loc("textures/gui/battery_hud_front.png");
 
+        @SuppressWarnings("unused")
         public static void renderBattery(GuiGraphics gui, ItemStack gunStack, float x, float y, int width, int height) {
             var gun = Gunsmith.getGunInfo(gunStack).orElse(null);
             if (gun == null) {
@@ -105,11 +106,13 @@ public final class EnergyWeaponVisuals {
                 return;
             }
 
-            gun.getCapability(ForgeCapabilities.ENERGY).ifPresent(battery -> {
+            var battery = gun.getCapability(Capabilities.EnergyStorage.ITEM);
+            if (battery != null) {
                 EnergyWeaponData.runtime(gun).ifPresent(info -> {
-                    field.setValue(battery.getEnergyStored() / info.energy().energyPerShot());
+                    int shots = battery.getEnergyStored() / info.energy().energyPerShot();
+                    field.setValue(shots);
                 });
-            });
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ public class AnimationSpeedScaler {
             return 1;
         }
         var isReloading = IGunOperator.fromLivingEntity(player).getSynReloadState().getStateType() != ReloadState.StateType.NOT_RELOADING;
-        return isReloading ? player.getAttributeValue(GunAttributes.RELOAD_SPEED.get()) : 1;
+        return isReloading ? player.getAttributeValue(GunAttributes.RELOAD_SPEED) : 1;
     }
 
     public static abstract sealed class TimeTracker {

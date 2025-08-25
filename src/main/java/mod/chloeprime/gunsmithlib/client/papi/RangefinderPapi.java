@@ -4,6 +4,7 @@ import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.api.util.Rangefinder;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
@@ -32,7 +33,7 @@ public class RangefinderPapi implements Function<ItemStack, String> {
             return FALLBACK;
         }
         var now = shooter.level().getGameTime();
-        var partial = MC.getPartialTick();
+        var partial = ClientProxy.getPartialTick();
         if (lastTick == now && lastPartialTick == partial) {
             return lastResult;
         }

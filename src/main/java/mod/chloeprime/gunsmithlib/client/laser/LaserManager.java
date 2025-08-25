@@ -3,16 +3,16 @@ package mod.chloeprime.gunsmithlib.client.laser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public class LaserManager {
     private static final Deque<LaserInstance> INSTANCES = new LinkedList<>();
     private static final boolean DEV_ENV = !FMLLoader.isProduction();
@@ -55,8 +55,8 @@ public class LaserManager {
                 PoseStack pose = event.getPoseStack();
                 pose.pushPose();
                 {
-                    MagicLaserUtils.stickLaserToMuzzle(instance, event.getPartialTick(), pose);
-                    MagicLaserUtils.render(instance, event.getCamera(), event.getPartialTick(), pose);
+                    MagicLaserUtils.stickLaserToMuzzle(instance, event.getPartialTick().getGameTimeDeltaPartialTick(false), pose);
+                    MagicLaserUtils.render(instance, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false), pose);
                 }
                 pose.popPose();
             }

@@ -5,13 +5,13 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.H
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import mod.chloeprime.gunsmithlib.network.S2CSyncLockedTarget;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public class ClientNetworkHandler {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final Int2IntMap BULLET_TARGET_ID_MAP = new Int2IntLinkedOpenHashMap();

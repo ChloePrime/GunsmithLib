@@ -3,26 +3,31 @@ package mod.chloeprime.gunsmithlib.client.eventhandler;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.client.input.AimKey;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public class CantAimWhenGunItemIsInCooldown {
     private static final Minecraft MC = Minecraft.getInstance();
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.ClientTickEvent event) {
+    private static void onPlayerTick(ClientTickEvent.Pre event) {
+        tryCancelAiming();
+    }
+
+    @SubscribeEvent
+    private static void onPlayerTick(ClientTickEvent.Post event) {
         tryCancelAiming();
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onAimPress(InputEvent.MouseButton.Post event) {
+    private static void onAimPress(InputEvent.MouseButton.Post event) {
         if (isInGame() && AimKey.AIM_KEY.matchesMouse(event.getButton())) {
             tryCancelAiming();
         }
