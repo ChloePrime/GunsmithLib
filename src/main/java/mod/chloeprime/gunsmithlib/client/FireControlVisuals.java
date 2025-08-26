@@ -70,7 +70,7 @@ public class FireControlVisuals {
         {
             poseStack.translate(offset.x(), offset.y(), offset.z());
             poseStack.mulPose(dispatcher.cameraOrientation());
-            poseStack.scale(-0.05F, -0.05F, 0.05F);
+            poseStack.scale(0.05F, -0.05F, 0.05F);
             Matrix4f matrix4f = poseStack.last().pose();
             float f2 = (float) (-font.width(pDisplayName) / 2);
             font.drawInBatch(pDisplayName, f2, (float) i, 0xFFFF_FFFF, false, matrix4f, buffer, Font.DisplayMode.SEE_THROUGH, 0, packedLight);
