@@ -19,11 +19,33 @@ public class MixinClientGunTooltip {
     private double makeDisplayedDamageConsiderAttributeModifiers(double original) {
         var gun = this.gun;
         var gunIndex = this.gunIndex;
-        if (gun == null || gunIndex == null) {
+        if (gun == null || gunIndex == null || gun.isEmpty()) {
             return original;
         }
         var shrapnel = gunIndex.getBulletData().getBulletAmount();
         return GsHelper.evaluateItemAttribute(gun, GunAttributes.BULLET_DAMAGE, original / shrapnel) * shrapnel;
+    }
+
+    @ModifyExpressionValue(
+            method = "getText",
+            at = @At(value = "INVOKE", target = "Lcom/tacz/guns/util/AttachmentDataUtils;getArmorIgnoreWithAttachment(Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/resource/pojo/data/gun/GunData;)D"))
+    private double makeDisplayedArmorPiercingConsiderAttributeModifiers(double original) {
+        var gun = this.gun;
+        if (gun == null || gun.isEmpty()) {
+            return original;
+        }
+        return GsHelper.evaluateItemAttribute(gun, GunAttributes.BULLET_DAMAGE, original);
+    }
+
+    @ModifyExpressionValue(
+            method = "getText",
+            at = @At(value = "INVOKE", target = "Lcom/tacz/guns/util/AttachmentDataUtils;getHeadshotMultiplier(Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/resource/pojo/data/gun/GunData;)D"))
+    private double makeDisplayedHeadshotMultiplierConsiderAttributeModifiers(double original) {
+        var gun = this.gun;
+        if (gun == null || gun.isEmpty()) {
+            return original;
+        }
+        return GsHelper.evaluateItemAttribute(gun, GunAttributes.BULLET_DAMAGE, original);
     }
 
     @Shadow @Final private ItemStack gun;

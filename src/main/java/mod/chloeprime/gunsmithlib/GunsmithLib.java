@@ -61,9 +61,28 @@ public class GunsmithLib {
     public static class Attributes {
         private static final Consumer<Attribute> SET_SYNCED = attribute -> attribute.setSyncable(true);
         private static final Consumer<Attribute> SET_NEGATIVE = attribute -> attribute.setSentiment(Attribute.Sentiment.NEGATIVE);
-
         private static final DeferredRegister<Attribute> REGISTRY = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, MOD_ID);
+
+        /**
+         * 射击伤害，是每个单片的基础伤害
+         */
         public static final DeferredHolder<Attribute, Attribute> BULLET_DAMAGE = create("bullet_damage", 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+        /**
+         * 穿甲倍率
+         * @since 4.6.0
+         */
+        public static final DeferredHolder<Attribute, Attribute> ARMOR_PIERCING_RATIO = createPercentBased("armor_piercing_ratio", 0, 0, 1);
+
+        /**
+         * 爆头倍率
+         * @since 4.6.0
+         */
+        public static final DeferredHolder<Attribute, Attribute> HEADSHOT_MULTIPLIER = createPercentBased("headshot_multiplier", 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+        /**
+         * 子弹飞行速度
+         */
         public static final DeferredHolder<Attribute, Attribute> BULLET_SPEED = create("bullet_speed", 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         public static final DeferredHolder<Attribute, Attribute> H_RECOIL = createPercentBased("horz_recoil", 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SET_SYNCED.andThen(SET_NEGATIVE));
@@ -88,6 +107,10 @@ public class GunsmithLib {
         }
 
         @SuppressWarnings("SameParameterValue")
+        private static DeferredHolder<Attribute, Attribute> createPercentBased(String name, double defaultValue, double min, double max) {
+            return createPercentBased(name, defaultValue, min, max, attribute -> {});
+        }
+
         private static DeferredHolder<Attribute, Attribute> createPercentBased(String name, double defaultValue, double min, double max, Consumer<Attribute> customizer) {
             return REGISTRY.register(name, () -> {
                 var attribute = new PercentageAttribute(createLangKey(name), defaultValue, min, max);

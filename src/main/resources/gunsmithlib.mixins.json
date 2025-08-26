@@ -23,6 +23,7 @@
     "MixinReloadProcedure",
     "dfu.MixinGunPackLoader",
     "dfu.MixinGunpackUpgrader",
+    "EntityKineticBulletAccessor",
     "interactkey.StairBlockAccessor",
     "interactkey.TacInteractKeyAutoInferenceMixin"
   ],
