@@ -1,10 +1,12 @@
 package mod.chloeprime.gunsmithlib.common.dfu;
 
+import com.google.common.hash.Funnels;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.MoreFiles;
 import me.muksc.taczpackupgrader.Upgrader;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import net.neoforged.fml.loading.FMLPaths;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.file.PathUtils;
 
@@ -17,6 +19,7 @@ public class GunpackUpgraderWrapper {
     public static final Path WORKING_DIR = ROOT_TEMP_DIR.resolve("temp");
     public static final Path UPGRADE_CACHE = ROOT_TEMP_DIR.resolve("upgrade_cache").resolve(VERSION);
 
+    @SuppressWarnings("UnstableApiUsage")
     public static Path upgrade(Path pack1201) throws IOException {
         if (Files.isDirectory(pack1201)) {
             GunsmithLib.LOGGER.info("Upgrading gunpack folder at {}", pack1201);
@@ -24,7 +27,9 @@ public class GunpackUpgraderWrapper {
         }
         String hash;
         try (var stream = Files.newInputStream(pack1201)) {
-            hash = DigestUtils.sha256Hex(stream);
+            var hasher = Hashing.sha256().newHasher();
+            ByteStreams.copy(stream, Funnels.asOutputStream(hasher));
+            hash = hasher.hash().toString();
         }
         Path cachedUpgradeResult = UPGRADE_CACHE.resolve(hash + ".zip");
         if (Files.isRegularFile(cachedUpgradeResult)) {
