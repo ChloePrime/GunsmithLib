@@ -17,6 +17,7 @@
   "attribute.name.gunsmithlib.aim_lock_range.desc": "Max lock distance for weapons with fire control system. Useless on ordinary weapons without fire control capability",
   "attribute.name.gunsmithlib.aim_lock_angle": "Angular Lock Range",
   "attribute.name.gunsmithlib.aim_lock_angle.desc": "Angular lock range for weapons with fire control system. Useless on ordinary weapons without fire control capability",
+  "gunsmithlib.item.technical.bugfix": "Technical Item to Prevent Game from Crashing",
   "gunsmithlib.item.modifiers.attachment": "When Installed:",
 
   "effect.gunsmithlib.crossfire": "Crossfire",

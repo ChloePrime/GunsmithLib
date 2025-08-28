@@ -7,6 +7,8 @@ import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import mod.chloeprime.gunsmithlib.common.internal.MagicReloadImpl;
+import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -99,5 +101,10 @@ public class Gunsmith {
             return false;
         }
         return !info.gunItem().getAttachment(shooter.registryAccess(), info.gunStack(), AttachmentType.SCOPE).isEmpty();
+    }
+
+    // MC1.21.1+ Begin
+    public static Optional<RegistryAccess> getRegistryAccess() {
+        return ClientProxy.getRegistryAccess();
     }
 }

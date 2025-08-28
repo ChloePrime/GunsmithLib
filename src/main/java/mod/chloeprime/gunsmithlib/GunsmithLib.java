@@ -8,6 +8,7 @@ import mod.chloeprime.gunsmithlib.common.entity.RangefinderMarker;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.entity.MagicLaser;
 import mod.chloeprime.gunsmithlib.common.util.AttackDamageMobEffect;
+import mod.chloeprime.gunsmithlib.common.util.LesRaisinsCrashFix;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -52,6 +53,7 @@ public class GunsmithLib {
         DataComponents.DFR.register(bus);
         GunLootFunctions.DFR_FUNC.register(bus);
         GunLootFunctions.DFR_COND.register(bus);
+        LesRaisinsCrashFix.init(bus);
     }
 
     public static ResourceLocation loc(String path) {
