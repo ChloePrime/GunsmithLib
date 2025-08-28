@@ -202,18 +202,40 @@ sourceSets.main.resources.srcDir generateModMetadata
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
 neoForge.ideSyncTask generateModMetadata
 
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+            groupId = group
+            artifactId = mod_id
+            version = version
+            pom.withXml {
+                def node = asNode()
+                if(node.dependencies.size() > 0)
+                    node.remove(node.dependencies) // Remove deps, as they are all mappings-dependent and/or forge
+            }
             from components.java
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            name = "Chloe_Maven"
+            url = "https://maven.chloeprime.cn:4080/releases/"
+            credentials {
+                username "$CHLOE_MAVEN_USERNAME"
+                password "$CHLOE_MAVEN_PASSWORD"
+            }
         }
     }
+//    repositories {
+//        maven {
+//            url "file://${project.projectDir}/repo"
+//        }
+//    }
 }
 
 tasks.withType(JavaCompile).configureEach {
