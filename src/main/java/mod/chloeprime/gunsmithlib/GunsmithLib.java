@@ -27,9 +27,11 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.PercentageAttribute;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.slf4j.Logger;
 
 import java.awt.*;
@@ -51,6 +53,7 @@ public class GunsmithLib {
         container.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         // MC1.21+ Only
         DataComponents.DFR.register(bus);
+        DataAttachments.DFR.register(bus);
         GunLootFunctions.DFR_FUNC.register(bus);
         GunLootFunctions.DFR_COND.register(bus);
         LesRaisinsCrashFix.init(bus);
@@ -162,6 +165,15 @@ public class GunsmithLib {
         public static final Supplier<DataComponentType<ItemAttributeModifiers>> ATTACHMENT_ATTRIBUTES = DFR.register("attachment_attribute_modifiers", () -> DataComponentType.<ItemAttributeModifiers>builder()
                 .persistent(ItemAttributeModifiers.CODEC)
                 .networkSynchronized(ItemAttributeModifiers.STREAM_CODEC)
+                .build());
+    }
+
+    public static class DataAttachments {
+        private static final DeferredRegister<AttachmentType<?>> DFR = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MOD_ID);
+        public static final Supplier<AttachmentType<Integer>> AMMO_IN_BACKPACK = DFR.register("ammo_in_backpack", () -> AttachmentType
+                .builder(() -> -1)
+                .serialize(Codec.INT)
+                .sync(ByteBufCodecs.INT)
                 .build());
     }
 }

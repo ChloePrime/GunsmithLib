@@ -8,7 +8,6 @@ import com.tacz.guns.resource.modifier.custom.EffectiveRangeModifier;
 import com.tacz.guns.resource.pojo.data.gun.FeedType;
 import com.tacz.guns.util.AttachmentDataUtils;
 import mod.chloeprime.gunsmithlib.Config;
-import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.internal.GunAttributeSyncState;
@@ -181,9 +180,7 @@ public class MiscAttributeAdapter {
                     H_RECOIL,
                     RPM,
                     // AMMO_CAPACITY 弹匣容量只在物品上生效
-                    RELOAD_SPEED,
-                    // 数据同步用 Attribute，外部代码请勿使用
-                    GunsmithLib.Attributes.AMMO_IN_BACKPACK));
+                    RELOAD_SPEED));
         }
 
         @SafeVarargs

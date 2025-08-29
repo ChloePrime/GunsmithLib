@@ -6,14 +6,12 @@ import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.Objects;
-
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class CapabilityBasedModCompat {
     public static boolean hasAmmoToConsume(LivingEntity user, ItemStack gunStack) {
         if (user.level().isClientSide) {
@@ -30,8 +28,7 @@ public class CapabilityBasedModCompat {
         if (gun == null) {
             return 0;
         }
-        var capability = ForgeCapabilities.ITEM_HANDLER;
-        var inventory = user.getCapability(capability, null).resolve().orElse(null);
+        var inventory = user.getCapability(Capabilities.ItemHandler.ENTITY);
         if (inventory == null) {
             return 0;
         }
@@ -43,7 +40,7 @@ public class CapabilityBasedModCompat {
             if (invItem.isEmpty()) {
                 continue;
             }
-            var backpack = invItem.getCapability(capability).resolve().orElse(null);
+            var backpack = invItem.getCapability(Capabilities.ItemHandler.ITEM);
             if (backpack == null) {
                 continue;
             }
@@ -65,17 +62,13 @@ public class CapabilityBasedModCompat {
     }
 
     @SubscribeEvent
-    public static void refreshAmmoInBackpack(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            return;
-        }
-        var user = event.player;
+    public static void refreshAmmoInBackpack(PlayerTickEvent.Post event) {
+        var user = event.getEntity();
         if (user.level().isClientSide) {
             return;
         }
-        var dataKey = GunsmithLib.Attributes.AMMO_IN_BACKPACK.get();
-        var dataContainer = Objects.requireNonNull(user.getAttribute(dataKey));
-        var existingValue = dataContainer.getBaseValue();
+        var dataKey = GunsmithLib.DataAttachments.AMMO_IN_BACKPACK.get();
+        int existingValue = user.getData(dataKey);
         if (IGun.mainHandHoldGun(user)) {
             // existingValue 为 -1 时说明玩家之前没有拿枪，需要立即刷新
             // 否则每 1 秒刷新一次
@@ -91,21 +84,21 @@ public class CapabilityBasedModCompat {
             // existingValue >= 0 时说明玩家之前拿枪，
             // 但是玩家现在并没有拿着，所以把它设置成 -1，即没拿枪时的状态
             if (existingValue >= 0) {
-                dataContainer.setBaseValue(-1);
+                user.setData(dataKey, -1);
                 return;
             }
         }
         var ammo = consumeAmmoFromPlayer(user, user.getMainHandItem(), Integer.MAX_VALUE, true);
-        dataContainer.setBaseValue(ammo);
+        user.setData(dataKey, ammo);
     }
 
     public static int getClientSyncedAmmoCountInBackpack(LivingEntity user) {
-        var dataKey = GunsmithLib.Attributes.AMMO_IN_BACKPACK.get();
-        return Math.max(0, Math.round((float) user.getAttributeValue(dataKey)));
+        var dataKey = GunsmithLib.DataAttachments.AMMO_IN_BACKPACK;
+        return Math.max(0, user.getData(dataKey));
     }
 
     public static void setClientSyncedAmmoCountInBackpack(LivingEntity user, int value) {
-        var dataKey = GunsmithLib.Attributes.AMMO_IN_BACKPACK.get();
-        Objects.requireNonNull(user.getAttribute(dataKey)).setBaseValue(Math.max(0, value));
+        var dataKey = GunsmithLib.DataAttachments.AMMO_IN_BACKPACK;
+        user.setData(dataKey, Math.max(0, value));
     }
 }
