@@ -6,6 +6,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.overlay.GunHudOverlay;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.client.EnergyWeaponVisuals;
+import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -22,6 +23,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GunHudOverlay.class, remap = false)
 public class MixinGunHudOverlay {
+    // 剩余弹药数量包括背包内的弹药
+    @Inject(
+            method = "handleCacheCount",
+            at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lcom/tacz/guns/client/gui/overlay/GunHudOverlay;handleInventoryAmmo(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Inventory;)V"))
+    private static void addRemainingAmmoInBackpackToTotalRemainingAmmoCount(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, boolean useInventoryAmmo, CallbackInfo ci) {
+        cacheInventoryAmmoCount += CapabilityBasedModCompat.getClientSyncedAmmoCountInBackpack(player);
+        cacheInventoryAmmoCount = Math.min(9999, cacheInventoryAmmoCount);
+    }
+
     // at的drawString方法是forge加的，所以不remap
     @WrapOperation(
             method = "render",

@@ -6,6 +6,7 @@ import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
+import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.OverheatFeedback;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,6 +22,21 @@ import java.util.Optional;
 
 @Mixin(value = ModernKineticGunScriptAPI.class, remap = false)
 public class MixinModernKineticGunScriptAPI implements AbstractGunScriptAPIExtension {
+    // 背包供弹功能
+
+    @ModifyReturnValue(method = "hasAmmoToConsume", at = @At("TAIL"))
+    private boolean makeHasAmmoToConsumeConsiderContainerItems(boolean original) {
+        return original || CapabilityBasedModCompat.hasAmmoToConsume(shooter, itemStack);
+    }
+
+    @ModifyReturnValue(method = "consumeAmmoFromPlayer", at = @At("TAIL"))
+    private int makeConsumeAmmoFromPlayerConsiderContainerItems(int original, int requested) {
+        if (original >= requested) {
+            return original;
+        }
+        return original + CapabilityBasedModCompat.consumeAmmoFromPlayer(shooter, itemStack, requested - original, false);
+    }
+
     // 换弹速度
     @ModifyReturnValue(method = "getReloadTime", at = @At("RETURN"))
     private long reloadSpeedScaler(long original) {
