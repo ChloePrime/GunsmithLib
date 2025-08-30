@@ -47,7 +47,27 @@ public class CapabilityBasedModCompat {
             for (int j = 0; j < backpack.getSlots(); j++) {
                 var stack = backpack.getStackInSlot(j);
                 if (stack.getItem() instanceof IAmmo ammo && ammo.isAmmoOfGun(gunStack, stack)) {
-                    found += backpack.extractItem(j, Math.min(requested - found, stack.getCount()), simulation).getCount();
+                    // 1.21.1 下，对于堆叠升级后的物品来说，
+                    // getStackInSlot 会返回 count 远大于物品 maxCount，
+                    // 但是 extract 依然不会返回多于 maxCount 的物品
+                    int maxCanExtract = Math.min(requested - found, stack.getCount());
+                    if (simulation) {
+                        var canExtract = !backpack.extractItem(j, maxCanExtract, true).isEmpty();
+                        if (canExtract) {
+                            found += maxCanExtract;
+                        }
+                    } else {
+                        int extracted = 0;
+                        while (extracted < maxCanExtract) {
+                            var extractedItem = backpack.extractItem(j, maxCanExtract - extracted, false);
+                            if (extractedItem.isEmpty()) {
+                                break;
+                            }
+                            extracted += extractedItem.getCount();
+                        }
+                        found += extracted;
+                    }
+//                    found += backpack.extractItem(j, Math.min(requested - found, stack.getCount()), simulation).getCount();
                     if (found >= requested) {
                         return found;
                     }
