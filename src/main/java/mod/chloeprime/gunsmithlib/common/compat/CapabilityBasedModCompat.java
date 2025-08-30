@@ -67,11 +67,13 @@ public class CapabilityBasedModCompat {
                         }
                         found += extracted;
                     }
-//                    found += backpack.extractItem(j, Math.min(requested - found, stack.getCount()), simulation).getCount();
                     if (found >= requested) {
-                        return found;
+                        break;
                     }
                 }
+            }
+            if (found >= requested) {
+                break;
             }
         }
         if (found > 0 && !simulation) {
