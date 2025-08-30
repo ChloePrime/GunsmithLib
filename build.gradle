@@ -226,6 +226,9 @@ publishing {
         }
     }
     repositories {
+        if (System.getProperty('CHLOE_MAVEN_USERNAME') == null) {
+            return
+        }
         maven {
             name = "Chloe_Maven"
             url = "https://maven.chloeprime.cn:4080/releases/"
