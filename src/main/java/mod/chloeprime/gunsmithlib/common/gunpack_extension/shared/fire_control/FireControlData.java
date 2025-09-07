@@ -1,9 +1,14 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
+import com.tacz.guns.api.item.attachment.AttachmentType;
+import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAttachmentData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -40,9 +45,19 @@ public final class FireControlData {
     }
 
     public static Optional<FireControlData> fromGun(GunInfo gun) {
-        return ((EnhancedGunData) gun.index().getGunData())
+          return ((EnhancedGunData) gun.index().getGunData())
                 .gunsmith$getGunsmithLibExtension()
                 .map(GunsmithLibGunDataExtension::getFireControlData);
+    }
+
+    public static Optional<FireControlData> fromAttachment(ItemStack stack) {
+        return Gunsmith.getAttachmentInfo(stack).flatMap(FireControlData::fromAttachment);
+    }
+
+    public static Optional<FireControlData> fromAttachment(AttachmentInfo gunInfo) {
+        return ((EnhancedAttachmentData) gunInfo.index().getData())
+                .gunsmith$getGunsmithLibExtension()
+                .map(GunsmithLibAttachmentDataExtension::getFireControlData);
     }
 
     public double getAngularRange() {

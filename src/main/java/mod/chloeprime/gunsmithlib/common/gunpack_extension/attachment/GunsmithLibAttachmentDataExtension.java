@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment;
 
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 
 /**
@@ -17,5 +18,11 @@ public class GunsmithLibAttachmentDataExtension extends GunsmithLibSharedDataExt
 
     public ShieldData getShieldData() {
         return shield;
+    }
+
+    private FireControlData fire_control;
+
+    public FireControlData getFireControlData(){
+        return fire_control;
     }
 }

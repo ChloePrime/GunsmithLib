@@ -1,13 +1,16 @@
 package mod.chloeprime.gunsmithlib.api.util;
 
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.resource.modifier.custom.EffectiveRangeModifier;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.HitResult;
@@ -29,18 +32,33 @@ public class TargetSearcher {
     }
 
     public static Optional<SearchResult> search(LivingEntity shooter, GunInfo gun, float partialTicks) {
+        double dataAngularRange = 0;
+        double dataRange = -1;
         @Nullable FireControlData data = FireControlData.fromGun(gun).orElse(null);
+        if (data!=null){
+            dataAngularRange = data.getAngularRange();
+            dataRange = data.getRangeOverride();
+        }
+        for (var attachmentType : AttachmentType.values()) {
+            ItemStack attachment = gun.gunItem().getAttachment(shooter.registryAccess(), gun.gunStack(), attachmentType);
+            data = FireControlData.fromAttachment(attachment).orElse(null);
+            if (data==null){
+                continue;
+            }
+            dataAngularRange = Math.max(dataAngularRange, data.getAngularRange());
+            dataRange = Math.max(dataRange,data.getRangeOverride());
+        }
         var propCache = IGunOperator.fromLivingEntity(shooter).getCacheProperty();
         if (propCache == null) {
             return Optional.empty();
         }
-        var baseRange = (data != null && data.getRangeOverride() >= 0)
-                ? data.getRangeOverride()
+        var baseRange = dataRange > 0
+                ? dataRange
                 : propCache.getCache(EffectiveRangeModifier.ID) instanceof Number effRange ? effRange.doubleValue() : -1;
         if (baseRange <= 0) {
             return Optional.empty();
         }
-        var baseAngularRange = Math.max(0, data != null ? data.getAngularRange() : getOldAimConeSizeOfGun(gun));
+        var baseAngularRange = Math.max(dataAngularRange , getOldAimConeSizeOfGun(gun));
         var angularRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_ANGLE, baseAngularRange);
         if (angularRange < 0.5) {
             return Optional.empty();

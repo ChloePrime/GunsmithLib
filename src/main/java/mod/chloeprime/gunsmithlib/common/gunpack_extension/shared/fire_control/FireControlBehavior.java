@@ -1,9 +1,11 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -34,6 +36,36 @@ public class FireControlBehavior {
         OptionalDouble torque = FireControlData.fromGun(gun)
                 .map(FireControlData::getTorque)
                 .orElse(OptionalDouble.empty());
+        if (FireControlData.fromGun(gun).isEmpty()){
+            for (var attachmentType : AttachmentType.values()) {
+                ItemStack attachment = gun.gunItem().getAttachment(event.getShooter().registryAccess(), gun.gunStack(), attachmentType);
+                FireControlData data = FireControlData.fromAttachment(attachment).orElse(null);
+                if (data==null){
+                    continue;
+                }
+                if (data.getTorque().isEmpty()){
+                    torque = OptionalDouble.empty();
+                    break;
+                }
+                if (torque.isEmpty()){
+                    torque = data.getTorque();
+                }
+                torque = OptionalDouble.of(Math.max(data.getTorque().getAsDouble(),torque.getAsDouble()));
+            }
+        }
+        if (torque.isPresent()){
+            for (var attachmentType : AttachmentType.values()) {
+                ItemStack attachment = gun.gunItem().getAttachment(event.getShooter().registryAccess(), gun.gunStack(), attachmentType);
+                FireControlData data = FireControlData.fromAttachment(attachment).orElse(null);
+                if (data==null){
+                    continue;
+                }
+                if (data.getTorque().isEmpty()){
+                    continue;
+                }
+                torque = OptionalDouble.of(Math.max(data.getTorque().getAsDouble(),torque.getAsDouble()));
+            }
+        }
 
         if (torque.isEmpty()) {
             // 让高速子弹直接指向目标
