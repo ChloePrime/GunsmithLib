@@ -6,7 +6,6 @@ import com.tacz.guns.resource.modifier.custom.EffectiveRangeModifier;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;

@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
-import com.tacz.guns.api.item.attachment.AttachmentType;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
@@ -8,7 +7,6 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAt
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
