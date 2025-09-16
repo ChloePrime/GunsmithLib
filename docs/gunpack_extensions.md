@@ -134,6 +134,15 @@
 ```json5
 {
   "gunsmithlib_extension": {
+    // 带药水效果的爆炸弹药爆炸后生成的药水云的持续时间
+    // 可留空，默认值为 600（30 秒），
+    // 4.7.0新增
+    area_effect_cloud_duration: 600,
+    // 药水云的最小大小比例（结束时的大小/初始大小）
+    // 可留空，默认值为 0（药水云持续时间结束时缩小到 0 大小）
+    // 4.7.0新增
+    area_effect_cloud_min_size_rate: 0.5,
+    // 药水效果列表
     "potion_effects": [
       {
         // 状态效果 id。

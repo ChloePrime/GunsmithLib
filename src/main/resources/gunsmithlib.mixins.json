@@ -4,12 +4,16 @@
   "package": "mod.chloeprime.gunsmithlib.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "gunsmithlib.refmap.json",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
   "mixins": [
     "AlternativeArmorPierceFormulaMixin",
     "EntityKineticBulletAccessor",
     "ItemCooldownsAccessor",
     "LevelAccessor",
     "MixinAbstractGunItem",
+    "MixinAreaEffectCloud",
     "MixinAttachmentData",
     "MixinAttachmentDataUtils",
     "MixinBullet",

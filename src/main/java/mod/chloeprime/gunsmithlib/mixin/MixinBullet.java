@@ -15,6 +15,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,17 +25,45 @@ import java.util.List;
 @Mixin(value = EntityKineticBullet.class)
 public abstract class MixinBullet extends Projectile implements EnhancedKineticBullet {
     private @Unique List<PotionEffectData> gunsmithlib$effects = List.of();
+    private @Unique int gunsmithlib$aecDuration = 0;
+    private @Unique float gunsmithlib$aecMinSize = 0;
 
     // 药水效果
 
     @Override
+    @Accessor(remap = false) public abstract boolean isExplosion();
+
+    @Override
+    @Accessor(remap = false) public abstract float getExplosionRadius();
+
+    @Unique @Override
     public List<PotionEffectData> gunsmithlib$getPotionEffects() {
         return gunsmithlib$effects;
     }
 
-    @Override
+    @Unique @Override
     public void gunsmithlib$setPotionEffects(List<PotionEffectData> value) {
         gunsmithlib$effects = value;
+    }
+
+    @Unique @Override
+    public int gunsmithlib$getPotionCloudDuration() {
+        return gunsmithlib$aecDuration;
+    }
+
+    @Unique @Override
+    public void gunsmithlib$setPotionCloudDuration(int value) {
+        gunsmithlib$aecDuration = value;
+    }
+
+    @Override
+    public float gunsmithlib$getPotionCloudMinSizeRate() {
+        return gunsmithlib$aecMinSize;
+    }
+
+    @Override
+    public void gunsmithlib$setPotionCloudMinSizeRate(float value) {
+        gunsmithlib$aecMinSize = value;
     }
 
     // 跟踪弹

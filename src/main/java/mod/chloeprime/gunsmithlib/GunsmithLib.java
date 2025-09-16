@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
+import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
 import mod.chloeprime.gunsmithlib.common.entity.RangefinderMarker;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.entity.MagicLaser;
@@ -144,6 +145,7 @@ public class GunsmithLib {
         private static final DeferredRegister<EntityType<?>> DFR = DeferredRegister.create(Registries.ENTITY_TYPE, MOD_ID);
         public static final Supplier<EntityType<MagicLaser>> MAGIC_LASER = DFR.register("magic_laser", () -> MagicLaser.TYPE);
         public static final Supplier<EntityType<RangefinderMarker>> RANGEFINDER_MARKER = DFR.register("rangefinder_marker", () -> RangefinderMarker.TYPE);
+        public static final Supplier<EntityType<AreaEffectCloud3D>> AREA_EFFECT_CLOUD_3D = DFR.register("area_effect_cloud_3d", () -> AreaEffectCloud3D.TYPE);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

@@ -1,4 +1,6 @@
 {
+  "entity.gunsmithlib.area_effect_cloud_3d": "三维区域效果云",
+
   "attribute.name.gunsmithlib.bullet_damage": "射击伤害",
   "attribute.name.gunsmithlib.bullet_damage.desc": "枪械射击造成的伤害（单个弹片的伤害）",
   "attribute.name.gunsmithlib.bullet_speed": "子弹速度",

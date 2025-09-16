@@ -1,4 +1,6 @@
 {
+  "entity.gunsmithlib.area_effect_cloud_3d": "3D Area Effect Cloud",
+
   "attribute.name.gunsmithlib.bullet_damage": "Bullet Damage",
   "attribute.name.gunsmithlib.bullet_damage.desc": "Damage caused by gunshot (per shrapnel)",
   "attribute.name.gunsmithlib.bullet_speed": "Bullet Speed",
