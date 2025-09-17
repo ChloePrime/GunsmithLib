@@ -20,6 +20,7 @@ public class AreaEffectCloud3D extends AreaEffectCloud {
 
     public AreaEffectCloud3D(EntityType<? extends AreaEffectCloud> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        super.setRadius(0);
         this.setWaitTime(0);
     }
 
@@ -29,7 +30,7 @@ public class AreaEffectCloud3D extends AreaEffectCloud {
     }
 
     public static AreaEffectCloud3D createAtCenter(Level level, double x, double y, double z, float radius) {
-        var cloud = new AreaEffectCloud3D(level, x, y - radius, z);
+        var cloud = new AreaEffectCloud3D(level, x, y, z);
         cloud.setRadius(radius);
         return cloud;
     }
@@ -38,6 +39,15 @@ public class AreaEffectCloud3D extends AreaEffectCloud {
     public @Nonnull EntityDimensions getDimensions(@Nonnull Pose pPose) {
         var length = getRadius() * 2;
         return EntityDimensions.scalable(length, length);
+    }
+
+    @Override
+    public void setRadius(float value) {
+        var delta = value - getRadius();
+        super.setRadius(value);
+        // 让半径更改时以碰撞立方体中心为中心，
+        // 而不是默认的以底部为中心
+        setPos(getX(), getY() - delta, getZ());
     }
 
     @Override
