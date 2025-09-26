@@ -34,7 +34,7 @@ public class MixinClientGunTooltip {
         if (gun == null || gun.isEmpty()) {
             return original;
         }
-        return GsHelper.evaluateItemAttribute(gun, GunAttributes.BULLET_DAMAGE, original);
+        return GsHelper.evaluateItemAttribute(gun, GunAttributes.ARMOR_PIERCING_RATIO, original);
     }
 
     @ModifyExpressionValue(
@@ -45,7 +45,7 @@ public class MixinClientGunTooltip {
         if (gun == null || gun.isEmpty()) {
             return original;
         }
-        return GsHelper.evaluateItemAttribute(gun, GunAttributes.BULLET_DAMAGE, original);
+        return GsHelper.evaluateItemAttribute(gun, GunAttributes.HEADSHOT_MULTIPLIER, original);
     }
 
     @Shadow @Final private ItemStack gun;
