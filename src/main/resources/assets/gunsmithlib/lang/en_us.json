@@ -3,6 +3,10 @@
 
   "attribute.name.gunsmithlib.bullet_damage": "Bullet Damage",
   "attribute.name.gunsmithlib.bullet_damage.desc": "Damage caused by gunshot (per shrapnel)",
+  "attribute.name.gunsmithlib.armor_piercing_ratio": "Bullet Armor Piercing",
+  "attribute.name.gunsmithlib.armor_piercing_ratio.desc": "Armor ignore ratio of gunshots",
+  "attribute.name.gunsmithlib.headshot_multiplier": "Headshot Damage",
+  "attribute.name.gunsmithlib.headshot_multiplier.desc": "Headshot damage multiplier of gunshots",
   "attribute.name.gunsmithlib.bullet_speed": "Bullet Speed",
   "attribute.name.gunsmithlib.bullet_speed.desc": "Speed of bullets you shoot, m/tick",
   "attribute.name.gunsmithlib.vert_recoil": "Vertical Recoil",

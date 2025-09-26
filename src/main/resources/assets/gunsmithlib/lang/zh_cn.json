@@ -3,6 +3,10 @@
 
   "attribute.name.gunsmithlib.bullet_damage": "射击伤害",
   "attribute.name.gunsmithlib.bullet_damage.desc": "枪械射击造成的伤害（单个弹片的伤害）",
+  "attribute.name.gunsmithlib.armor_piercing_ratio": "原版护甲穿透",
+  "attribute.name.gunsmithlib.armor_piercing_ratio.desc": "射击伤害穿透原版护甲的比率",
+  "attribute.name.gunsmithlib.headshot_multiplier": "爆头伤害",
+  "attribute.name.gunsmithlib.headshot_multiplier.desc": "爆头命中时的伤害倍率",
   "attribute.name.gunsmithlib.bullet_speed": "子弹速度",
   "attribute.name.gunsmithlib.bullet_speed.desc": "射出的子弹的速度（单位 米/刻）",
   "attribute.name.gunsmithlib.vert_recoil": "纵向后座",
