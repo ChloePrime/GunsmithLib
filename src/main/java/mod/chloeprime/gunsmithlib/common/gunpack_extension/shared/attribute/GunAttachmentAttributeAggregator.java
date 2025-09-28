@@ -31,9 +31,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @EventBusSubscriber
 public class GunAttachmentAttributeAggregator {
@@ -61,7 +59,7 @@ public class GunAttachmentAttributeAggregator {
     }
 
     private static final AttachmentType[] ATTACHMENT_TYPE_REGISTRY = AttachmentType.values();
-    private static final ThreadLocal<Map<Pair<Holder<Attribute>, AttributeModifier.Operation>, AttributeModifier>> MERGE_BUFFER = ThreadLocal.withInitial(LinkedHashMap::new);
+    private static final ThreadLocal<Map<Pair<Holder<Attribute>, AttributeModifier.Operation>, AttributeModifier>> MERGE_BUFFER = ThreadLocal.withInitial(HashMap::new);
 
     @SubscribeEvent
     public static void onGunAttribute(ItemAttributeModifierEvent event) {
