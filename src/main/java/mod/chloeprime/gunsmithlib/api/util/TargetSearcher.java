@@ -37,7 +37,8 @@ public class TargetSearcher {
         var baseRange = (data != null && data.getRangeOverride() >= 0)
                 ? data.getRangeOverride()
                 : propCache.getCache(EffectiveRangeModifier.ID) instanceof Number effRange ? effRange.doubleValue() : -1;
-        if (baseRange <= 0) {
+        var modifiedRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_RANGE, baseRange);
+        if (modifiedRange <= 0) {
             return Optional.empty();
         }
         var baseAngularRange = Math.max(0, data != null ? data.getAngularRange() : getOldAimConeSizeOfGun(gun));
@@ -45,7 +46,6 @@ public class TargetSearcher {
         if (angularRange < 0.5) {
             return Optional.empty();
         }
-        var modifiedRange = getAttributeValueWithBase(shooter, FireControlAttributes.AIM_LOCK_RANGE, baseRange);
         return search(shooter, Math.min(modifiedRange, MAX_DISTANCE), Math.toRadians(angularRange / 2), partialTicks);
     }
 
