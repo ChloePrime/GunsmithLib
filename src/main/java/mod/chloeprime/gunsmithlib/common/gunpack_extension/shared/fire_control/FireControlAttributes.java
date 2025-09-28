@@ -28,6 +28,9 @@ public class FireControlAttributes {
     }
 
     private static void onCreateAttributes(EntityAttributeModificationEvent event) {
-        event.getTypes().forEach(type -> event.add(type, AIM_LOCK_ANGLE));
+        event.getTypes().forEach(type -> {
+            event.add(type, AIM_LOCK_RANGE);
+            event.add(type, AIM_LOCK_ANGLE);
+        });
     }
 }
