@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
 
 @EventBusSubscriber
@@ -31,7 +32,8 @@ public class FireControlBehavior {
             return;
         }
 
-        OptionalDouble torque = FireControlData.fromGun(gun)
+        Optional<FireControlData> fcData = FireControlData.fromGun(gun);
+        OptionalDouble torque = fcData
                 .map(FireControlData::getTorque)
                 .orElse(OptionalDouble.empty());
 
@@ -42,7 +44,7 @@ public class FireControlBehavior {
             bullet.setDeltaMovement(newBulletMotion);
         } else {
             // 让低速子弹缓慢转向目标
-            HomingProjectileBehavior.onBulletCreate(event.getShooter(), bullet, torque.getAsDouble(), aimResult.entity());
+            HomingProjectileBehavior.onBulletCreate(event.getShooter(), bullet, torque.getAsDouble(), fcData.get().getTorqueLerpRate(), aimResult.entity());
         }
     }
 

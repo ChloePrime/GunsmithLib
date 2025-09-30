@@ -19,10 +19,12 @@ public class HomingProjectileBehavior {
     public static final String PDKEY_ENABLED = PDKEY_PREFIX + "enabled";
     public static final String PDKEY_TORQUE = PDKEY_PREFIX + "torque";
     public static final String PDKEY_TARGET = PDKEY_PREFIX + "target";
+    public static final String PDKEY_TORQUE_LERP_RATE = PDKEY_PREFIX + "torque_lerp_rate";
 
-    public static void onBulletCreate(Entity shooter, Projectile bullet, double torque, Entity target) {
+    public static void onBulletCreate(Entity shooter, Projectile bullet, double torque, double torqueLerpRate, Entity target) {
         bullet.getPersistentData().putBoolean(PDKEY_ENABLED, true);
         bullet.getPersistentData().putDouble(PDKEY_TORQUE, torque);
+        bullet.getPersistentData().putDouble(PDKEY_TORQUE_LERP_RATE, torqueLerpRate);
         if (!bullet.level().isClientSide) {
             bullet.getPersistentData().putUUID(PDKEY_TARGET, target.getUUID());
             PacketDistributor.sendToPlayersTrackingEntityAndSelf(shooter, new S2CSyncLockedTarget(bullet.getId(), target.getId()));
@@ -58,7 +60,9 @@ public class HomingProjectileBehavior {
         if (unitOffset <= 1e-8) {
             return;
         }
-        var newDirection = slerp(oldDirection, targetDirection, Math.min(1, Math.toRadians(torque) / unitOffset));
+        var torqueLerpRate = data.getDouble(PDKEY_TORQUE_LERP_RATE);
+        var totalTorque = Math.toRadians(torque) + angleTo(oldDirection, targetDirection) * torqueLerpRate;
+        var newDirection = slerp(oldDirection, targetDirection, Math.min(1, totalTorque) / unitOffset);
         if (newDirection.lengthSqr() >= 1e-4) {
             Vec3 newVelocity = newDirection.normalize().scale(oldSpeed);
             bullet.setDeltaMovement(newVelocity);

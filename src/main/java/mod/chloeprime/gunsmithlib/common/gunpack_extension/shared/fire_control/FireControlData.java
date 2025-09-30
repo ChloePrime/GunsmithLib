@@ -35,6 +35,20 @@ public final class FireControlData {
     @SuppressWarnings("FieldMayBeFinal")
     private @Nullable Double torque = null;
 
+    /**
+     * 强扭矩。
+     * <p>
+     * 强扭矩会随着角度差给制导系统带来额外扭矩。
+     * 强扭矩固定（且大于 0）时，导弹运动方向和目标方向的角度差越大，
+     * 强扭矩带来的额外扭矩就绝大，且和角度差成正比。
+     * <p>
+     * 基础扭矩为 0 时不生效
+     *
+     * @since 4.8.0
+     */
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    private double torque_lerp_rate = 0.0;
+
     public static Optional<FireControlData> fromGun(ItemStack stack) {
         return Gunsmith.getGunInfo(stack).flatMap(FireControlData::fromGun);
     }
@@ -55,5 +69,9 @@ public final class FireControlData {
 
     public OptionalDouble getTorque() {
         return torque != null ? OptionalDouble.of(torque) : OptionalDouble.empty();
+    }
+
+    public double getTorqueLerpRate() {
+        return torque_lerp_rate;
     }
 }
