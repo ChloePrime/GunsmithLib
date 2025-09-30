@@ -35,3 +35,16 @@
   // ......
 }
 ```
+## 弹匣剩余弹药显示模式覆盖:
+4.8.0版本新增，可以控制右下角剩余弹药计数器的显示风格。
+```json5
+{
+  "gunsmithlib_extension": {
+    // 可选值有 default, battery, counter
+    // default: 默认，如果为充电武器则显示电池，否则显示计数器
+    // battery: 显示电池，无论是否为充电武器
+    // counter: 显示计数器，无论是否为充电武器
+    "current_ammo_display_type": "battery"
+  },
+}
+```

@@ -1,9 +1,13 @@
 package mod.chloeprime.gunsmithlib.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.util.AttachmentDataUtils;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.CurrentAmmoDisplayType;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplay;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.GunsmithLibGunDisplayExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy.EnergyWeaponBehavior;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy.EnergyWeaponData;
 import net.minecraft.client.Minecraft;
@@ -25,7 +29,18 @@ public final class EnergyWeaponVisuals {
             var gun = Optional.ofNullable(Minecraft.getInstance().player)
                     .map(LivingEntity::getMainHandItem)
                     .orElse(ItemStack.EMPTY);
-            var isEnergy = EnergyWeaponBehavior.isEnergyWeapon(gun);
+
+            var displayType = TimelessAPI.getGunDisplay(gun)
+                    .map(instance -> ((EnhancedGunDisplay) instance))
+                    .flatMap(EnhancedGunDisplay::gunsmith$getGunsmithLibExtension)
+                    .map(GunsmithLibGunDisplayExtension::getCurrentAmmoDisplayType)
+                    .orElse(CurrentAmmoDisplayType.DEFAULT);
+
+            var isEnergy = switch (displayType) {
+                case DEFAULT -> EnergyWeaponBehavior.isEnergyWeapon(gun);
+                case BATTERY -> true;
+                case COUNTER -> false;
+            };
 
             if (isEnergy) {
                 gui.pose().pushPose();
