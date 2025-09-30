@@ -62,7 +62,7 @@ public class HomingProjectileBehavior {
         }
         var torqueLerpRate = data.getDouble(PDKEY_TORQUE_LERP_RATE);
         var totalTorque = Math.toRadians(torque) + angleTo(oldDirection, targetDirection) * torqueLerpRate;
-        var newDirection = slerp(oldDirection, targetDirection, Math.min(1, totalTorque) / unitOffset);
+        var newDirection = slerp(oldDirection, targetDirection, Math.min(1, totalTorque / unitOffset));
         if (newDirection.lengthSqr() >= 1e-4) {
             Vec3 newVelocity = newDirection.normalize().scale(oldSpeed);
             bullet.setDeltaMovement(newVelocity);
