@@ -25,22 +25,33 @@ import java.util.function.IntSupplier;
 
 public final class EnergyWeaponVisuals {
     public static final class HUD {
-        public static int modifyCurrentAmmoDisplay(GuiGraphics gui, float x, float y, int width, int height, IntSupplier oldBehavior) {
+        public static boolean isEnabled() {
             var gun = Optional.ofNullable(Minecraft.getInstance().player)
                     .map(LivingEntity::getMainHandItem)
                     .orElse(ItemStack.EMPTY);
+            return isEnabledFor(gun);
+        }
 
+        public static boolean isEnabledFor(ItemStack gun) {
             var displayType = TimelessAPI.getGunDisplay(gun)
                     .map(instance -> ((EnhancedGunDisplay) instance))
                     .flatMap(EnhancedGunDisplay::gunsmith$getGunsmithLibExtension)
                     .map(GunsmithLibGunDisplayExtension::getCurrentAmmoDisplayType)
                     .orElse(CurrentAmmoDisplayType.DEFAULT);
 
-            var isEnergy = switch (displayType) {
+            return switch (displayType) {
                 case DEFAULT -> EnergyWeaponBehavior.isEnergyWeapon(gun);
                 case BATTERY -> true;
                 case COUNTER -> false;
             };
+        }
+
+        public static int modifyCurrentAmmoDisplay(GuiGraphics gui, float x, float y, int width, int height, IntSupplier oldBehavior) {
+            var gun = Optional.ofNullable(Minecraft.getInstance().player)
+                    .map(LivingEntity::getMainHandItem)
+                    .orElse(ItemStack.EMPTY);
+
+            var isEnergy = isEnabledFor(gun);
 
             if (isEnergy) {
                 gui.pose().pushPose();
