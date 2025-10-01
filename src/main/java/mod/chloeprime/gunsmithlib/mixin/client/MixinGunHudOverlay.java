@@ -17,11 +17,14 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.regex.Pattern;
 
 @Mixin(value = GunHudOverlay.class, remap = false)
 public class MixinGunHudOverlay {
@@ -58,7 +61,9 @@ public class MixinGunHudOverlay {
             method = "render", index = 0,
             at = @At(value = "INVOKE", remap = true, target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I"))
     private static String fixWidthForBatteryDisplayWhenAmmoIsAbove1000(String originalCounterText) {
-        return EnergyWeaponVisuals.HUD.isEnabled() ? "000" : originalCounterText;
+        return EnergyWeaponVisuals.HUD.isEnabled() && gunsmithlib$COUNTER_PATTERN.matcher(originalCounterText).matches()
+                ? "000"
+                : originalCounterText;
     }
 
     @Inject(method = "handleCacheCount", at = @At("TAIL"))
@@ -68,5 +73,6 @@ public class MixinGunHudOverlay {
         cacheInventoryAmmoCount = cache.getValue();
     }
 
+    private static final @Unique Pattern gunsmithlib$COUNTER_PATTERN = Pattern.compile("^\\d+%?$");
     @Shadow private static int cacheInventoryAmmoCount;
 }
