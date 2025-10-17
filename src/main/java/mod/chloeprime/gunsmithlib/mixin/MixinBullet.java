@@ -1,8 +1,10 @@
 package mod.chloeprime.gunsmithlib.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.AirburstSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.HomingProjectileBehavior;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
@@ -27,6 +29,13 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
     private @Unique List<PotionEffectData> gunsmithlib$effects = List.of();
     private @Unique int gunsmithlib$aecDuration = 0;
     private @Unique float gunsmithlib$aecMinSize = 0;
+
+    // 空爆系统
+
+    @WrapMethod(method = "tick")
+    private void tickAirburst(Operation<Void> original) {
+        AirburstSystem.onBulletTick(this, original::call);
+    }
 
     // 药水效果
 

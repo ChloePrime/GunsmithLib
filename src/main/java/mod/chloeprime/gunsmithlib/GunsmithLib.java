@@ -168,6 +168,10 @@ public class GunsmithLib {
                 .persistent(ItemAttributeModifiers.CODEC)
                 .networkSynchronized(ItemAttributeModifiers.STREAM_CODEC)
                 .build());
+        public static final Supplier<DataComponentType<Integer>> SELECTED_AIRBURST_DISTANCE_INDEX = DFR.register("selected_airburst_distance_index", () -> DataComponentType.<Integer>builder()
+                .persistent(Codec.INT)
+                .networkSynchronized(ByteBufCodecs.VAR_INT)
+                .build());
     }
 
     public static class DataAttachments {

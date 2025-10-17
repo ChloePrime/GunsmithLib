@@ -7,4 +7,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(value = EntityKineticBullet.class, remap = false)
 public interface EntityKineticBulletAccessor {
     @Accessor void setArmorIgnore(float value);
+    @Accessor void setExplosionDelayCount(int value);
 }

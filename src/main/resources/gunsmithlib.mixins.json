@@ -36,6 +36,7 @@
   "client": [
     "client.MixinClientGamePacketListener",
     "client.MixinClientGunTooltip",
+    "client.MixinFireSelectKey",
     "client.MixinGunAnimationStateContext",
     "client.MixinGunDisplay",
     "client.MixinGunDisplayInstance",

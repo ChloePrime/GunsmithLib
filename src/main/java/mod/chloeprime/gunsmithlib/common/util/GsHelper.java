@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
+import cn.chloeprime.commons.lang4.FloatSupplier;
 import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
@@ -9,6 +10,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,8 +28,27 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.DoubleSupplier;
 
 public class GsHelper {
+    public static float infDist(FloatSupplier nextGaussianFunc, float mean, float dev) {
+        return infLerp(nextGaussianFunc.getAsFloat(), mean - dev, mean + dev);
+    }
+
+    public static double infDist(DoubleSupplier nextGaussianFunc, double mean, double dev) {
+        return infLerp(nextGaussianFunc.getAsDouble(), mean - dev, mean + dev);
+    }
+
+    public static float infLerp(float delta, float start, float end) {
+        var normalizedDelta = (float) Math.atan(delta) / Mth.PI + 0.5F;
+        return Mth.lerp(normalizedDelta, start, end);
+    }
+
+    public static double infLerp(double delta, double start, double end) {
+        var normalizedDelta = Math.atan(delta) / Math.PI + 0.5;
+        return Mth.lerp(normalizedDelta, start, end);
+    }
+
     /**
      * @return 增益倍率，永远不会为 0
      * @since 3.2.0

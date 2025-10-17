@@ -6,6 +6,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.overlay.GunHudOverlay;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.client.EnergyWeaponVisuals;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.AirburstHUD;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -55,6 +56,15 @@ public class MixinGunHudOverlay {
             GuiGraphics graphics, float partialTick, int width, int height
     ) {
         return EnergyWeaponVisuals.HUD.modifyCurrentAmmoDisplay(gui, pX, pY, width, height, () -> original.call(gui, pFont, pText, pX, pY, pColor, pDropShadow));
+    }
+
+    @Inject(
+            method = "render",
+            at = @At(value = "INVOKE", target = "Lcom/tacz/guns/client/resource/GunDisplayInstance;getHUDTexture()Lnet/minecraft/resources/ResourceLocation;"))
+    private static void renderAirburstDistance(
+            GuiGraphics graphics, float partialTick, int width, int height, CallbackInfo ci
+    ) {
+        AirburstHUD.render(graphics, width, height);
     }
 
     @ModifyArg(

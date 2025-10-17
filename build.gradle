@@ -38,6 +38,11 @@ repositories {
         }
     }
 
+    maven {
+        name = "Chloe_Maven"
+        url = "https://maven.chloeprime.cn:4080/releases/"
+    }
+
     maven { url 'https://modmaven.dev/' }
     maven {
         url "https://jitpack.io"
@@ -166,6 +171,9 @@ configurations {
 }
 
 dependencies {
+    implementation jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.1.0") {
+        exclude group: '*', module: '*'
+    }
     // TACZ
     implementation jarJar('com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.6-hotfix-r5') {
         exclude group: '*', module: '*'

@@ -2,6 +2,7 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun;
 
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
@@ -46,6 +47,14 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     @SuppressWarnings("unused")
     private @Nullable FireControlData fire_control;
 
+    /**
+     * 只在枪械数据中生效的爆炸物扩展
+     *
+     * @since 4.9.0
+     */
+    @SuppressWarnings("unused")
+    private @Nullable GunExplosiveData gun_explosive;
+
     // 下面是代码
 
     public static Optional<GunsmithLibGunDataExtension> of(ItemStack stack) {
@@ -70,5 +79,9 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
 
     public @Nullable FireControlData getFireControlData() {
         return fire_control;
+    }
+
+    public @Nullable GunExplosiveData getGunExplosiveData() {
+        return gun_explosive;
     }
 }
