@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "pack.gunsmithlib.name",
+  "desc": "pack.gunsmithlib.desc",
+  "license": "CC0",
+  "authors": [
+    "ChloePrime"
+  ],
+  "date": "2025-10-18",
+  "url": "https://github.com/ChloePrime/GunsmithLib",
+  "dependencies": {
+    "tacz": "[1.1.5,)"
+  }
+}

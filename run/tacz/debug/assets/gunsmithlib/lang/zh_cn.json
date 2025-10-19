@@ -1,0 +1,6 @@
+{
+  "pack.gunsmithlib.name" : "GunsmithLib测试用枪包",
+  "pack.gunsmithlib.desc" : "也可以作为示例使用哦",
+  "gunsmithlib.gun.625.name": "625弹炮合一系统",
+  "gunsmithlib.gun.625.desc": "调试爆炸物扩展用"
+}
