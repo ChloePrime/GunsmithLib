@@ -4,6 +4,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -17,14 +18,14 @@ public final class FireControlData {
     /**
      * 锁定角范围
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private double angular_range = 0;
 
     /**
      * 覆盖默认锁定距离。<p>
      * 若为小于 0 的值（默认值 -1 就是）则使用默认锁定距离，即武器的有效射程
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private double range_override = -1;
 
     /**
@@ -32,7 +33,7 @@ public final class FireControlData {
      * 为空时子弹将在射出时指向目标。适用于高速动能子弹。<p>
      * 不为空时，子弹将在运动过程中逐渐指向目标。适用于导弹/毒刺/标枪等武器。
      */
-    @SuppressWarnings("FieldMayBeFinal")
+    @GunpackProperty
     private @Nullable Double torque = null;
 
     /**
@@ -46,7 +47,7 @@ public final class FireControlData {
      *
      * @since 4.8.0
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private double torque_lerp_rate = 0.0;
 
     public static Optional<FireControlData> fromGun(ItemStack stack) {

@@ -7,6 +7,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSha
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy.EnergyWeaponData;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 3.3.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable EnergyWeaponData battery;
 
     /**
@@ -28,7 +29,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 3.3.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private boolean enable_overheat_feedback;
 
     /**
@@ -36,7 +37,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 3.4.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable ShieldData shield;
 
     /**
@@ -44,7 +45,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 3.5.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable FireControlData fire_control;
 
     /**
@@ -52,7 +53,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 4.9.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable GunExplosiveData gun_explosive;
 
     // 下面是代码

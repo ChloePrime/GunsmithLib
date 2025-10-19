@@ -1,5 +1,7 @@
 package mod.chloeprime.gunsmithlib.client.gunpack_extension;
 
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
+
 /**
  * @since 4.5.0
  */
@@ -9,7 +11,7 @@ public class GunsmithLibGunDisplayExtension {
      *
      * @since 4.5.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private boolean hide_heat_bar_overlay;
 
     /**
@@ -20,7 +22,7 @@ public class GunsmithLibGunDisplayExtension {
      *
      * @since 4.8.0
      */
-    @SuppressWarnings({"unused", "FieldMayBeFinal"})
+    @GunpackProperty
     private CurrentAmmoDisplayType current_ammo_display_type = CurrentAmmoDisplayType.DEFAULT;
 
     public boolean hideHeatBarOverlay() {

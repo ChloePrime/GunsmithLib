@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute;
 
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.common.util.AttributeOperationConversion;
 import net.minecraft.core.Holder;
@@ -24,35 +25,35 @@ public class GunsmithLibAttributeModifierEntry {
      * 要作用在什么属性上。<p>
      * 必填
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private ResourceLocation attribute;
 
     /**
      * 属性修饰器 id。<p>
      * 必填
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private UUID id;
 
     /**
      * 属性修饰器名称，该名称可能被神化模组和一些其他的调试功能看到。<p>
      * 可选
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private String name = "Gun / Attachment";
 
     /**
      * 属性修饰器的值，<p>
      * 必填
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private double amount;
 
     /**
      * 属性修饰器的运算模式 <p>
      * 可选，默认为加法
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private AttributeOperationConversion.ClassicName operation = AttributeOperationConversion.ClassicName.ADDITION;
 
     // 下面是代码

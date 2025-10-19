@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -21,18 +22,19 @@ import java.util.function.Supplier;
  * 子弹命中施加药水效果
  * @since 4.3.0
  */
-@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "unused"})
 public class PotionEffectData {
     /**
      * 药水效果的 id。<p>
      * 原版的效果 id 列表请见 <a href="https://zh.minecraft.wiki/w/%E7%8A%B6%E6%80%81%E6%95%88%E6%9E%9C">Minecraft Wiki 上的状态效果页面</a>
      */
+    @GunpackProperty
     private ResourceLocation effect_id;
 
     /**
      * 药水效果的持续时间，
      * 单位为刻（tick）
      */
+    @GunpackProperty
     private int duration = 20;
 
     /**
@@ -40,36 +42,42 @@ public class PotionEffectData {
      * 1 = 1级，2 = 2级。<p>
      * 同样等级需要填的参数比 /effect 命令里的 amplifier 参数大 1 点。
      */
+    @GunpackProperty
     private int level = 1;
 
     /**
      * 如果为 true，那么药水的粒子效果会变淡
      */
+    @GunpackProperty
     private boolean is_ambient = false;
 
     /**
      * 如果为 false，那么药水的粒子效果会隐藏
      */
+    @GunpackProperty
     private boolean visible = true;
 
     /**
      * 如果为 true，那么该药水效果会在客户端里显示出来
      */
+    @GunpackProperty
     private boolean show_icon = true;
 
     /**
      * 每次命中施加效果的概率
      */
+    @GunpackProperty
     private float chance = 1;
 
     /**
      * 最大叠加的药水等级。
      * 如果 <= 0 则不叠加
      */
+    @GunpackProperty
     private int max_stack_level;
 
     // 下面是代码
-    private transient Supplier<Optional<Holder<MobEffect>>> effect = Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT
+    private transient final Supplier<Optional<Holder<MobEffect>>> effect = Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT
             .getHolder(effect_id)
             .map(Function.identity()));
 

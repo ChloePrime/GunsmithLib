@@ -12,6 +12,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.Guns
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ public class GunsmithLibSharedDataExtension {
     /**
      * 枪械/配件的属性修饰器
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable GunsmithLibAttributeModifierEntry[] attribute_modifiers;
 
     /**
@@ -35,19 +36,19 @@ public class GunsmithLibSharedDataExtension {
      *
      * @since 4.3.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable PotionEffectData[] potion_effects;
 
     /**
      * 带有药水效果的爆炸弹药爆炸后药水云的持续时间
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private int area_effect_cloud_duration = 600;
 
     /**
      * 药水云的最小大小比例（结束时的大小/初始大小）
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private float area_effect_cloud_min_size_rate = 0;
 
     // 下面是具体实现

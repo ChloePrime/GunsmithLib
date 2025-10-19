@@ -5,6 +5,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -17,7 +18,7 @@ public class GunExplosiveData {
      *
      * @since 4.9.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private @Nullable double[] airburst_distances;
 
     /**
@@ -25,7 +26,7 @@ public class GunExplosiveData {
      *
      * @since 4.9.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private double airburst_distances_distribution;
 
     public @Nonnull DoubleList getAirburstDistances() {

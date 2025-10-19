@@ -9,6 +9,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAt
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -22,13 +23,13 @@ public class ShieldData {
      * 格挡原版伤害的范围，单位为角度°。<p>
      * 原版盾牌的格挡范围为 180°
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private double block_vanilla_damage_angle = 0;
 
     /**
      * 格挡子弹的范围，单位为角度（°）
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private double block_bullet_damage_angle = 0;
 
     @SuppressWarnings("unused")
@@ -54,20 +55,20 @@ public class ShieldData {
     /**
      * 该枪盾什么时候可以格挡伤害
      */
-    @SuppressWarnings("FieldMayBeFinal")
+    @GunpackProperty
     private @Nullable Condition condition = Condition.WHEN_AIMING;
 
     /**
      * 是否在装弹时停用枪盾，无论 {@link #condition} 如何。
      */
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    @GunpackProperty
     private boolean disable_shield_when_reloading = true;
 
     /**
      * 若为 true，则该枪盾无法被斧头破盾
      * @since 3.6.0
      */
-    @SuppressWarnings("unused")
+    @GunpackProperty
     private boolean undisableable_by_axes;
 
     // 下面是代码
