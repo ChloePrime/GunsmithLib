@@ -2,7 +2,9 @@
   "gunsmithlib_extension": {
     "gun_explosive": {
       "airburst_distances": [25, 50, 100],
-      "airburst_distances_distribution": 0.25
+      "airburst_distances_distribution": 0.25,
+      "proximity_fuse_distance": 1.5,
+      "prevent_destroying_loot_items": true
     }
   },
   "ammo": "tacz:308",

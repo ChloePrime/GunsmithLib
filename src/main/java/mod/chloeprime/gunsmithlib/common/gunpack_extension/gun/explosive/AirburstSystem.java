@@ -6,12 +6,12 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -100,16 +100,16 @@ public class AirburstSystem {
         event.getBullet().getPersistentData().putDouble(PDK_AIRBURST_DISTANCE, finalDistance);
     }
 
-    public static void onBulletTick(Projectile bullet, Runnable tickFunction) {
+    @SubscribeEvent
+    public static void onBulletReadyToTrace(BulletReadyToTraceEvent event) {
+        var bullet = event.getEntity();
         var pd = bullet.getPersistentData();
         if (bullet.level().isClientSide || !pd.contains(PDK_AIRBURST_DISTANCE)) {
-            tickFunction.run();
             return;
         }
 
-        var posBefore = bullet.position();
-        tickFunction.run();
-        var posAfter = bullet.position();
+        var posBefore = event.getStartPos();
+        var posAfter = event.getEndPos();
 
         if (!bullet.isAlive()) {
             return;
@@ -119,7 +119,7 @@ public class AirburstSystem {
         if (newDistance > 0) {
             pd.putDouble(PDK_AIRBURST_DISTANCE, newDistance);
         } else if (bullet instanceof EntityKineticBulletAccessor accessor) {
-            bullet.setPos(posBefore.lerp(posAfter, 1 - newDistance / delta));
+            GsHelper.syncBulletExplodePos(bullet, posBefore.lerp(posAfter, 1 - newDistance / delta));
             accessor.setExplosionDelayCount(0);
         }
     }

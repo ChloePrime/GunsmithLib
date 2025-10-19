@@ -1,6 +1,10 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
 import cn.chloeprime.commons.lang4.FloatSupplier;
+import cn.chloeprime.commons.rpc.RPC;
+import cn.chloeprime.commons.rpc.RPCFlow;
+import cn.chloeprime.commons.rpc.RPCTarget;
+import cn.chloeprime.commons.rpc.RemoteCallable;
 import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
@@ -16,9 +20,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -210,6 +216,22 @@ public class GsHelper {
             buffer.addition().clear();
             buffer.mulBase().clear();
             buffer.mulTotal().clear();
+        }
+    }
+
+    public static void syncBulletExplodePos(Projectile bullet, Vec3 pos) {
+        if (bullet.level().isClientSide) {
+            syncBulletExplodePos0(bullet, pos);
+        } else {
+            RPC.call(RPCTarget.near(bullet), GsHelper::syncBulletExplodePos0, bullet, pos);
+        }
+    }
+
+    @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT, callLocally = true)
+    private static void syncBulletExplodePos0(Projectile bullet, Vec3 pos) {
+        if (bullet != null) {
+            bullet.setPos(pos);
+            bullet.setDeltaMovement(Vec3.ZERO);
         }
     }
 }

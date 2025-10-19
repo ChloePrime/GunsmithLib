@@ -1,12 +1,11 @@
 package mod.chloeprime.gunsmithlib.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.AirburstSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.HomingProjectileBehavior;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction1;
 import mod.chloeprime.gunsmithlib.common.util.SpecialHurtable;
@@ -15,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -30,11 +30,15 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
     private @Unique int gunsmithlib$aecDuration = 0;
     private @Unique float gunsmithlib$aecMinSize = 0;
 
-    // 空爆系统
-
-    @WrapMethod(method = "tick")
-    private void tickAirburst(Operation<Void> original) {
-        AirburstSystem.onBulletTick(this, original::call);
+    @Inject(method = "onBulletTick", remap = false, at = @At("HEAD"))
+    private void beforeTrace(CallbackInfo ci) {
+        if (this.level().isClientSide()) {
+            return;
+        }
+        var start = this.position();
+        var end = start.add(getDeltaMovement());
+        var event = new BulletReadyToTraceEvent(this, start, end);
+        NeoForge.EVENT_BUS.post(event);
     }
 
     // 药水效果

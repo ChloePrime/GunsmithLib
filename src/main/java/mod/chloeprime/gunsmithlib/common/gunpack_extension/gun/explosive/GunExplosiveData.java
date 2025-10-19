@@ -29,6 +29,22 @@ public class GunExplosiveData {
     @GunpackProperty
     private double airburst_distances_distribution;
 
+    /**
+     * 近炸引信探测距离
+     *
+     * @since 4.9.0
+     */
+    @GunpackProperty
+    private double proximity_fuse_distance;
+
+    /**
+     * 防止爆炸炸坏掉落物
+     *
+     * @since 4.9.0
+     */
+    @GunpackProperty
+    private boolean prevent_destroying_loot_items;
+
     public @Nonnull DoubleList getAirburstDistances() {
         return Optional.ofNullable(airburst_distances)
                 .map(DoubleList::of)
@@ -37,6 +53,14 @@ public class GunExplosiveData {
 
     public double getAirburstDistancesDistribution() {
         return airburst_distances_distribution;
+    }
+
+    public double getProximityFuseDistance() {
+        return proximity_fuse_distance;
+    }
+
+    public boolean willPreventDestroyingLootItems() {
+        return prevent_destroying_loot_items;
     }
 
     public static Optional<GunExplosiveData> fromGun(ItemStack stack) {

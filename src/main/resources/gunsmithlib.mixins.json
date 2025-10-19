@@ -19,6 +19,7 @@
     "MixinBullet",
     "MixinChunkMap",
     "MixinGunData",
+    "MixinItemEntity",
     "MixinItemStack",
     "MixinLivingEntity",
     "MixinLuaGunLogicConstant",
