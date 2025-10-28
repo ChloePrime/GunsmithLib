@@ -15,8 +15,8 @@ public class BulletReadyToTraceEvent extends EntityEvent {
     public BulletReadyToTraceEvent(Projectile bullet, Vec3 start, Vec3 end) {
         super(bullet);
         this.bullet = bullet;
-        this.start=start;
-        this.end=end;
+        this.start = start;
+        this.end = end;
     }
 
     @Override

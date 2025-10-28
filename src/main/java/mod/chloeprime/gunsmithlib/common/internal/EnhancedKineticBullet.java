@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.internal;
 
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface EnhancedKineticBullet {
     void gunsmithlib$setPotionCloudDuration(int value);
     float gunsmithlib$getPotionCloudMinSizeRate();
     void gunsmithlib$setPotionCloudMinSizeRate(float value);
+
+    Vec3 gunsmithlib$getHitPos();
 }

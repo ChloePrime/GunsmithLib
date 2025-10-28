@@ -92,10 +92,11 @@ public class PotionEffectBehavior {
         if (effects == null || effects.isEmpty()) {
             return;
         }
+        var hitPos = bullet.gunsmithlib$getHitPos();
         float radius = bullet.getExplosionRadius();
         var cloud = AreaEffectCloud3D.createAtCenter(
                 projectile.level(),
-                projectile.getX(), projectile.getY(), projectile.getZ(),
+                hitPos.x(), hitPos.y(), hitPos.z(),
                 radius
         );
         float minRadiusRate = Mth.clamp(bullet.gunsmithlib$getPotionCloudMinSizeRate(), 0, 1);
