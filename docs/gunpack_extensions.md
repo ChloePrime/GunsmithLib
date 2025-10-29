@@ -133,6 +133,7 @@
   },
 }
 ```
+另请参见：[Minecraft Wiki 上的属性系统介绍](https://zh.minecraft.wiki/w/%E5%B1%9E%E6%80%A7)
 
 ## 药水效果（支持枪械和配件）
 ```json5
@@ -178,4 +179,24 @@
   },
 }
 ```
-另请参见：[Minecraft Wiki 上的属性系统介绍](https://zh.minecraft.wiki/w/%E5%B1%9E%E6%80%A7)
+## 爆炸弹药扩展（只支持枪械，暂不支持配件）
+添加于版本 4.9.0
+```json5
+{
+  "gunsmithlib_extension": {
+    "gun_explosive": {
+      // 空爆距离挡位，
+      // 格式为浮点数数组。
+      "airburst_distances": [25, 50, 100],
+      // 空爆距离的误差，推荐取值范围为 [0, 1]
+      // 0 表示完全没有误差
+      // 1 表示实际空爆距离会在 (0, 2x设定空爆距离) 之间随机
+      "airburst_distances_distribution": 0.25,
+      // 近炸引信探测距离，单位为格
+      "proximity_fuse_distance": 1.5,
+      // 防止这把武器的爆炸炸坏掉落物
+      "prevent_destroying_loot_items": true
+    }
+  }
+}
+```
