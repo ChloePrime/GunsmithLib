@@ -1,9 +1,5 @@
 {
   "gunsmithlib_extension": {
-    "fire_control": {
-      "angular_range": 120,
-      "range_override": 500
-    },
     "gun_explosive": {
       "airburst_distances": [25, 50, 100],
       "airburst_distances_distribution": 0.25,

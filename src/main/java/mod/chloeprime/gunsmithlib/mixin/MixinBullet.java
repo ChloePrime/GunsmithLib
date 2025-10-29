@@ -18,8 +18,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,14 +39,10 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
 
     @Inject(method = "onBulletTick", remap = false, at = @At("HEAD"))
     private void beforeTrace(CallbackInfo ci) {
-        if (this.level().isClientSide()) {
-            return;
-        }
-        var start = this.position();
-        var end = start.add(getDeltaMovement());
-        var event = new BulletReadyToTraceEvent(this, start, end);
-        NeoForge.EVENT_BUS.post(event);
+        BulletReadyToTraceEvent.onBulletTick(this, pierce);
     }
+
+    @Shadow(remap = false) private int pierce;
 
     // 命中位置记录
 

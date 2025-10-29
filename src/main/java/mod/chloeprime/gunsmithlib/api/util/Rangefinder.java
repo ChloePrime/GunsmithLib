@@ -64,6 +64,25 @@ public class Rangefinder {
         }
     }
 
+    public static class MissResult extends HitResult implements Result {
+        private final double length;
+
+        protected MissResult(double length, Vec3 hitLocation) {
+            super(hitLocation);
+            this.length = length;
+        }
+
+        @Override
+        public @Nonnull Type getType() {
+            return Type.MISS;
+        }
+
+        @Override
+        public double getLength() {
+            return length;
+        }
+    }
+
     public static Result clip(Entity shooter, Vec3 pos, Vec3 direction, int piercing, double range) {
         Vec3 hitLocation;
         double length;
@@ -79,7 +98,7 @@ public class Rangefinder {
         if (block.getType() == HitResult.Type.MISS && entity.isEmpty()) {
             length = (float) range;
             hitLocation = pos.add(direction.scale(range));
-            return new BlockResult(length, true, hitLocation, block.getDirection(), block.getBlockPos(), block.isInside());
+            return new MissResult(length, hitLocation);
         }
         // 伤害实体并统计数量
         var furthestHit = new MutableObject<EntityHitResult>(null);
@@ -113,9 +132,14 @@ public class Rangefinder {
                     .orElse(pos);
         }
         length = hitLocation.distanceTo(ctx.getFrom());
-        return isBlock
-                ? new BlockResult(length, false, hitLocation, block.getDirection(), block.getBlockPos(), block.isInside())
-                : new EntityResult(length, Optional.ofNullable(furthestHit.getValue()).map(EntityHitResult::getEntity).orElse(null), hitLocation);
+        if (isBlock) {
+            return new BlockResult(length, false, hitLocation, block.getDirection(), block.getBlockPos(), block.isInside());
+        }
+        var hitEntity = Optional.ofNullable(furthestHit.getValue()).map(EntityHitResult::getEntity).orElse(null);
+        if (hitEntity != null) {
+            return new EntityResult(length, hitEntity, hitLocation);
+        }
+        return new MissResult(length, hitLocation);
     }
 
     private static Optional<Stream<EntityHitResult>> clipEntities(Projectile projectile, Entity shooter, Vec3 from, Vec3 to, int limit) {

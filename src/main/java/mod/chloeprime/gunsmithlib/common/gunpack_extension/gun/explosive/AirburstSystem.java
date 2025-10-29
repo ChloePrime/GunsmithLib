@@ -119,7 +119,7 @@ public class AirburstSystem {
         if (newDistance > 0) {
             pd.putDouble(PDK_AIRBURST_DISTANCE, newDistance);
         } else if (bullet instanceof EntityKineticBulletAccessor accessor) {
-            GsHelper.syncBulletExplodePos(bullet, posBefore.lerp(posAfter, 1 - newDistance / delta));
+            GsHelper.syncBulletExplodePos(bullet, posBefore.lerp(posAfter, 1 + newDistance / delta));
             accessor.setExplosionDelayCount(0);
         }
     }
