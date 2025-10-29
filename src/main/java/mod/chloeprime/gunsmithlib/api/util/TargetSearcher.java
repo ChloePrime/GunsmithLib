@@ -84,7 +84,7 @@ public class TargetSearcher {
                 })
                 // 夹角 <= 自瞄范围
                 .filter(pair -> pair.getRight() != null && pair.getRight() >= cosConeAngle)
-                .min(Comparator.comparingDouble(pair -> getAimPriority(pair.getLeft().pos(), pair.getRight(), muzzle, range, maxAngle)))
+                .min(Comparator.comparingDouble(pair -> getAimPriority(muzzle, pair.getLeft().pos(), lookAngle)))
                 .map(Pair::getLeft);
     }
 
@@ -108,10 +108,15 @@ public class TargetSearcher {
         }
     }
 
-    private static double getAimPriority(Vec3 targetPos, double cosAngle, Vec3 muzzle, double range, double aimConeAngle) {
-        var distanceRatio = targetPos.distanceTo(muzzle) / range;
-        var angleRatio = Math.acos(cosAngle) / aimConeAngle;
-        return (distanceRatio * distanceRatio * 0.5 + angleRatio * angleRatio);
+    /**
+     * 使用目标点离视线直线的距离作为优先级的算法
+     *
+     * @since 4.9.0
+     */
+    private static double getAimPriority(Vec3 muzzle, Vec3 targetPos, Vec3 lookDir) {
+        var c2 = muzzle.distanceToSqr(targetPos);
+        var a = lookDir.dot(targetPos.subtract(muzzle));
+        return c2 - a * a;
     }
 
     private static Optional<Vec3> getEstimatedHitPosForNonHumanoidTarget(LivingEntity shooter, Entity target, float partialTicks) {
