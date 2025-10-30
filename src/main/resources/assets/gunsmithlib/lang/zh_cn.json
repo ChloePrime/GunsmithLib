@@ -26,6 +26,11 @@
   "gunsmithlib.item.technical.bugfix": "防止游戏崩溃用技术性物品",
   "gunsmithlib.item.modifiers.attachment": "作为配件安装时：",
 
+  "key.category.gunsmithlib": "Gunsmith Lib",
+  "key.gunsmithlib.ballistic_computer.desc": "弹道计算机",
+
   "effect.gunsmithlib.crossfire": "交叉火力",
-  "subtitle.gunsmithlib.shield_blocks_bullet": "子弹被枪盾格挡"
+  "subtitle.gunsmithlib.shield_blocks_bullet": "子弹被枪盾格挡",
+
+  "gunsmithlib.message.airburst_rangefinder.too_far": "太远了"
 }

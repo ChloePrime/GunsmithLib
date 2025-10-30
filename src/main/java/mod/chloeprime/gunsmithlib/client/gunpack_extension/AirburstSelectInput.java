@@ -2,9 +2,8 @@ package mod.chloeprime.gunsmithlib.client.gunpack_extension;
 
 import cn.chloeprime.commons.rpc.RPC;
 import cn.chloeprime.commons.rpc.RPCTarget;
-import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.client.sound.SoundPlayManager;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.AirburstSystem;
 import net.minecraft.client.Minecraft;
 
@@ -28,9 +27,7 @@ public class AirburstSelectInput {
 
         if (player.isShiftKeyDown()) {
             canceller.run();
-            TimelessAPI
-                    .getGunDisplay(gun.gunStack())
-                    .ifPresent(display -> SoundPlayManager.playFireSelectSound(player, display));
+            GunsmithLibClient.playFireSelectSound(gun.gunStack());
             // 通知服务端切换空爆挡位
             RPC.call(RPCTarget.toServer(), AirburstSystem::onSelectAirburstIndex, player);
         }

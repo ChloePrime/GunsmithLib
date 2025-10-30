@@ -172,6 +172,10 @@ public class GunsmithLib {
                 .persistent(Codec.INT)
                 .networkSynchronized(ByteBufCodecs.VAR_INT)
                 .build());
+        public static final Supplier<DataComponentType<Double>> CUSTOM_AIRBURST_DISTANCE = DFR.register("custom_airburst_distance", () -> DataComponentType.<Double>builder()
+                .persistent(Codec.DOUBLE)
+                .networkSynchronized(ByteBufCodecs.DOUBLE)
+                .build());
     }
 
     public static class DataAttachments {

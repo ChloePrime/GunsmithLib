@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 public class GunExplosiveData {
     /**
@@ -28,6 +29,15 @@ public class GunExplosiveData {
      */
     @GunpackProperty
     private double airburst_distances_distribution;
+
+    /**
+     * 空爆测距装表的距离上限。
+     * 只有填了这一项后玩家才可以用中键测距装表。
+     *
+     * @since 4.10.0
+     */
+    @GunpackProperty
+    private Double airburst_rangefinder_max_distance;
 
     /**
      * 近炸引信探测距离
@@ -53,6 +63,14 @@ public class GunExplosiveData {
 
     public double getAirburstDistancesDistribution() {
         return airburst_distances_distribution;
+    }
+
+    /**
+     * @since 4.10.0
+     */
+    public OptionalDouble getAirburstRangefinderMaxDistance() {
+        Double distance = airburst_rangefinder_max_distance;
+        return distance == null ? OptionalDouble.empty() : OptionalDouble.of(distance);
     }
 
     public double getProximityFuseDistance() {

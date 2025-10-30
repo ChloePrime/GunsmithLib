@@ -26,6 +26,11 @@
   "gunsmithlib.item.technical.bugfix": "Technical Item to Prevent Game from Crashing",
   "gunsmithlib.item.modifiers.attachment": "When Installed:",
 
+  "key.category.gunsmithlib": "Gunsmith Lib",
+  "key.gunsmithlib.ballistic_computer.desc": "Ballistic Computer",
+
   "effect.gunsmithlib.crossfire": "Crossfire",
-  "subtitle.gunsmithlib.shield_blocks_bullet": "Bullet blocked by shield"
+  "subtitle.gunsmithlib.shield_blocks_bullet": "Bullet blocked by shield",
+
+  "gunsmithlib.message.airburst_rangefinder.too_far": "Too Far"
 }

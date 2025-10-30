@@ -1,18 +1,27 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
+import cn.chloeprime.commons.rpc.RPC;
 import cn.chloeprime.commons.rpc.RPCFlow;
+import cn.chloeprime.commons.rpc.RPCTarget;
 import cn.chloeprime.commons.rpc.RemoteCallable;
+import com.tacz.guns.api.entity.IGunOperator;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.api.util.Rangefinder;
+import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -30,12 +39,19 @@ import java.util.OptionalDouble;
 @EventBusSubscriber
 public class AirburstSystem {
     public static final String PDK_AIRBURST_DISTANCE = GunsmithLib.loc("airburst_distance").toString();
+    public static final Component MSG_TOO_FAR = Component
+            .translatable("%s.message.airburst_rangefinder.too_far".formatted(GunsmithLib.MOD_ID))
+            .withStyle(ChatFormatting.RED);
 
     public static int getSelectedDistanceIndex(ItemStack stack) {
         return Objects.requireNonNullElse(stack.get(GunsmithLib.DataComponents.SELECTED_AIRBURST_DISTANCE_INDEX), 0);
     }
 
     public static OptionalDouble getSelectedDistance(GunInfo gun) {
+        var custom = getAirburstRangefinderStoredDistance(gun.gunStack());
+        if (custom > 0) {
+            return OptionalDouble.of(custom);
+        }
         var distances = getAirburstDistances(gun);
         if (distances.isEmpty()) {
             return OptionalDouble.empty();
@@ -53,6 +69,44 @@ public class AirburstSystem {
         return GunExplosiveData.fromGun(gun)
                 .map(GunExplosiveData::getAirburstDistances)
                 .orElse(DoubleList.of());
+    }
+
+    /**
+     * 获取弹道计算机测距上限
+     *
+     * @since 4.10.0
+     */
+    public static @Nonnull OptionalDouble getAirburstRangefinderMaxDistance(GunInfo gun) {
+        return GunExplosiveData.fromGun(gun)
+                .map(GunExplosiveData::getAirburstRangefinderMaxDistance)
+                .orElse(OptionalDouble.empty());
+    }
+
+    /**
+     * 获取弹道计算机存入的空爆距离
+     *
+     * @since 4.10.0
+     */
+    public static double getAirburstRangefinderStoredDistance(ItemStack stack) {
+        return Objects.requireNonNullElse(stack.get(GunsmithLib.DataComponents.CUSTOM_AIRBURST_DISTANCE), 0.0);
+    }
+
+    /**
+     * 设置弹道计算机存入的空爆距离
+     *
+     * @since 4.10.0
+     */
+    public static void setAirburstRangefinderStoredDistance(ItemStack stack, double value) {
+        stack.set(GunsmithLib.DataComponents.CUSTOM_AIRBURST_DISTANCE, value);
+    }
+
+    /**
+     * 清除弹道计算机存入的空爆距离
+     *
+     * @since 4.10.0
+     */
+    public static boolean clearAirburstRangefinderStoredDistance(ItemStack stack) {
+        return stack.remove(GunsmithLib.DataComponents.CUSTOM_AIRBURST_DISTANCE) != null;
     }
 
     public static double getAirburstDistanceDistribution(GunInfo gun) {
@@ -77,6 +131,50 @@ public class AirburstSystem {
             return;
         }
         setSelectedDistanceIndex(gun.gunStack(), (getSelectedDistanceIndex(gun.gunStack()) + 1) % count);
+    }
+
+    @RemoteCallable
+    public static void onBallisticComputerPressed(Player user) {
+        if (user == null || user.level().isClientSide || !user.isAlive()) {
+            return;
+        }
+        var gun = Gunsmith.getGunInfo(user.getMainHandItem()).orElse(null);
+        if (gun == null) {
+            return;
+        }
+        var maxDistance = AirburstSystem.getAirburstRangefinderMaxDistance(gun).orElse(-1);
+        if (maxDistance <= 0) {
+            return;
+        }
+        var operator = IGunOperator.fromLivingEntity(user);
+        if (operator.getSynIsAiming()) {
+            // 进行测距并存入结果
+            var result = Rangefinder.clip(user, user.getEyePosition(), user.getLookAngle(), 0, maxDistance);
+            if (result.asHitResult().getType() != HitResult.Type.MISS) {
+                setAirburstRangefinderStoredDistance(gun.gunStack(), result.getLength());
+                rangefinderFeedback(user);
+            } else {
+                user.displayClientMessage(MSG_TOO_FAR, true);
+            }
+        } else {
+            // 未瞄准时按住中键则清除弹道计算机测距结果
+            if (clearAirburstRangefinderStoredDistance(gun.gunStack())) {
+                rangefinderFeedback(user);
+            }
+        }
+    }
+
+    private static void rangefinderFeedback(Player user) {
+        if (user instanceof ServerPlayer ssp) {
+            RPC.call(RPCTarget.to(ssp), AirburstSystem::rangefinderFeedback);
+        } else {
+            rangefinderFeedback();
+        }
+    }
+
+    @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)
+    private static void rangefinderFeedback() {
+        GunsmithLibClient.playFireSelectSound();
     }
 
     @SubscribeEvent
