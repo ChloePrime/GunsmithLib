@@ -139,6 +139,7 @@ public class GunsmithLib {
     public static class SoundEvents {
         private static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
         public static final DeferredHolder<SoundEvent, SoundEvent> SHIELD_BLOCKS_BULLET = REGISTRY.register("shield_blocks_bullet", () -> SoundEvent.createVariableRangeEvent(loc( "shield_blocks_bullet")));
+        public static final DeferredHolder<SoundEvent, SoundEvent> BALLISTIC_COMPUTER = REGISTRY.register("ballistic_computer", () -> SoundEvent.createVariableRangeEvent(loc( "ballistic_computer")));
     }
 
     public static class EntityTypes {

@@ -10,5 +10,11 @@
       "tacz:block/target_block_hit/target_block_hit_6",
       "tacz:block/target_block_hit/target_block_hit_7"
     ]
+  },
+  "ballistic_computer": {
+    "subtitle": "subtitle.gunsmithlib.ballistic_computer",
+    "sounds": [
+      "gunsmithlib:computer_button"
+    ]
   }
 }

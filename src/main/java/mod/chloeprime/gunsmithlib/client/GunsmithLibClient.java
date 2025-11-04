@@ -7,12 +7,18 @@ import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.client.papi.RangefinderPapi;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+
+import java.util.Objects;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class GunsmithLibClient {
@@ -31,12 +37,8 @@ public class GunsmithLibClient {
         event.registerEntityRenderer(GunsmithLib.EntityTypes.AREA_EFFECT_CLOUD_3D.get(), NoopRenderer::new);
     }
 
-    public static void playFireSelectSound() {
-        var player = Minecraft.getInstance().player;
-        if (player == null) {
-            return;
-        }
-        playFireSelectSound(player.getMainHandItem());
+    public static void playComputerButtonSound() {
+        playUnspatialSound(GunsmithLib.SoundEvents.BALLISTIC_COMPUTER.getId());
     }
 
     public static void playFireSelectSound(ItemStack gun) {
@@ -47,5 +49,14 @@ public class GunsmithLibClient {
         TimelessAPI
                 .getGunDisplay(gun)
                 .ifPresent(display -> SoundPlayManager.playFireSelectSound(player, display));
+    }
+
+    public static void playUnspatialSound(ResourceLocation id) {
+        Objects.requireNonNull(id, "Registry not initialized");
+        var sound = new SimpleSoundInstance(
+                id, SoundSource.PLAYERS, 1, 1,
+                SoundInstance.createUnseededRandom(), false, 0, SoundInstance.Attenuation.NONE,
+                0, 0, 0, true);
+        Minecraft.getInstance().getSoundManager().play(sound);
     }
 }

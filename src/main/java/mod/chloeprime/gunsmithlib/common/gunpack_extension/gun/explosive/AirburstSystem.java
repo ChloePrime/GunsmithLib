@@ -174,7 +174,7 @@ public class AirburstSystem {
 
     @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)
     private static void rangefinderFeedback() {
-        GunsmithLibClient.playFireSelectSound();
+        GunsmithLibClient.playComputerButtonSound();
     }
 
     @SubscribeEvent

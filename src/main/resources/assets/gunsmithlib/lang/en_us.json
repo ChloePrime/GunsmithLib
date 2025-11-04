@@ -30,6 +30,7 @@
   "key.gunsmithlib.ballistic_computer.desc": "Ballistic Computer",
 
   "effect.gunsmithlib.crossfire": "Crossfire",
+  "subtitle.gunsmithlib.ballistic_computer": "Ballistic Computer Beeping",
   "subtitle.gunsmithlib.shield_blocks_bullet": "Bullet blocked by shield",
 
   "gunsmithlib.message.airburst_rangefinder.too_far": "Too Far"

@@ -27,7 +27,12 @@ public class AirburstSelectInput {
 
         if (player.isShiftKeyDown()) {
             canceller.run();
-            GunsmithLibClient.playFireSelectSound(gun.gunStack());
+            // 此处默认支持测距的空爆武器在设定上带有弹道计算机，所以播放计算机音效
+            if (AirburstSystem.getAirburstRangefinderMaxDistance(gun).isPresent()) {
+                GunsmithLibClient.playComputerButtonSound();
+            } else {
+                GunsmithLibClient.playFireSelectSound(gun.gunStack());
+            }
             // 通知服务端切换空爆挡位
             RPC.call(RPCTarget.toServer(), AirburstSystem::onSelectAirburstIndex, player);
         }
