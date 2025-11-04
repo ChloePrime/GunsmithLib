@@ -11,9 +11,11 @@
 
 ## 状态机新增常量：
 
-| 常量名                                | 说明              | 详细说明                              | 添加版本  |
-|------------------------------------|-----------------|-----------------------------------|-------|
-| `GUNSMITHLIB_INPUT_COOLDOWN_START` | 破盾（开始冷却）时触发的状态名 | 值为 `"gunsmithlib:cooldown_start"` | 3.7.0 |
+| 常量名                                      | 说明              | 详细说明                                    | 添加版本   |
+|------------------------------------------|-----------------|-----------------------------------------|--------|
+| `GUNSMITHLIB_INPUT_COOLDOWN_START`       | 破盾（开始冷却）时触发的状态名 | 值为 `"gunsmithlib:cooldown_start"`       | 3.7.0  |
+| `GUNSMITHLIB_INPUT_SHIELD_BLOCKS_DAMAGE` | 枪盾挡住非子弹伤害时触发    | 值为 `"gunsmithlib:shield_blocks_damage"` | 4.11.0 |
+| `GUNSMITHLIB_INPUT_SHIELD_BLOCKS_BULLET` | 枪盾挡住子弹时触发       | 值为 `"gunsmithlib:shield_blocks_bullet"` | 4.11.0 |
 
 ## 双机共享扩展 API
 

@@ -1,8 +1,7 @@
 package mod.chloeprime.gunsmithlib.mixin.client;
 
-import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.client.resource.GunDisplayInstance;
 import mod.chloeprime.gunsmithlib.api.client.GunsmithLibAnimationConstant;
+import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -31,9 +30,7 @@ public abstract class MixinClientGamePacketListener extends ClientCommonPacketLi
         if (packet.item() != gun.getItem()) {
             return;
         }
-        TimelessAPI.getGunDisplay(gun)
-                .map(GunDisplayInstance::getAnimationStateMachine)
-                .ifPresent(sm -> sm.trigger(GunsmithLibAnimationConstant.GUNSMITHLIB_INPUT_COOLDOWN_START));
+        GunsmithLibClient.triggerAnimation(gun, GunsmithLibAnimationConstant.GUNSMITHLIB_INPUT_COOLDOWN_START);
     }
 
     public MixinClientGamePacketListener(Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie) {
