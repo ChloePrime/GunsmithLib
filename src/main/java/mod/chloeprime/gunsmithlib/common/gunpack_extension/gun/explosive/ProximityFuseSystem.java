@@ -57,7 +57,7 @@ public class ProximityFuseSystem {
         var bulletBB = bullet.getBoundingBox();
         var entityTest = (Predicate<Entity>) et -> testEntity(et, shooter);
 
-        int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) / 0.5));
+        int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) * 3 / distance));
         for (int i = 0; i < slices; i++) {
             var rayCastStart = posBefore.lerp(posAfter, (double) (i + 1) / slices);
             var aabb = AABB.ofSize(rayCastStart, bulletBB.getXsize(), bulletBB.getYsize(), bulletBB.getZsize()).inflate(distance + 4);
