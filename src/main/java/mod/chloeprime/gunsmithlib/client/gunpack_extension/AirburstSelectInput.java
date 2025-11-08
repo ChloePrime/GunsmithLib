@@ -34,7 +34,10 @@ public class AirburstSelectInput {
                 GunsmithLibClient.playFireSelectSound(gun.gunStack());
             }
             // 通知服务端切换空爆挡位
-            RPC.call(RPCTarget.toServer(), AirburstSystem::onSelectAirburstIndex, player);
+            RPC.call(RPCTarget.toServer(), AirburstSystem::onSelectAirburstIndex);
         }
+    }
+
+    private AirburstSelectInput() {
     }
 }

@@ -19,6 +19,11 @@ public interface AbstractCommonScriptingExtension extends CommonScriptingExtensi
     IGun gunsmithlib$getGunItemInterface();
     Optional<LivingEntity> gunsmithlib$getShooter();
 
+    default String gunsmith$getGunIdHelper() {
+        var gunInterface = gunsmithlib$getGunItemInterface();
+        return gunInterface == null ? "" : gunInterface.getGunId(gunsmithlib$getCurrentItem()).toString();
+    }
+
     @Override
     @SuppressWarnings("UnstableApiUsage")
     default double gunsmith_getEstimatedRange() {

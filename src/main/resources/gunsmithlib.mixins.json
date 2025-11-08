@@ -9,6 +9,7 @@
   },
   "mixins": [
     "AlternativeArmorPierceFormulaMixin",
+    "CommonGunIndexAccessor",
     "EntityKineticBulletAccessor",
     "ItemCooldownsAccessor",
     "LevelAccessor",
@@ -22,6 +23,7 @@
     "MixinItemEntity",
     "MixinItemStack",
     "MixinLivingEntity",
+    "MixinLivingEntityFireSelect",
     "MixinLuaGunLogicConstant",
     "MixinMob",
     "MixinModernKineticGunItem",
@@ -35,9 +37,12 @@
     "interactkey.TacInteractKeyAutoInferenceMixin"
   ],
   "client": [
+    "client.MixinAnimationStateContext",
     "client.MixinClientGamePacketListener",
     "client.MixinClientGunTooltip",
+    "client.MixinClientIndexManager",
     "client.MixinFireSelectKey",
+    "client.MixinFirstPersonRenderEventHandler",
     "client.MixinGunAnimationStateContext",
     "client.MixinGunDisplay",
     "client.MixinGunDisplayInstance",

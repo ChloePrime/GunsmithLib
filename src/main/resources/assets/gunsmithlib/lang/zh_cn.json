@@ -28,6 +28,7 @@
 
   "key.category.gunsmithlib": "Gunsmith Lib",
   "key.gunsmithlib.ballistic_computer.desc": "弹道计算机",
+  "key.gunsmithlib.switch_part_or_ammo_type.desc": "切换武器部件，长按切换变体/弹种",
 
   "effect.gunsmithlib.crossfire": "交叉火力",
   "subtitle.gunsmithlib.ballistic_computer": "弹道计算机嘀嘀声",

@@ -5,12 +5,17 @@ import cn.chloeprime.commons.rpc.RPC;
 import cn.chloeprime.commons.rpc.RPCFlow;
 import cn.chloeprime.commons.rpc.RPCTarget;
 import cn.chloeprime.commons.rpc.RemoteCallable;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
 import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.item.IAmmo;
+import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -20,12 +25,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
@@ -35,6 +43,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.DoubleSupplier;
+
+import static mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat.MAX_DISPLAYED_AMMO_SCANNED;
 
 public class GsHelper {
     public static float infDist(FloatSupplier nextGaussianFunc, float mean, float dev) {
@@ -219,6 +229,32 @@ public class GsHelper {
         }
     }
 
+    public static <E extends Enum<E>> Codec<E> enumCodec(Class<E> type) {
+        return Codec.STRING.xmap(
+                str -> Enum.valueOf(type, str.toUpperCase(Locale.ROOT)),
+                value -> value.name().toLowerCase(Locale.ROOT));
+    }
+
+    public static <T> Codec<List<T>> selfOrList(Codec<T> elementCodec) {
+        return Codec
+                .either(elementCodec, Codec.list(elementCodec))
+                .xmap(either -> {
+                    if (either.right().isPresent()) {
+                        return either.right().get();
+                    }
+                    if (either.left().isPresent()) {
+                        return List.of(either.left().get());
+                    }
+                    throw new IllegalStateException();
+                }, list -> {
+                    if (list.size() == 1) {
+                        return Either.left(list.getFirst());
+                    } else {
+                        return Either.right(list);
+                    }
+                });
+    }
+
     public static void syncBulletExplodePos(Projectile bullet, Vec3 pos) {
         if (bullet.level().isClientSide) {
             syncBulletExplodePos0(bullet, pos);
@@ -233,5 +269,70 @@ public class GsHelper {
             bullet.setPos(pos);
             bullet.setDeltaMovement(Vec3.ZERO);
         }
+    }
+
+    /**
+     * @return 无限弹药时返回 {@link OptionalInt#empty()}
+     */
+    public static OptionalInt scanAmmo(Player user, GunInfo gun) {
+        var inv = scanInventoryAmmo(user, gun);
+        if (inv.isEmpty()) {
+            return OptionalInt.empty();
+        }
+        var backpack = scanBackpackAmmo(user, gun);
+        if (backpack.isEmpty()) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(inv.getAsInt() + backpack.getAsInt());
+    }
+
+    /**
+     * 不包含精妙背包内的子弹
+     *
+     * @return 无限弹药时返回 {@link OptionalInt#empty()}
+     */
+    public static OptionalInt scanInventoryAmmo(Player user, GunInfo gun) {
+        Objects.requireNonNull(user);
+        Objects.requireNonNull(gun);
+
+        if (!IGunOperator.fromLivingEntity(user).needCheckAmmo()) {
+            return OptionalInt.empty();
+        }
+        if (gun.gunItem().useDummyAmmo(gun.gunStack())) {
+            return OptionalInt.of(gun.gunItem().getDummyAmmoAmount(gun.gunStack()));
+        }
+        var inventory = user.getCapability(Capabilities.ItemHandler.ENTITY, null);
+        return getInventoryAmmo(gun.gunStack(), inventory);
+    }
+
+    /**
+     * 精妙背包内的子弹
+     *
+     * @return 无限弹药时返回 {@link OptionalInt#empty()}
+     */
+    public static OptionalInt scanBackpackAmmo(Player user, GunInfo gun) {
+        var count = CapabilityBasedModCompat.consumeAmmoFromPlayer(user, gun.gunStack(), MAX_DISPLAYED_AMMO_SCANNED, true);
+        return count == MAX_DISPLAYED_AMMO_SCANNED ? OptionalInt.empty() : OptionalInt.of(count);
+    }
+
+    private static OptionalInt getInventoryAmmo(ItemStack stack, @Nullable IItemHandler inventory) {
+        if (inventory == null) {
+            return OptionalInt.of(0);
+        }
+        int result = 0;
+        int slots = inventory.getSlots();
+        for (int i = 0; i < slots; i++) {
+            var inventoryItem = inventory.getStackInSlot(i);
+            if (inventoryItem.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(stack, inventoryItem)) {
+                result += inventoryItem.getCount();
+            }
+            if (inventoryItem.getItem() instanceof IAmmoBox iAmmoBox && iAmmoBox.isAmmoBoxOfGun(stack, inventoryItem)) {
+                if (iAmmoBox.isAllTypeCreative(inventoryItem) || iAmmoBox.isCreative(inventoryItem)) {
+                    return OptionalInt.empty();
+                }
+                result += iAmmoBox.getAmmoCount(inventoryItem);
+            }
+        }
+        return OptionalInt.of(result);
     }
 }

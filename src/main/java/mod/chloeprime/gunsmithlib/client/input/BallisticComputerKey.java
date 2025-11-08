@@ -16,7 +16,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
 @EventBusSubscriber(Dist.CLIENT)
-public class BallisticComputerKey {
+public final class BallisticComputerKey {
     public static final KeyMapping KEY_MAPPING = new KeyMapping(
             "key.%s.ballistic_computer.desc".formatted(GunsmithLib.MOD_ID),
             GunsmithLibInput.KeyConflictContexts.IN_GAME_CONCURRENT,
@@ -60,5 +60,8 @@ public class BallisticComputerKey {
             return;
         }
         RPC.call(RPCTarget.toServer(), AirburstSystem::onBallisticComputerPressed, player);
+    }
+
+    private BallisticComputerKey() {
     }
 }

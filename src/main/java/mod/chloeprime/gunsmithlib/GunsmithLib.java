@@ -6,6 +6,7 @@ import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
 import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
 import mod.chloeprime.gunsmithlib.common.entity.RangefinderMarker;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantStorage;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.entity.MagicLaser;
 import mod.chloeprime.gunsmithlib.common.util.AttackDamageMobEffect;
@@ -176,6 +177,15 @@ public class GunsmithLib {
         public static final Supplier<DataComponentType<Double>> CUSTOM_AIRBURST_DISTANCE = DFR.register("custom_airburst_distance", () -> DataComponentType.<Double>builder()
                 .persistent(Codec.DOUBLE)
                 .networkSynchronized(ByteBufCodecs.DOUBLE)
+                .build());
+        public static final Supplier<DataComponentType<AmmoVariantStorage>> AMMO_VARIANT_STORAGE = DFR.register("ammo_variant_storage", () -> DataComponentType.<AmmoVariantStorage>builder()
+                .persistent(AmmoVariantStorage.CODEC)
+                .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(AmmoVariantStorage.CODEC))
+                .cacheEncoding()
+                .build());
+        public static final Supplier<DataComponentType<String>> SELECTED_PART = DFR.register("selected_part", () -> DataComponentType.<String>builder()
+                .persistent(Codec.STRING)
+                .networkSynchronized(ByteBufCodecs.STRING_UTF8)
                 .build());
     }
 

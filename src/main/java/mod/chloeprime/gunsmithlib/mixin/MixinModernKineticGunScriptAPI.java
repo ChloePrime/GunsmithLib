@@ -9,15 +9,18 @@ import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.OverheatFeedback;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Mixin(value = ModernKineticGunScriptAPI.class, remap = false)
@@ -38,12 +41,26 @@ public class MixinModernKineticGunScriptAPI implements AbstractGunScriptAPIExten
     }
 
     // 换弹速度
+
     @ModifyReturnValue(method = "getReloadTime", at = @At("RETURN"))
     private long reloadSpeedScaler(long original) {
         return shooter != null ? (long) (original * shooter.getAttributeValue(GunAttributes.RELOAD_SPEED)) : original;
     }
 
-    // 过热反馈
+    // 扩展 API
+
+    private @Unique String gunsmith$gunIdString;
+
+    @Inject(method = "initGunItem", at = @At("TAIL"))
+    private void initGunIdString(CallbackInfo ci) {
+        gunsmith$gunIdString = String.valueOf(gunId);
+    }
+
+    @Override
+    public String gunsmith_getGunId() {
+        return Objects.requireNonNullElseGet(gunsmith$gunIdString, this::gunsmith$getGunIdHelper);
+    }
+
     @Override
     public void gunsmith_playOverheatSound() {
         if (shooter != null) {
@@ -91,6 +108,7 @@ public class MixinModernKineticGunScriptAPI implements AbstractGunScriptAPIExten
     @Shadow private AbstractGunItem abstractGunItem;
     @Shadow private ItemStack itemStack;
     @Shadow private LivingEntity shooter;
+    @Shadow private ResourceLocation gunId;
 
     @Override
     public ItemStack gunsmithlib$getCurrentItem() {

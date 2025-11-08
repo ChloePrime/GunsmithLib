@@ -31,5 +31,6 @@ public class GunsmithLibInput {
     @SubscribeEvent
     public static void onRegisteringKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(BallisticComputerKey.KEY_MAPPING);
+        event.register(SwitchPartOrAmmoTypeKey.KEY_MAPPING);
     }
 }

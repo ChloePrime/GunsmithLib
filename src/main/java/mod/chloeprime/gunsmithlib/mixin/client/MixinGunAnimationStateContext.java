@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -23,11 +26,21 @@ import java.util.function.Function;
 public abstract class MixinGunAnimationStateContext implements AbstractGunAnimationStateContextExtension {
     @Shadow private ItemStack currentGunItem;
     @Shadow private IGun iGun;
+    @Shadow protected abstract <T> Optional<T> processCameraEntity(Function<Entity, T> processor);
 
     // 扩展 API
 
-    @Shadow
-    protected abstract <T> Optional<T> processCameraEntity(Function<Entity, T> processor);
+    private @Unique String gunsmith$gunIdString = "";
+
+    @Inject(method = "setCurrentGunItem", at = @At("TAIL"))
+    private void initGunIdString(CallbackInfo ci) {
+        gunsmith$gunIdString = String.valueOf(gunsmith$getGunIdHelper());
+    }
+
+    @Override
+    public String gunsmith_getGunId() {
+        return Objects.requireNonNullElseGet(gunsmith$gunIdString, this::gunsmith$getGunIdHelper);
+    }
 
     @Override
     public float gunsmith_getCooldownSeconds() {

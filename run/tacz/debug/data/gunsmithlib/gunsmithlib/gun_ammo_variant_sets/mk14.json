@@ -1,0 +1,14 @@
+{
+  "parts": [
+    {
+      "name": "main",
+      "variants": [
+        "tacz:mk14",
+        {
+          "auto": "gunsmithlib:mk14_ap",
+          "semi": "gunsmithlib:mk14_ap_semi"
+        }
+      ]
+    }
+  ]
+}

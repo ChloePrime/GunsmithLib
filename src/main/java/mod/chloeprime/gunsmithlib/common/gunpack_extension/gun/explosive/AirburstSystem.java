@@ -1,9 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
-import cn.chloeprime.commons.rpc.RPC;
-import cn.chloeprime.commons.rpc.RPCFlow;
-import cn.chloeprime.commons.rpc.RPCTarget;
-import cn.chloeprime.commons.rpc.RemoteCallable;
+import cn.chloeprime.commons.rpc.*;
 import com.tacz.guns.api.entity.IGunOperator;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
@@ -88,6 +85,13 @@ public class AirburstSystem {
      * @since 4.10.0
      */
     public static double getAirburstRangefinderStoredDistance(ItemStack stack) {
+        var isSupported = GunExplosiveData
+                .fromGun(stack)
+                .filter(explosive -> explosive.getAirburstRangefinderMaxDistance().orElse(0) > 0)
+                .isPresent();
+        if (!isSupported) {
+            return 0;
+        }
         return Objects.requireNonNullElse(stack.get(GunsmithLib.DataComponents.CUSTOM_AIRBURST_DISTANCE), 0.0);
     }
 
@@ -118,7 +122,8 @@ public class AirburstSystem {
     }
 
     @RemoteCallable(flow = RPCFlow.CLIENT_TO_SERVER, callLocally = true)
-    public static void onSelectAirburstIndex(Player user) {
+    public static void onSelectAirburstIndex() {
+        var user = RPCContext.isCalledThroughRPC() ? RPCContext.getSenderPlayer() : null;
         if (user == null) {
             return;
         }
@@ -220,5 +225,8 @@ public class AirburstSystem {
             GsHelper.syncBulletExplodePos(bullet, posBefore.lerp(posAfter, 1 + newDistance / delta));
             accessor.setExplosionDelayCount(0);
         }
+    }
+
+    private AirburstSystem() {
     }
 }

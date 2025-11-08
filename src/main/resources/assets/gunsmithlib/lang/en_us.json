@@ -28,6 +28,7 @@
 
   "key.category.gunsmithlib": "Gunsmith Lib",
   "key.gunsmithlib.ballistic_computer.desc": "Ballistic Computer",
+  "key.gunsmithlib.switch_part_or_ammo_type.desc": "Switch Weapon Part, Variant or Ammo Type",
 
   "effect.gunsmithlib.crossfire": "Crossfire",
   "subtitle.gunsmithlib.ballistic_computer": "Ballistic Computer Beeping",

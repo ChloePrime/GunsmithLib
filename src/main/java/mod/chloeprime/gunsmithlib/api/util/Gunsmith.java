@@ -57,10 +57,11 @@ public class Gunsmith {
 
     /**
      * Instantly reloads some ammo from inventory to inside the gun
-     * @param shooter shooter entity
-     * @param gun the gun stack
+     *
+     * @param shooter     shooter entity
+     * @param gun         the gun stack
      * @param reloadCount ammo count to find and load.
-     * @param options options.
+     * @param options     options.
      * @return actually loaded ammo count.
      */
     public static int magicReload(LivingEntity shooter, ItemStack gun, int reloadCount, MagicReloadOptions... options) {
@@ -83,7 +84,7 @@ public class Gunsmith {
         var axisX = axisZ.cross(UP);
         var axisY = axisX.cross(axisZ);
 
-        var x = Mth.lerp(adsProgress,0.06F, 0);
+        var x = Mth.lerp(adsProgress, 0.06F, 0);
         var y = Mth.lerp(adsProgress, -0.08F, hasScope(shooter) ? -0.2F : 0);
         var z = Mth.lerp(adsProgress, 0.8F, 0.6F);
 

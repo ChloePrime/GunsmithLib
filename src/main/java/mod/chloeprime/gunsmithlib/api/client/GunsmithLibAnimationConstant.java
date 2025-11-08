@@ -28,4 +28,21 @@ public class GunsmithLibAnimationConstant {
      * @since 4.11.0
      */
     public static final String GUNSMITHLIB_INPUT_SHIELD_BLOCKS_BULLET = GunsmithLib.loc("shield_blocks_bullet").toString();
+
+    /**
+     * 当切换枪械当前部件（下挂武器等）时触发
+     * "gunsmithlib:current_part_switched"
+     *
+     * @since 4.12.0
+     */
+    public static final String GUNSMITHLIB_INPUT_CURRENT_PART_SWITCHED = GunsmithLib.loc("current_part_switched").toString();
+
+    /**
+     * 当切换 variant（弹种，模式）时触发。
+     * 切换弹种后需要重新换弹的情况下不会触发。
+     * "gunsmithlib:variant_switched"
+     *
+     * @since 4.12.0
+     */
+    public static final String GUNSMITHLIB_INPUT_VARIANT_SWITCHED = GunsmithLib.loc("variant_switched").toString();
 }

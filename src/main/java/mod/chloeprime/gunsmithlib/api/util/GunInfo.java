@@ -6,9 +6,11 @@ import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * @see Gunsmith#getGunInfo(ItemStack)
@@ -19,6 +21,13 @@ public record GunInfo(
         ResourceLocation gunId,
         CommonGunIndex index
 ) {
+    /**
+     * @since 4.12.0
+     */
+    public static Optional<GunInfo> of(ItemStack gun) {
+        return Gunsmith.getGunInfo(gun);
+    }
+
     public int getTotalAmmo() {
         int mag = gunItem().getCurrentAmmoCount(gunStack());
         int barrel = index().getGunData().getBolt() == Bolt.OPEN_BOLT
@@ -50,6 +59,18 @@ public record GunInfo(
                 gunItem.setCurrentAmmoCount(gunStack, 0);
             }
         }
+    }
+
+    /**
+     * 卸载所有子弹，包括膛内的 +1 发
+     */
+    public void dropAllAmmoIncludingBarrel(Player user) {
+        if (gunItem().hasBulletInBarrel(gunStack())) {
+            gunItem().setBulletInBarrel(gunStack(), false);
+            gunItem().setCurrentAmmoCount(gunStack(), gunItem().getCurrentAmmoCount(gunStack()) + 1);
+        }
+        gunItem().dropAllAmmo(user, gunStack());
+        setTotalAmmo(0);
     }
 
     public int getDummyAmmoAmount() {

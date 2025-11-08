@@ -1,12 +1,19 @@
 package mod.chloeprime.gunsmithlib.client;
 
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
+import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.client.model.papi.PapiManager;
 import com.tacz.guns.client.resource.GunDisplayInstance;
+import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
+import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplayInstance;
+import mod.chloeprime.gunsmithlib.client.papi.AirburstDistancePapi;
 import mod.chloeprime.gunsmithlib.client.papi.RangefinderPapi;
+import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -20,14 +27,16 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
+import java.util.*;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class GunsmithLibClient {
     public static void initClient() {
         PapiManager.addPapi(RangefinderPapi.NAME, RangefinderPapi.INSTANCE);
+        PapiManager.addPapi(AirburstDistancePapi.NAME, AirburstDistancePapi.INSTANCE);
     }
 
     @SubscribeEvent
@@ -64,6 +73,10 @@ public class GunsmithLibClient {
         Minecraft.getInstance().getSoundManager().play(sound);
     }
 
+    public static void triggerAnimation(String key) {
+        triggerAnimation(Minecraft.getInstance().player, key);
+    }
+
     public static void triggerAnimation(@Nullable LivingEntity user, String key) {
         if (user == null) {
             return;
@@ -76,8 +89,99 @@ public class GunsmithLibClient {
     }
 
     public static void triggerAnimation(ItemStack gun, String key) {
+        updateStateMachineContext(gun);
         TimelessAPI.getGunDisplay(gun)
                 .map(GunDisplayInstance::getAnimationStateMachine)
                 .ifPresent(sm -> sm.trigger(key));
+    }
+
+    public static void updateSyncedBackpackAmmoAmountImmediately(int amount) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        CapabilityBasedModCompat.setClientSyncedAmmoCountInBackpack(player, amount);
+    }
+
+    @ApiStatus.Internal
+    public static void clearAndReloadWeapon(ResourceLocation newGunId) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        // 刷新枪械 id，防止根据旧备弹数量判定是否能换弹
+        var weapon = player.getMainHandItem();
+        setClientGunIdAndUpdateAnimationStateMachineContext(weapon, newGunId);
+        Gunsmith.getGunInfo(weapon).ifPresent(gun -> gun.setTotalAmmo(0));
+        // reload
+        IClientPlayerGunOperator.fromLocalPlayer(player).reload();
+    }
+
+    public static void setClientGunIdAndUpdateAnimationStateMachineContext(ResourceLocation newGunId) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        setClientGunIdAndUpdateAnimationStateMachineContext(player.getMainHandItem(), newGunId);
+    }
+
+    public static void setClientGunIdAndUpdateAnimationStateMachineContext(ItemStack weapon, ResourceLocation newGunId) {
+        Gunsmith.getGunInfo(weapon).ifPresent(gun -> {
+            gun.gunItem().setGunId(weapon, newGunId);
+            updateStateMachineContext(weapon);
+        });
+    }
+
+    public static void setClientGunIdAndUpdateAttachmentCache(ItemStack weapon, ResourceLocation newGunId, LivingEntity user) {
+        if (user == null) {
+            return;
+        }
+        Gunsmith.getGunInfo(weapon).ifPresent(gun -> {
+            gun.gunItem().setGunId(weapon, newGunId);
+            AttachmentPropertyManager.postChangeEvent(user, weapon);
+        });
+    }
+
+    private static void updateStateMachineContext(ItemStack gun) {
+        TimelessAPI.getGunDisplay(gun)
+                .map(GunDisplayInstance::getAnimationStateMachine)
+                .map(AnimationStateMachine::getContext)
+                .ifPresent(gsm -> gsm.setCurrentGunItem(gun));
+    }
+
+    private static Map<ResourceLocation, List<ResourceLocation>> lastRedirectionData;
+
+    public static void applyDisplayRedirectionData() {
+        if (lastRedirectionData != null) {
+            applyDisplayRedirectionData(lastRedirectionData);
+        }
+    }
+
+    public static void applyDisplayRedirectionData(Map<ResourceLocation, List<ResourceLocation>> redirections) {
+        lastRedirectionData = redirections;
+        // 清空之前的 override 数据防止残留
+        for (var entry : TimelessAPI.getAllClientGunIndex()) {
+            ((EnhancedGunDisplayInstance) entry.getValue().getDefaultDisplay()).gunsmith$acceptOverride(null);
+        }
+        // 装载新的 redirect 数据
+        redirections.forEach(GunsmithLibClient::applyDisplayRedirection);
+    }
+
+    private static void applyDisplayRedirection(ResourceLocation masterId, List<ResourceLocation> ids) {
+        var master = TimelessAPI
+                .getClientGunIndex(masterId)
+                .map(ClientGunIndex::getDefaultDisplay)
+                .orElse(null);
+        if (master == null) {
+            return;
+        }
+        ids.stream()
+                .flatMap(id -> TimelessAPI.getClientGunIndex(id).stream())
+                .map(ClientGunIndex::getDefaultDisplay)
+                .filter(display -> display != master)
+                .forEach(display -> ((EnhancedGunDisplayInstance) display).gunsmith$acceptOverride(master));
+    }
+
+    private GunsmithLibClient() {
     }
 }

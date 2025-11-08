@@ -1,0 +1,11 @@
+{
+  "parts": [
+    {
+      "name": "main",
+      "variants": [
+        "gunsmithlib:625",
+        "gunsmithlib:625_ap"
+      ]
+    }
+  ]
+}
