@@ -48,3 +48,17 @@
   },
 }
 ```
+## 多弹种功能的部分可配置项
+4.12.0版本新增。
+```json5
+{
+  "gunsmithlib_extension": {
+    // 当前武器在弹种轮盘菜单上显示的名称。
+    // 支持填入本地化键。
+    "variant_name": "何意味",
+    // 当前武器在弹种轮盘菜单上显示的图标。
+    // 需要包含 textures/ 文件夹和 .png 后缀。
+    "variant_icon": "gunsmithlib:textures/dreadnought_cat.png"
+  },
+}
+```
