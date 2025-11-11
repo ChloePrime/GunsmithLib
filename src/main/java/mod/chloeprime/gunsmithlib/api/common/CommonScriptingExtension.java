@@ -13,4 +13,11 @@ public interface CommonScriptingExtension extends VanillaCooldownAPI, Rangefinde
      * @since 4.12.0
      */
     String gunsmith_getGunId();
+
+    /**
+     * 获取武器蓄力时间，单位为秒。
+     *
+     * @since 4.13.0
+     */
+    double gunsmith_getChargingTime();
 }

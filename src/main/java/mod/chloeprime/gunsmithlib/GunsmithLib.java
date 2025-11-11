@@ -178,6 +178,9 @@ public class GunsmithLib {
                 .persistent(Codec.DOUBLE)
                 .networkSynchronized(ByteBufCodecs.DOUBLE)
                 .build());
+
+        // 多弹种系统
+
         public static final Supplier<DataComponentType<AmmoVariantStorage>> AMMO_VARIANT_STORAGE = DFR.register("ammo_variant_storage", () -> DataComponentType.<AmmoVariantStorage>builder()
                 .persistent(AmmoVariantStorage.CODEC)
                 .networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(AmmoVariantStorage.CODEC))
@@ -186,6 +189,17 @@ public class GunsmithLib {
         public static final Supplier<DataComponentType<String>> SELECTED_PART = DFR.register("selected_part", () -> DataComponentType.<String>builder()
                 .persistent(Codec.STRING)
                 .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                .build());
+
+        // 蓄力扳机系统
+
+        public static final Supplier<DataComponentType<Boolean>> CHARGING = DFR.register("charging", () -> DataComponentType.<Boolean>builder()
+                .persistent(Codec.BOOL)
+                .networkSynchronized(ByteBufCodecs.BOOL)
+                .build());
+        public static final Supplier<DataComponentType<Long>> CHARGE_BEGIN_TIME = DFR.register("charge_begin_time", () -> DataComponentType.<Long>builder()
+                .persistent(Codec.LONG)
+                .networkSynchronized(ByteBufCodecs.VAR_LONG)
                 .build());
     }
 

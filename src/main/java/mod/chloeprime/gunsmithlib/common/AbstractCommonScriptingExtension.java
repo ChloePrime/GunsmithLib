@@ -5,6 +5,7 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
 import mod.chloeprime.gunsmithlib.api.common.CommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.api.util.Rangefinder;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ChargeableTriggerSystem;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,5 +51,15 @@ public interface AbstractCommonScriptingExtension extends CommonScriptingExtensi
 
         double range = GsHelper.getEstimatedMaxRange(shooter, gunStack, gunItem);
         return Rangefinder.clip(shooter, shooter.getEyePosition(), shooter.getLookAngle(), pierce, range).getLength();
+    }
+
+    @Override
+    default double gunsmith_getChargingTime() {
+        var shooter = gunsmithlib$getShooter().orElse(null);
+        var gunStack = gunsmithlib$getCurrentItem();
+        if (shooter == null || gunStack == null) {
+            return 0;
+        }
+        return ChargeableTriggerSystem.getChargeTime(gunStack, shooter.level().getGameTime()) / 20.0;
     }
 }

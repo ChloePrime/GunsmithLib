@@ -56,6 +56,15 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     @GunpackProperty
     private @Nullable GunExplosiveData gun_explosive;
 
+    /**
+     * 是否为蓄力模式。
+     * 注：蓄力模式仅在半自动开火模式下生效。
+     *
+     * @since 4.13.0
+     */
+    @GunpackProperty
+    private boolean chargeable = false;
+
     // 下面是代码
 
     public static Optional<GunsmithLibGunDataExtension> of(ItemStack stack) {
@@ -84,5 +93,9 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
 
     public @Nullable GunExplosiveData getGunExplosiveData() {
         return gun_explosive;
+    }
+
+    public boolean isChargeable() {
+        return chargeable;
     }
 }

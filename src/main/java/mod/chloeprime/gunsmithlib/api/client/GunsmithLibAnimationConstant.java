@@ -45,4 +45,13 @@ public class GunsmithLibAnimationConstant {
      * @since 4.12.0
      */
     public static final String GUNSMITHLIB_INPUT_VARIANT_SWITCHED = GunsmithLib.loc("variant_switched").toString();
+
+    /**
+     * 蓄力武器开始蓄力时触发。
+     * 警告：即使不符合射击条件（例如膛内没有子弹）也会触发
+     * "gunsmithlib:begin_charging"
+     *
+     * @since 4.13.0
+     */
+    public static final String GUNSMITHLIB_INPUT_BEGIN_CHARGING = GunsmithLib.loc("begin_charging").toString();
 }

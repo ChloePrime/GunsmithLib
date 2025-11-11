@@ -49,6 +49,8 @@
     "client.MixinGunHudOverlay",
     "client.MixinHeatBarOverlay",
     "client.MixinLuaAnimationConstant",
+    "client.MixinShootKey",
+    "client.MouseButtonInputEventAccessor",
     "client.RecoilAttributeMixin",
     "client.animation.MixinGunAnimationStateContext",
     "client.animation.MixinObjectAnimationRunner"
