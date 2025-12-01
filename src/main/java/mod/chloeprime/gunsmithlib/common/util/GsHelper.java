@@ -32,6 +32,7 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -113,6 +114,19 @@ public class GsHelper {
         return version;
     }
 
+    public static int[] getGameVersion() {
+        if (mcVersion != null) {
+            return mcVersion;
+        }
+
+        mcVersion = Optional.ofNullable(FMLLoader.versionInfo().mcVersion())
+                .map(DefaultArtifactVersion::new)
+                .map(version -> new int[]{version.getMajorVersion(), version.getMinorVersion(), version.getIncrementalVersion()})
+                .orElse(new int[]{-1, -1, -1});
+        return mcVersion;
+    }
+
+
     private static ArtifactVersion extractModVersion(ArtifactVersion fullVersion) {
         if (fullVersion.getMajorVersion() > 0) {
             return fullVersion;
@@ -143,6 +157,7 @@ public class GsHelper {
     }
 
     private static int[] version = null;
+    private static int[] mcVersion = null;
 
     private GsHelper() {
     }
