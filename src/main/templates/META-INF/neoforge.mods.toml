@@ -89,7 +89,7 @@ config="${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId="tacz"
     mandatory=true
-    versionRange="[1.1.6,)"
+    versionRange="[1.1.7,)"
     ordering="NONE"
     side="BOTH"
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares

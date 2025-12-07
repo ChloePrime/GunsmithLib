@@ -175,7 +175,7 @@ dependencies {
         exclude group: '*', module: '*'
     }
     // TACZ
-    implementation jarJar('com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.6-hotfix-r5') {
+    implementation jarJar('com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.7-r1') {
         exclude group: '*', module: '*'
     }
     implementation jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:1.1.0') {
