@@ -8,6 +8,7 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.client.EnergyWeaponVisuals;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.AirburstHUD;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -53,18 +54,18 @@ public class MixinGunHudOverlay {
             ))
     private static int energyWeaponShowHeat(
             GuiGraphics gui, Font pFont, @Nullable String pText, float pX, float pY, int pColor, boolean pDropShadow, Operation<Integer> original,
-            GuiGraphics graphics, float partialTick, int width, int height
+            GuiGraphics graphics, DeltaTracker delta
     ) {
-        return EnergyWeaponVisuals.HUD.modifyCurrentAmmoDisplay(gui, pX, pY, width, height, () -> original.call(gui, pFont, pText, pX, pY, pColor, pDropShadow));
+        return EnergyWeaponVisuals.HUD.modifyCurrentAmmoDisplay(gui, pX, pY, graphics.guiWidth(), graphics.guiHeight(), () -> original.call(gui, pFont, pText, pX, pY, pColor, pDropShadow));
     }
 
     @Inject(
             method = "render",
             at = @At(value = "INVOKE", target = "Lcom/tacz/guns/client/resource/GunDisplayInstance;getHUDTexture()Lnet/minecraft/resources/ResourceLocation;"))
     private static void renderAirburstDistance(
-            GuiGraphics graphics, float partialTick, int width, int height, CallbackInfo ci
+            GuiGraphics graphics, DeltaTracker delta, CallbackInfo ci
     ) {
-        AirburstHUD.render(graphics, width, height);
+        AirburstHUD.render(graphics, graphics.guiWidth(), graphics.guiHeight());
     }
 
     @ModifyArg(
