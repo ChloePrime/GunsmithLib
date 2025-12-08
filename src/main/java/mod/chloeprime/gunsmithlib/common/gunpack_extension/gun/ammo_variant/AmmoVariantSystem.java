@@ -310,7 +310,7 @@ public class AmmoVariantSystem {
         if (gun == null) {
             return;
         }
-        var count = GsHelper.scanAmmo(sender, gun).orElse(Integer.MAX_VALUE);
+        var count = GsHelper.scanBackpackAmmo(sender, gun).orElse(Integer.MAX_VALUE);
         RPC.call(RPCTarget.to(sender), AmmoVariantSystem::receiveBackpackAmmoCountFromServer, slot, count);
     }
 
