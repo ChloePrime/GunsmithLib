@@ -65,6 +65,14 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     @GunpackProperty
     private boolean chargeable = false;
 
+    /**
+     * 如为 true，则不会出现在 TaCZ 的创造模式标签页里。
+     *
+     * @since 5.1.0
+     */
+    @GunpackProperty
+    private boolean hidden = false;
+
     // 下面是代码
 
     public static Optional<GunsmithLibGunDataExtension> of(ItemStack stack) {
@@ -97,5 +105,9 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
 
     public boolean isChargeable() {
         return chargeable;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 }

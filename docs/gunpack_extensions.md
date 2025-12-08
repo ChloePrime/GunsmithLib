@@ -222,3 +222,13 @@ display 文件中有少量多弹种功能的可配置项。
   },
 }
 ```
+
+## 从创造标签页中隐藏
+只对 TaCZ 的标签页生效，且只能写在枪械的 data 里。
+```json5
+{
+  "gunsmithlib_extension": {
+    "hidden": true
+  },
+}
+```

@@ -1,4 +1,7 @@
 {
+  "gunsmithlib_extension": {
+    "hidden": true
+  },
   "ammo": "tacz:50bmg",
   "can_crawl": false,
   "bolt": "open_bolt",
