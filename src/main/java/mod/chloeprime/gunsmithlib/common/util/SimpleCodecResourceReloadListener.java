@@ -63,7 +63,7 @@ public abstract class SimpleCodecResourceReloadListener<T> extends SimplePrepara
                 builder.put(id, decoded.result().get().getFirst());
             }
         });
-        return builder.build();
+        return builder.buildKeepingLast();
     }
 
     protected static Optional<CompoundTag> encodeJsonToNBT(Map<ResourceLocation, JsonElement> jsons) {

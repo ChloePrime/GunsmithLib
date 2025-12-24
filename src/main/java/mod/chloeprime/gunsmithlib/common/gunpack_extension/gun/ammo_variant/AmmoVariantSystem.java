@@ -118,7 +118,7 @@ public class AmmoVariantSystem {
         var newStorage = new AmmoVariantStorage(ImmutableMap.<String, AmmoVariantStorage.OfSinglePart>builder()
                 .putAll(oldStorage.byPartStorage())
                 .put(currentPart.name(), newPartStorage)
-                .build());
+                .buildKeepingLast());
         AmmoVariantStorage.set(gun.gunStack(), newStorage);
         return newStorage;
     }

@@ -177,7 +177,7 @@ public record GunAmmoVariantSet(
         for (var part : parts) {
             builder.put(part.name(), part);
         }
-        return builder.build();
+        return builder.buildKeepingLast();
     }
 
     private static <T> Object2IntMap<T> index(List<T> objects) {

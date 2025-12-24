@@ -110,7 +110,7 @@ public class GunVariantRegistry {
             var ids = Arrays.asList(encodedEntry).subList(1, encodedEntry.length);
             map.put(master, ids);
         }
-        GunsmithLibClient.applyDisplayRedirectionData(map.build());
+        GunsmithLibClient.applyDisplayRedirectionData(map.buildKeepingLast());
     }
 
     /**
