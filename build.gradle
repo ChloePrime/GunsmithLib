@@ -175,10 +175,10 @@ dependencies {
         exclude group: '*', module: '*'
     }
     // TACZ
-    implementation jarJar('com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.7-r1') {
+    implementation jarJar('com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.7-r2') {
         exclude group: '*', module: '*'
     }
-    implementation jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:1.1.0') {
+    implementation jarJar('curse.maven:tacz-pack-upgrader-1353465:7034898') {
         exclude group: '*', module: '*'
     }
     compileOnly 'com.github.FiguraMC.luaj:luaj-core:3.0.8-figura'

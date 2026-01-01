@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 @Mixin(Upgrader.class)
 public class MixinGunpackUpgrader {
-    @Inject(method = "processPacks", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "run", at = @At("HEAD"), cancellable = true)
     private void disableIntrinsicAutoUpdateBehavior(Path path, CallbackInfo ci) {
         ci.cancel();
     }
