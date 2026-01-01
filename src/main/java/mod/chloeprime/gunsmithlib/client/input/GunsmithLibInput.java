@@ -25,6 +25,18 @@ public class GunsmithLibInput {
             public boolean conflicts(@Nonnull IKeyConflictContext other) {
                 return false;
             }
+        },
+
+        UNIVERSAL_CONCURRENT {
+            @Override
+            public boolean isActive() {
+                return KeyConflictContext.UNIVERSAL.isActive();
+            }
+
+            @Override
+            public boolean conflicts(@Nonnull IKeyConflictContext other) {
+                return false;
+            }
         }
     }
 

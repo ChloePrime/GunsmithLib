@@ -16,6 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ public final class SwitchPartOrAmmoTypeKey {
 
     public static final KeyMapping KEY_MAPPING = new KeyMapping(
             "key.%s.switch_part_or_ammo_type.desc".formatted(GunsmithLib.MOD_ID),
-            GunsmithLibInput.KeyConflictContexts.IN_GAME_CONCURRENT,
+            GunsmithLibInput.KeyConflictContexts.UNIVERSAL_CONCURRENT,
             KeyModifier.NONE,
             InputConstants.Type.KEYSYM,
             InputConstants.KEY_X,
@@ -51,6 +52,9 @@ public final class SwitchPartOrAmmoTypeKey {
     }
 
     private static void signal(int glfwAction) {
+        if (!KeyConflictContext.IN_GAME.isActive()) {
+            return;
+        }
         var now = System.currentTimeMillis();
         if (glfwAction == InputConstants.PRESS) {
             isPressing++;
