@@ -50,7 +50,9 @@
     "client.MixinShootKey",
     "client.MouseButtonInputEventAccessor",
     "client.RecoilAttributeMixin",
+    "client.animation.MixinBedrockGunModel",
     "client.animation.MixinGunAnimationStateContext",
+    "client.animation.MixinGunItemRendererWrapper",
     "client.animation.MixinObjectAnimationRunner"
   ],
   "injectors": {
