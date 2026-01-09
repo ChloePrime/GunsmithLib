@@ -170,6 +170,9 @@ public class ShieldBehavior {
      */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onBulletHitEntity(EntityHurtByGunEvent.Pre event) {
+        if (event.getBullet() == null) {
+            return;
+        }
         if (!(event.getHurtEntity() instanceof LivingEntity victim)) {
             return;
         }

@@ -56,7 +56,7 @@ public class PotionEffectBehavior {
 
     @SubscribeEvent
     public static void onGunshotPost(EntityHurtByGunEvent.Post event) {
-        if (event.getBullet().level().isClientSide()) {
+        if (event.getBullet() == null || event.getBullet().level().isClientSide()) {
             return;
         }
         if (!(event.getBullet() instanceof EnhancedKineticBullet bullet)) {
