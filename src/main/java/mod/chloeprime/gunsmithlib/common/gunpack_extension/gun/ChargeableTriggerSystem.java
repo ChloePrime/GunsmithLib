@@ -92,6 +92,9 @@ public class ChargeableTriggerSystem {
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity().level().isClientSide()) {
+            return;
+        }
         removeChargeBeginTimeIfNeeded(event.getEntity().getMainHandItem());
     }
 }
