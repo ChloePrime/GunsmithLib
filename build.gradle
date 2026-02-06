@@ -164,10 +164,6 @@ neoForge {
     }
 }
 
-tasks.named('jar', Jar).configure {
-    archiveClassifier.set('modular')
-}
-
 tasks.register('fullVersion', Jar) {
     from sourceSets.main.output
     dependsOn tasks.jarJarInFullVersion
@@ -175,7 +171,8 @@ tasks.register('fullVersion', Jar) {
     from tasks.jarJarInFullVersion
 }
 
-tasks.named('build').configure {
+tasks.named('jar', Jar).configure {
+    archiveClassifier.set('modular')
     dependsOn tasks.fullVersion
 }
 
