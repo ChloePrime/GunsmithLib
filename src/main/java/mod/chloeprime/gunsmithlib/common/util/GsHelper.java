@@ -18,6 +18,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -46,7 +47,9 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import static mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat.MAX_DISPLAYED_AMMO_SCANNED;
 
@@ -363,4 +366,21 @@ public class GsHelper {
             throw new LuaError("bad argument: function or nil expected, got " + luaValue.typename());
         }
     }
+
+    public static <T> void tryRemoveComponent(ItemStack stack, Supplier<DataComponentType<T>> component) {
+        try {
+            var com = component.get();
+            if (stack.has(com)) {
+                stack.remove(com);
+            }
+        } catch (UnsupportedOperationException ex) {
+            // Log only once
+            if (uoeInDataMapLogged.getAndSet(true)) {
+                return;
+            }
+            GunsmithLib.LOGGER.error("Found immutable map in data component", ex);
+        }
+    }
+
+    private static final AtomicBoolean uoeInDataMapLogged = new AtomicBoolean(false);
 }

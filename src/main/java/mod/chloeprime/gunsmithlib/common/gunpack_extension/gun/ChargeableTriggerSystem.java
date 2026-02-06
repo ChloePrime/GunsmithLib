@@ -86,7 +86,7 @@ public class ChargeableTriggerSystem {
 
     public static void removeChargeBeginTimeIfNeeded(ItemStack gun) {
         if (!isCharging(gun)) {
-            gun.remove(GunsmithLib.DataComponents.CHARGE_BEGIN_TIME);
+            GsHelper.tryRemoveComponent(gun, GunsmithLib.DataComponents.CHARGE_BEGIN_TIME);
         }
     }
 
