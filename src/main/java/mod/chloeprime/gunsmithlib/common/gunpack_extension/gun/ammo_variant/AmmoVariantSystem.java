@@ -289,13 +289,16 @@ public class AmmoVariantSystem {
         GunsmithLibClient.setClientGunIdAndUpdateAttachmentCache(user.getMainHandItem(), gunIdAfter, user);
     }
 
+    @SuppressWarnings("ConditionCoveredByFurtherCondition")
     public static boolean hasVariantConnection(ItemStack a, ItemStack b) {
         var gunA = Gunsmith.getGunInfo(a).orElse(null);
         var gunB = Gunsmith.getGunInfo(b).orElse(null);
         if (gunA == null || gunB == null) {
             return false;
         }
-        return Objects.equals(GunAmmoVariantSet.of(gunA), GunAmmoVariantSet.of(gunB));
+        var setA = GunAmmoVariantSet.of(gunA).orElse(null);
+        var setB = GunAmmoVariantSet.of(gunB).orElse(null);
+        return setA != null && setB != null && setA == setB;
     }
 
     // GUI 服务端配合逻辑
