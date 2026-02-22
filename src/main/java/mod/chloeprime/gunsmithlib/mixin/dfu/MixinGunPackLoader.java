@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.mixin.dfu;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.tacz.guns.resource.GunPackLoader;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.StartupConfig;
 import mod.chloeprime.gunsmithlib.common.dfu.GunpackUpgraderWrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,6 +25,9 @@ public class MixinGunPackLoader {
 
     @Unique
     private static GunPackLoader.GunPack gunsmithlib$upgrade(GunPackLoader.GunPack original) {
+        if (StartupConfig.DISABLE_PACK_UPGRADER.get()) {
+            return original;
+        }
         if (original == null) {
             return null;
         }

@@ -46,6 +46,7 @@ public class GunsmithLib {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public GunsmithLib(IEventBus bus, ModContainer container) {
+        container.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
         Attributes.REGISTRY.register(bus);
         FireControlAttributes.init(bus);
         MobEffects.REGISTRY.register(bus);
