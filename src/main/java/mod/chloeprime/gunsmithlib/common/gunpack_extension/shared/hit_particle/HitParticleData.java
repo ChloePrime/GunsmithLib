@@ -6,7 +6,6 @@ import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
-import mod.chloeprime.gunsmithlib.common.util.LuaFormula;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
@@ -43,14 +42,14 @@ public class HitParticleData {
      * 详情请参阅 <a href=https://zh.minecraft.wiki/w/%E5%91%BD%E4%BB%A4/particle?variant=zh-cn#%E5%8F%82%E6%95%B0>Minecraft Wiki 上的 Particle 命令</a>（无视所有基岩版相关的部分你）
      */
     @GunpackProperty
-    private String speed = String.valueOf(0.0);
+    private double speed;
 
     /**
      * 粒子效果的 count<p>
      * 详情请参阅 <a href=https://zh.minecraft.wik/w/%E5%91%BD%E4%BB%A4/particle?variant=zh-cn#%E5%8F%82%E6%95%B0>Minecraft Wiki 上的 Particle 命令</a>（无视所有基岩版相关的部分你）
      */
     @GunpackProperty
-    private String count = String.valueOf(0.0);
+    private int count;
 
     /**
      * 如果为 true，则这个命中粒子将拥有很远的渲染距离。
@@ -114,11 +113,11 @@ public class HitParticleData {
     }
 
     public double getSpeed() {
-        return speedFormula.eval();
+        return speed;
     }
 
     public int getCount() {
-        return (int) (countFormula.eval() + 1e-12);
+        return count;
     }
 
     public boolean isExplosiveParticleAlternate() {
@@ -164,8 +163,6 @@ public class HitParticleData {
         return List.of();
     }
 
-    private final LuaFormula speedFormula = new LuaFormula(() -> speed);
-    private final LuaFormula countFormula = new LuaFormula(() -> count);
     private ParticleOptions particle;
     private boolean error;
 }
