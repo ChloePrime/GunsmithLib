@@ -232,3 +232,91 @@ display 文件中有少量多弹种功能的可配置项。
   },
 }
 ```
+
+# 5.2 版本新增内容
+### 命中粒子：
+可以放在枪械 data 和子弹 index 中。枪械上配置的粒子将覆盖弹药中配置的粒子。
+```json5
+{
+  "gunsmithlib_extension": {
+    "hit_particles": [
+      {
+        // 粒子效果的 id，支持需要额外元数据的粒子效果。
+        "particle_id": "minecraft:crit",
+        // dx dy dz，参考原版 particle 命令。
+        // 注意，对于某些粒子来说，count 设置为 0 会有特殊的意义。
+        // 具体请参阅 Minecraft Wiki
+        "dx": 0,
+        "dy": 0,
+        "dz": 0,
+        "speed": 0,
+        "count": 0,
+        // 如果为 true，则这个命中粒子将拥有很远的渲染距离。
+        // 且如果这个子弹会产生爆炸，则隐藏爆炸的粒子效果。
+        "explosive_particle_alternate": true,
+        // 如果为 true，则命中方块时将使用命中的方块的
+        // 且命中方块时 particle_id 将会失效。
+        // 
+        // 如果为 false，则命中方块时将不播放这个粒子
+        // 
+        // 如果留空，则无论是否命中方块都播放配置中指定的粒子。
+        "is_adaptive_block_particle": false,
+        // 为 true 时，粒子 id 将代表 AAA Particles 的粒子 id，且 dx, dy, dz, speed 和 count 会失效。
+        // 为 false 时，使用原版粒子，且如果安装了 AAA Particles 模组，则这个条目的原版粒子不会生成。
+        // 不填写时，使用原版粒子，且无论是否安装 AAA Particles 都会生成粒子。
+        "is_aaa_particle": false,
+      },
+      {
+        // 一个带元数据的粒子效果 id 示例。
+        // 其中 minecraft:apple 为 item 粒子的元数据。
+        "particle_id": "minecraft:item minecraft:apple",
+        // ......
+      },
+      // AAA Particles (Effekseer 粒子) 配置示例
+      {
+        // 粒子 id
+        "particle_id": "your_namespace:example",
+        // 声明这个粒子是 AAA 粒子。
+        // 如果此值为 true 且没有安装 AAA Particles 模组，则当前条目会被直接忽略。
+        // 配合其他 is_aaa_particle 为 false 的粒子可以实现备选粒子功能。
+        "is_aaa_particle": true,
+        // AAA Particles 粒子的额外元数据：
+        "aaa_particle_data": {
+          // 粒子的缩放
+          "scale": 1,
+          // 传给对应 Effekseer 粒子的动态输入
+          // 具体请参阅 https://effekseer.github.io/Help_Tool/en/ToolReference/dynamicParameter.html
+          // "parameters": [1, 1, 1, 1],
+          // 粒子生成时触发的 Effekseer 粒子触发器
+          // 具体请参阅 https://effekseer.github.io/Help_Tool/en/ToolTutorial/15.html
+          // "triggers": [0, 2]
+        }
+      }
+    ]
+  }
+}
+```
+
+### 跳弹（Ricochet）系统
+```json5
+{
+  "gunsmithlib_extension": {
+    "ricochet": {
+      // 最小入射角，单位为角度。
+      // 如果命中方块时入射角小于这个数值，则不会触发跳弹。
+      "min_angle_of_incidence": 30,
+      // 最大跳弹次数。
+      // 跳弹超过这个次数则必定爆炸。
+      "max_ricochet_times": 1,
+      // 第一次跳弹后对子弹重力的乘数，
+      // 用于解决默认重力在跳弹后看着过大的问题。
+      "gravity_scale": 0.5,
+      // 最小弹力（0° 垂直入射时的弹力）
+      "min_bounciness": 0.25,
+      // 最大弹力（90° 入射角时的理论弹力）
+      "max_bounciness": 1
+    }
+  }
+}
+```
+- 实际反弹力度由枪弹配置，入射角和命中的表面材质共同决定。
