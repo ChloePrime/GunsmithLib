@@ -8,4 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface EntityKineticBulletAccessor {
     @Accessor void setArmorIgnore(float value);
     @Accessor void setExplosionDelayCount(int value);
+
+    @Accessor float getGravity();
+    @Accessor void setGravity(float value);
 }

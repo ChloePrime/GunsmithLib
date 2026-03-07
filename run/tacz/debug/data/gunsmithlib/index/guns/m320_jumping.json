@@ -1,0 +1,7 @@
+{
+  "name": "gunsmithlib.gun.m320_jumping.name",
+  "display": "tacz:m320_display",
+  "data": "gunsmithlib:m320_jumping_data",
+  "tooltip": "tacz.gun.m320.desc",
+  "type": "rpg"
+}

@@ -15,9 +15,10 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDat
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunsmithLibAttributeModifierEntry;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.ricochet.RicochetData;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -59,11 +60,22 @@ public class GunsmithLibSharedDataExtension {
     private float area_effect_cloud_min_size_rate = 0;
 
     /**
-     * 命中时的粒子效果
+     * 命中时的粒子效果，
+     * 可以添加在枪械和子弹的 data 里，添加在配件上无效。
+     *
      * @since 5.2.0
      */
     @GunpackProperty
     private @Nullable HitParticleData[] hit_particles;
+
+    /**
+     * 跳弹设置。
+     * 玩补包榴弹玩的
+     *
+     * @since 5.2.0
+     */
+    @GunpackProperty
+    private @Nullable RicochetData ricochet;
 
     // 下面是具体实现
 
@@ -87,6 +99,10 @@ public class GunsmithLibSharedDataExtension {
         return Optional.ofNullable(hit_particles)
                 .map(Arrays::asList)
                 .orElse(List.of());
+    }
+
+    public @Nullable RicochetData getRicochetData() {
+        return ricochet;
     }
 
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];
