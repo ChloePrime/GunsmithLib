@@ -11,6 +11,7 @@ import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -77,6 +78,16 @@ public class HitParticleData {
     @GunpackProperty
     private @Nullable Boolean is_aaa_particle = null;
 
+    /**
+     * AAA 粒子的附加数据。
+     */
+    @GunpackProperty
+    private @Nullable AAAParticleData aaa_particle_data;
+
+    public @Nullable ResourceLocation getParticleId() {
+        return ResourceLocation.tryParse(particle_id);
+    }
+
     public @Nullable ParticleOptions getParticle(HolderLookup<ParticleType<?>> registry) {
         if (particle == null && !error) {
             try {
@@ -120,6 +131,10 @@ public class HitParticleData {
 
     public @Nullable Boolean isAaaParticle() {
         return is_aaa_particle;
+    }
+
+    public @Nullable AAAParticleData getAaaParticleData() {
+        return aaa_particle_data;
     }
 
     // 下面是代码

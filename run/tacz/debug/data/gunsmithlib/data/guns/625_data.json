@@ -3,9 +3,18 @@
     "hit_particles": [
       {
         "particle_id": "minecraft:crit",
+        "is_aaa_particle": false,
         "explosive_particle_alternate": true,
         "speed": 2,
         "count": 80
+      },
+      {
+        "particle_id": "gunsmithlib:fire",
+        "explosive_particle_alternate": true,
+        "is_aaa_particle": true,
+        "aaa_particle_data": {
+          "scale": 0.8
+        }
       }
     ],
     "gun_explosive": {
