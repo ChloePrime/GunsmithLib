@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAttachmentData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
@@ -115,10 +114,9 @@ public class ShieldData {
         return Gunsmith.getAttachmentInfo(stack).flatMap(ShieldData::fromAttachment);
     }
 
-    public static Optional<ShieldData> fromAttachment(AttachmentInfo gunInfo) {
-        return ((EnhancedAttachmentData) gunInfo.index().getData())
-                .gunsmith$getGunsmithLibExtension()
+    public static Optional<ShieldData> fromAttachment(AttachmentInfo attachInfo) {
+        return GunsmithLibAttachmentDataExtension
+                .of(attachInfo)
                 .map(GunsmithLibAttachmentDataExtension::getShieldData);
     }
-
 }

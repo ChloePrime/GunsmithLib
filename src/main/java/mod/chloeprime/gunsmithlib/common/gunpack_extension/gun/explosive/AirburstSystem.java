@@ -2,6 +2,8 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
 import cn.chloeprime.commons.rpc.*;
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
+import com.tacz.guns.entity.EntityKineticBullet;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
@@ -13,14 +15,19 @@ import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -222,8 +229,21 @@ public class AirburstSystem {
         if (newDistance > 0) {
             pd.putDouble(PDK_AIRBURST_DISTANCE, newDistance);
         } else if (bullet instanceof EntityKineticBulletAccessor accessor) {
-            GsHelper.syncBulletExplodePos(bullet, posBefore.lerp(posAfter, 1 + newDistance / delta));
-            accessor.setExplosionDelayCount(0);
+            var explodePos = posBefore.lerp(posAfter, 1 + newDistance / delta);
+            // 发布 AmmoHitBlockEvent 事件以触发命中粒子效果
+            boolean canceled;
+            if (bullet instanceof EntityKineticBullet ekb) {
+                var dir = posAfter.subtract(posBefore);
+                var hit = new BlockHitResult(explodePos, Direction.getNearest(dir.x(), dir.y(), dir.z()), BlockPos.containing(explodePos), true);
+                canceled = NeoForge.EVENT_BUS.post(new AmmoHitBlockEvent(bullet.level(), hit, Blocks.AIR.defaultBlockState(), ekb)).isCanceled();
+            } else {
+                canceled = false;
+            }
+            // 爆炸！
+            if (!canceled) {
+                GsHelper.syncBulletExplodePos(bullet, explodePos);
+                accessor.setExplosionDelayCount(0);
+            }
         }
     }
 

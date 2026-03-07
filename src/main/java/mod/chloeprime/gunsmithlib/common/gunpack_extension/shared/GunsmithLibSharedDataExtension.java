@@ -5,11 +5,16 @@ import com.google.common.collect.Iterables;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
+import mod.chloeprime.gunsmithlib.api.util.AmmoInfo;
+import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.ammo.GunsmithLibAmmoDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAttachmentData;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunsmithLibAttributeModifierEntry;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
@@ -19,6 +24,8 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 枪械和配件共通的扩展功能
@@ -51,6 +58,13 @@ public class GunsmithLibSharedDataExtension {
     @GunpackProperty
     private float area_effect_cloud_min_size_rate = 0;
 
+    /**
+     * 命中时的粒子效果
+     * @since 5.2.0
+     */
+    @GunpackProperty
+    private @Nullable HitParticleData[] hit_particles;
+
     // 下面是具体实现
 
     public List<GunsmithLibAttributeModifierEntry> getAttributeModifiers() {
@@ -67,6 +81,12 @@ public class GunsmithLibSharedDataExtension {
 
     public float getAreaEffectCloudMinSizeRate() {
         return area_effect_cloud_min_size_rate;
+    }
+
+    public List<HitParticleData> getHitParticles() {
+        return Optional.ofNullable(hit_particles)
+                .map(Arrays::asList)
+                .orElse(List.of());
     }
 
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];
@@ -86,10 +106,28 @@ public class GunsmithLibSharedDataExtension {
         return bakedAttributeModifiers;
     }
 
+    public static Optional<GunsmithLibSharedDataExtension> forGun(GunInfo gun) {
+        return GunsmithLibGunDataExtension.of(gun).map(Function.identity());
+    }
+
+    public static Optional<GunsmithLibSharedDataExtension> forAmmo(AmmoInfo ammo) {
+        return GunsmithLibAmmoDataExtension.of(ammo).map(Function.identity());
+    }
+
+    public static Optional<GunsmithLibSharedDataExtension> forAttachment(AttachmentInfo attachment) {
+        return GunsmithLibAttachmentDataExtension.of(attachment).map(Function.identity());
+    }
+
+    /**
+     * 返回枪械和配件上所有的扩展 data，不包括子弹扩展 data。
+     *
+     * @param gun 枪械对象。
+     * @return 枪械和配件上所有的扩展 data，不包括子弹！
+     */
     public static Iterable<GunsmithLibSharedDataExtension> allOf(GunInfo gun) {
         // From Gun
-        Iterable<GunsmithLibSharedDataExtension> fromGun = ((EnhancedGunData) gun.index().getGunData()).gunsmith$getGunsmithLibExtension()
-                .map(List::<GunsmithLibSharedDataExtension>of)
+        Iterable<GunsmithLibSharedDataExtension> fromGun = forGun(gun)
+                .map(List::of)
                 .orElse(List.of());
         // From Attachment
         Iterable<GunsmithLibSharedDataExtension> fromAttachment = Iterables.transform(Arrays.asList(ATTACH_TYPE_REGISTRY), attachmentType -> TimelessAPI

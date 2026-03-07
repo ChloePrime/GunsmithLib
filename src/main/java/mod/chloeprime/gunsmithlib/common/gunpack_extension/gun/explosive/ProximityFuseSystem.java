@@ -1,6 +1,8 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
+import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
@@ -13,12 +15,15 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.lang.Math.*;
@@ -61,7 +66,13 @@ public class ProximityFuseSystem {
         for (int i = 0; i < slices; i++) {
             var rayCastStart = posBefore.lerp(posAfter, (double) (i + 1) / slices);
             var aabb = AABB.ofSize(rayCastStart, bulletBB.getXsize(), bulletBB.getYsize(), bulletBB.getZsize()).inflate(distance + 4);
-            if (sphericalTrace(bullet, rayCastStart, distance, aabb, entityTest)) {
+            var hit = sphericalTrace(bullet, rayCastStart, distance, aabb, entityTest).orElse(null);
+            if (hit != null) {
+                // 发布 AmmoHitEntityEvent 事件以触发命中粒子效果
+                if (bullet instanceof EntityKineticBullet ekb) {
+                    NeoForge.EVENT_BUS.post(new AmmoHitEntityEvent(bullet.level(), hit, hit.getEntity(), ekb, false));
+                }
+                // 爆炸！
                 GsHelper.syncBulletExplodePos(bullet, rayCastStart);
                 accessor.setExplosionDelayCount(0);
                 return;
@@ -69,7 +80,7 @@ public class ProximityFuseSystem {
         }
     }
 
-    private static boolean sphericalTrace(Projectile bullet, Vec3 center, double distance, AABB aabb, Predicate<Entity> entityTest) {
+    private static Optional<EntityHitResult> sphericalTrace(Projectile bullet, Vec3 center, double distance, AABB aabb, Predicate<Entity> entityTest) {
         int resolution = Mth.clamp((int) ceil(8 * distance), 1, MAX_CAST_RESOLUTION);
         for (int rx = 0; rx < resolution; rx++) {
             var theta = 2 * PI * rx / resolution;
@@ -81,13 +92,13 @@ public class ProximityFuseSystem {
                 var y = distance * sinTheta * sin(phi);
                 var z = distance * cosTheta;
                 var end = center.add(new Vec3(x, y, z).scale(distance));
-                var hit = ProjectileUtil.getEntityHitResult(bullet.level(), bullet, center, end, aabb, entityTest, 0);
+                var hit = ProjectileUtil.getEntityHitResult(bullet, center, end, aabb, entityTest, 0);
                 if (hit != null && hit.getType() != HitResult.Type.MISS) {
-                    return true;
+                    return Optional.of(hit);
                 }
             }
         }
-        return false;
+        return Optional.empty();
     }
 
     private static final TargetingConditions FOR_COMBAT = TargetingConditions.forCombat();

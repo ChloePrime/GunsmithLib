@@ -1,6 +1,9 @@
 package mod.chloeprime.gunsmithlib.proxies;
 
+import cn.chloeprime.commons.rpc.RPCFlow;
+import cn.chloeprime.commons.rpc.RemoteCallable;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -54,5 +57,13 @@ public class ClientProxy {
         } else {
             return ClientProxyImpl.bobCompensation(vec);
         }
+    }
+
+    @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)
+    public static void receiveNoParticleExplodePacket(Vec3 pos, float power, BlockPos[] toBlow, Vec3 knockback) {
+        if (DEDICATED_SERVER) {
+            return;
+        }
+        ClientProxyImpl.receiveNoParticleExplodePacket(pos, power, toBlow, knockback);
     }
 }

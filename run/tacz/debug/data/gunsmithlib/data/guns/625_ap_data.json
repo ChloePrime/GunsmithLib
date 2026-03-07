@@ -1,5 +1,23 @@
 {
   "gunsmithlib_extension": {
+    "hit_particles": [
+      {
+        "is_adaptive_block_particle": true,
+        "speed": 1,
+        "count": 4
+      },
+      {
+        "particle_id": "minecraft:crit",
+        "is_adaptive_block_particle": false,
+        "speed": 1,
+        "count": 16
+      },
+      {
+        "particle_id": "minecraft:flame",
+        "speed": 0.125,
+        "count": 4
+      }
+    ],
     "hidden": true
   },
   "ammo": "tacz:50bmg",

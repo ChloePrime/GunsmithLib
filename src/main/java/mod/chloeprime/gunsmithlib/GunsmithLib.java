@@ -66,6 +66,10 @@ public class GunsmithLib {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
+    public static ResourceLocation loc(String namespace, String path) {
+        return new ResourceLocation(namespace, path);
+    }
+
     public static class Attributes {
         private static final Consumer<Attribute> SET_SYNCED = attribute -> attribute.setSyncable(true);
         private static final Consumer<Attribute> SET_NEGATIVE = attribute -> attribute.setSentiment(Attribute.Sentiment.NEGATIVE);

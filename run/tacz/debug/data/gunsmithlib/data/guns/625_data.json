@@ -1,5 +1,13 @@
 {
   "gunsmithlib_extension": {
+    "hit_particles": [
+      {
+        "particle_id": "minecraft:crit",
+        "explosive_particle_alternate": true,
+        "speed": 2,
+        "count": 80
+      }
+    ],
     "gun_explosive": {
       "airburst_distances": [25, 50, 100],
       "airburst_distances_distribution": 0.25,
