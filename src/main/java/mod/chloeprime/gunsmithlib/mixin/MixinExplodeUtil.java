@@ -39,7 +39,7 @@ public class MixinExplodeUtil {
         if (!(exploder instanceof EntityKineticBullet bullet)) {
             return;
         }
-        gunsmith$useNoParticlePacket = HitParticleSystem.isHidingExplodeParticle(Gunsmith.createGunItemFromId(bullet.getGunId()));
+        gunsmith$useNoParticlePacket = HitParticleSystem.isHidingExplodeParticle(Gunsmith.createGunItemFromId(bullet.getGunId(), exploder.level().registryAccess()));
     }
 
     @WrapOperation(
@@ -51,7 +51,7 @@ public class MixinExplodeUtil {
             var power = explosion.getPower();
             var toBlow = explosion.getToBlow().toArray(BlockPos[]::new);
             var knockback = new Vec3(explosion.getKnockbackX(), explosion.getKnockbackY(), explosion.getKnockbackZ());
-            RPC.call(RPCTarget.to(connection.player), ClientProxy::receiveNoParticleExplodePacket, pos, power, toBlow, knockback);
+            RPC.call(RPCTarget.to(connection.player), ClientProxy::receiveNoParticleExplodePacket, pos, power, toBlow, knockback, explosion.getBlockInteraction());
         } else {
             original.call(connection, packet);
         }

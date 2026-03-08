@@ -8,6 +8,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.LogicalSide;
@@ -60,10 +61,11 @@ public class ClientProxy {
     }
 
     @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)
-    public static void receiveNoParticleExplodePacket(Vec3 pos, float power, BlockPos[] toBlow, Vec3 knockback) {
+    public static void receiveNoParticleExplodePacket(Vec3 pos, float power, BlockPos[] toBlow, Vec3 knockback,
+                                                      Explosion.BlockInteraction blockInteraction) {
         if (DEDICATED_SERVER) {
             return;
         }
-        ClientProxyImpl.receiveNoParticleExplodePacket(pos, power, toBlow, knockback);
+        ClientProxyImpl.receiveNoParticleExplodePacket(pos, power, toBlow, knockback, blockInteraction);
     }
 }

@@ -7,6 +7,8 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -21,7 +23,6 @@ import org.joml.Vector4f;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -81,13 +82,24 @@ class ClientProxyImpl {
         return ((LevelAccessor) level).invokeGetEntities().get(uuid);
     }
 
-    static void receiveNoParticleExplodePacket(Vec3 pos, float power, BlockPos[] toBlow, Vec3 knockback) {
+    static void receiveNoParticleExplodePacket(Vec3 pos, float power, BlockPos[] toBlow, Vec3 knockback, Explosion.BlockInteraction blockInteraction) {
         var level = MC.level;
         var player = MC.player;
         if (level == null || player == null) {
             return;
         }
-        Explosion explosion = new Explosion(level, null, pos.x(), pos.y(), pos.z(), power, Collections.singletonList(toBlow));
+        Explosion explosion = new Explosion(
+                level,
+                null,
+                pos.x(),
+                pos.y(),
+                pos.z(),
+                power,
+                Arrays.asList(toBlow),
+                blockInteraction,
+                ParticleTypes.CRIT,
+                ParticleTypes.CRIT,
+                SoundEvents.GENERIC_EXPLODE);
         explosion.finalizeExplosion(false);
         player.setDeltaMovement(player.getDeltaMovement().add(knockback.x(), knockback.y(), knockback.z()));
     }

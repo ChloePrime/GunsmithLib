@@ -17,16 +17,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class RicochetSystem {
     /**
      * 速度斩杀线。
@@ -51,7 +51,7 @@ public class RicochetSystem {
         if (ammo.level().isClientSide()) {
             return;
         }
-        var gunStack = Gunsmith.createGunItemFromId(gunId);
+        var gunStack = Gunsmith.createGunItemFromId(gunId, ammo.level().registryAccess());
         var data = RicochetData.of(gunStack).orElse(null);
         if (data == null) {
             return;
@@ -75,9 +75,9 @@ public class RicochetSystem {
         count.increment();
         // 发布事件，确定命中物体的材质弹性，顺便判定是否被取消
         var event = new RicochetEvent(ammo, ammo.level(), hit, normal);
-        MinecraftForge.EVENT_BUS.post(new InternalEvent.RicochetBounciness(event));
+        NeoForge.EVENT_BUS.post(new InternalEvent.RicochetBounciness(event));
 
-        var isCanceled = MinecraftForge.EVENT_BUS.post(event);
+        var isCanceled = NeoForge.EVENT_BUS.post(event).isCanceled();
         if (isCanceled) {
             return;
         }

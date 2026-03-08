@@ -4,7 +4,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.A
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 import javax.annotation.Nullable;
 

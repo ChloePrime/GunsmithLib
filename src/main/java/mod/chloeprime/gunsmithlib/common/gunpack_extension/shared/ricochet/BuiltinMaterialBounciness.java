@@ -6,12 +6,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class BuiltinMaterialBounciness {
     private static final Object2FloatMap<TagKey<Block>> TAG_TO_BOUNCINESS = new Object2FloatArrayMap<>();
     private static final Object2FloatMap<SoundType> SND_TYPE_TO_BOUNCINESS = new Object2FloatArrayMap<>();
@@ -71,7 +71,7 @@ public class BuiltinMaterialBounciness {
             }
         }
         // 根据声音类型从内置表中推测
-        var bySound = SND_TYPE_TO_BOUNCINESS.getFloat(state.getSoundType());
+        var bySound = SND_TYPE_TO_BOUNCINESS.getFloat(state.getSoundType(event.getLevel(), hit.getBlockPos(), event.getEntity()));
         if (!Float.isNaN(bySound)) {
             event.setMaterialBouncinessOfHitTarget(bySound);
         }

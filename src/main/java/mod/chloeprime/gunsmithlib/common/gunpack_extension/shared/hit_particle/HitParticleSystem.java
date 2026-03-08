@@ -7,7 +7,6 @@ import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -16,12 +15,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.Optional;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class HitParticleSystem {
     @SubscribeEvent
     public static void onAmmoHitBlock(AmmoHitBlockEvent event) {
@@ -31,8 +30,8 @@ public class HitParticleSystem {
 
     @SubscribeEvent
     public static void onAmmoHitEntity(AmmoHitEntityEvent event) {
-        var ammo = event.ammo();
-        onAmmoHitAnything(ammo, event.hitResult(), ammo.getGunId());
+        var ammo = event.getAmmo();
+        onAmmoHitAnything(ammo, event.getHitResult(), ammo.getGunId());
     }
 
     private static void onAmmoHitAnything(Projectile ammo, HitResult hit, ResourceLocation gunId) {
@@ -46,7 +45,7 @@ public class HitParticleSystem {
                 : ammo.getLookAngle().normalize().scale(-1);
         var hitPos = hit.getLocation().add(normal.scale(0.25));
         // 获取当前生效的粒子 data
-        var gunIdStack = Gunsmith.createGunItemFromId(gunId);
+        var gunIdStack = Gunsmith.createGunItemFromId(gunId, level.registryAccess());
 
         for (var data : HitParticleData.of(gunIdStack)) {
             if (data == null) {
@@ -80,8 +79,7 @@ public class HitParticleSystem {
                 if (isAdaptiveBlock == Boolean.TRUE) {
                     continue;
                 }
-                // noinspection deprecation
-                particle = data.getParticle(BuiltInRegistries.PARTICLE_TYPE.asLookup());
+                particle = data.getParticle(level.registryAccess());
             }
             if (particle == null) {
                 continue;

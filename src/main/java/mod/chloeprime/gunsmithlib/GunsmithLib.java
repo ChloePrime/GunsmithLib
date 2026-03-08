@@ -67,7 +67,7 @@ public class GunsmithLib {
     }
 
     public static ResourceLocation loc(String namespace, String path) {
-        return new ResourceLocation(namespace, path);
+        return ResourceLocation.fromNamespaceAndPath(namespace, path);
     }
 
     public static class Attributes {

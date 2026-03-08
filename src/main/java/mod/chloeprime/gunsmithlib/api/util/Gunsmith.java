@@ -9,6 +9,7 @@ import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
 import mod.chloeprime.gunsmithlib.common.internal.MagicReloadImpl;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -64,8 +65,8 @@ public class Gunsmith {
      * @param id gun id
      * @return a gun item with the given gun id.
      */
-    public static ItemStack createGunItemFromId(ResourceLocation id) {
-        return GunItemBuilder.create().setId(id).build();
+    public static ItemStack createGunItemFromId(ResourceLocation id, HolderLookup.Provider registryAccess) {
+        return GunItemBuilder.create().setId(id).build(registryAccess);
     }
 
     /**

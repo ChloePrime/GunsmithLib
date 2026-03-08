@@ -1,7 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.internal;
 
 import mod.chloeprime.gunsmithlib.api.common.RicochetEvent;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 public class InternalEvent<E extends Event> extends Event {
     private final E impl;

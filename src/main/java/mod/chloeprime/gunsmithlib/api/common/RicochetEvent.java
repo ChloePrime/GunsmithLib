@@ -5,15 +5,14 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-@Cancelable
-public class RicochetEvent extends EntityEvent {
+public class RicochetEvent extends EntityEvent implements ICancellableEvent {
     private final @Nonnull Projectile bullet;
     private final @Nonnull Level level;
     private final @Nonnull HitResult hitResult;
