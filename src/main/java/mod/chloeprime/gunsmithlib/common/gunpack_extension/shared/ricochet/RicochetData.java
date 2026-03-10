@@ -76,13 +76,17 @@ public class RicochetData {
 
     @SuppressWarnings("OptionalIsPresent")
     public static Optional<RicochetData> of(ItemStack gun) {
-        var onGun = Gunsmith.getGunInfo(gun)
-                .flatMap(GunsmithLibSharedDataExtension::forGun)
+        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
+        if (gunInfo == null) {
+            return Optional.empty();
+        }
+        var onGun = GunsmithLibSharedDataExtension
+                .forGun(gunInfo)
                 .map(GunsmithLibSharedDataExtension::getRicochetData);
         if (onGun.isPresent()) {
             return onGun;
         }
-        var onAmmo = Gunsmith.getAmmoInfo(gun)
+        var onAmmo = Gunsmith.getAmmoInfo(Gunsmith.createAmmoItemFromId(gunInfo.index().getGunData().getAmmoId()))
                 .flatMap(GunsmithLibSharedDataExtension::forAmmo)
                 .map(GunsmithLibSharedDataExtension::getRicochetData);
         if (onAmmo.isPresent()) {

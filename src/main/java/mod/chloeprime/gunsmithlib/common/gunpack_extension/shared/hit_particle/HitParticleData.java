@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -145,21 +146,24 @@ public class HitParticleData {
      * @return 这把武器上实际生效的 particle data。
      */
     public static List<HitParticleData> of(ItemStack gun) {
-        var onGun = Gunsmith.getGunInfo(gun)
-                .flatMap(GunsmithLibSharedDataExtension::forGun)
+        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
+        if (gunInfo == null) {
+            return Collections.emptyList();
+        }
+        var onGun = GunsmithLibSharedDataExtension.forGun(gunInfo)
                 .map(GunsmithLibSharedDataExtension::getHitParticles)
                 .orElse(List.of());
         if (!onGun.isEmpty()) {
             return onGun;
         }
-        var onAmmo = Gunsmith.getAmmoInfo(gun)
+        var onAmmo = Gunsmith.getAmmoInfo(Gunsmith.createAmmoItemFromId(gunInfo.index().getGunData().getAmmoId()))
                 .flatMap(GunsmithLibSharedDataExtension::forAmmo)
                 .map(GunsmithLibSharedDataExtension::getHitParticles)
                 .orElse(List.of());
         if (!onAmmo.isEmpty()) {
             return onAmmo;
         }
-        return List.of();
+        return Collections.emptyList();
     }
 
     private ParticleOptions particle;
