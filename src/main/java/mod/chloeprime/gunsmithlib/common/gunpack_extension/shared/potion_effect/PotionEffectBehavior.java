@@ -104,8 +104,11 @@ public class PotionEffectBehavior {
         cloud.setDuration(duration);
         cloud.setWaitTime(0);
         cloud.setRadiusPerTick(-radius * (1 - minRadiusRate) / duration);
-        effects.forEach(effect -> effect.applyTo(cloud));
+        var success = new boolean[]{false};
+        effects.forEach(effect -> success[0] = success[0] | effect.applyTo(cloud));
         // 把药水云上市（加入世界）
-        projectile.level().addFreshEntity(cloud);
+        if (success[0]) {
+            projectile.level().addFreshEntity(cloud);
+        }
     }
 }

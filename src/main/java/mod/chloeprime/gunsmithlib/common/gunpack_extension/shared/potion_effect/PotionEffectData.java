@@ -13,6 +13,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Consumer;
@@ -76,6 +77,22 @@ public class PotionEffectData {
     @GunpackProperty
     private int max_stack_level;
 
+    /**
+     * 药水云的药水等级
+     *
+     * @since 5.3.0
+     */
+    @GunpackProperty
+    private Integer area_cloud_level;
+
+    /**
+     * 药水云的生成概率
+     *
+     * @since 5.3.0
+     */
+    @GunpackProperty
+    private Float area_cloud_chance;
+
     // 下面是代码
     private transient final Supplier<Optional<Holder<MobEffect>>> effect = Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT
             .getHolder(effect_id)
@@ -113,38 +130,52 @@ public class PotionEffectData {
         return max_stack_level;
     }
 
+    public final int getAreaCloudLevel() {
+        return Objects.requireNonNullElse(area_cloud_level, level);
+    }
+
+    public final float getAreaCloudChance() {
+        return Objects.requireNonNullElse(area_cloud_chance, chance);
+    }
+
     public void applyTo(LivingEntity target) {
-        applyTo(target.getRandom(), target::getEffect, target::addEffect);
+        applyTo(target.getRandom(), target::getEffect, target::addEffect, false);
     }
 
-    public void applyTo(AreaEffectCloud3D cloud) {
-        applyTo(cloud.getRandom(), _effect -> null, cloud::addEffect);
+    public boolean applyTo(AreaEffectCloud3D cloud) {
+        return applyTo(cloud.getRandom(), _effect -> null, cloud::addEffect, true);
     }
 
-    public void applyTo(
+    public boolean applyTo(
             RandomSource random,
             Function<Holder<MobEffect>, @Nullable MobEffectInstance> current,
-            Consumer<MobEffectInstance> target
+            Consumer<MobEffectInstance> target,
+            boolean isCloud
     ) {
-        if (getChance() <= 0) {
-            return;
+        var applyChance = isCloud ? getAreaCloudChance() : getChance();
+        if (applyChance <= 0) {
+            return false;
         }
         var effect = getEffect().orElse(null);
         if (effect == null) {
-            return;
+            return false;
         }
-        if (getChance() < 1 && random.nextFloat() > getChance()) {
-            return;
+        if (applyChance < 1 && random.nextFloat() > applyChance) {
+            return false;
         }
+        int appLevel = isCloud ? getAreaCloudLevel() : getLevel();
         int newLevel;
         if (getMaxStackLevel() > 0) {
             var existLevel = Optional.ofNullable(current.apply(effect)).map(MobEffectInstance::getAmplifier).orElse(-1) + 1;
-            newLevel = Mth.clamp(existLevel + getLevel(), 1, getMaxStackLevel());
+            newLevel = Mth.clamp(existLevel + appLevel, 1, getMaxStackLevel());
         } else {
-            newLevel = getLevel();
+            newLevel = appLevel;
         }
         if (newLevel > 0) {
             target.accept(createInstance(effect, newLevel));
+            return true;
+        } else {
+            return false;
         }
     }
 
