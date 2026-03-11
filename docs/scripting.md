@@ -31,6 +31,39 @@
 | `gunsmith_getGunId()`                | 获取当前武器的枪械 id        |                                   | 4.12.0 |
 | `gunsmith_getChargingTime()`         | 获取这次射击已经蓄力的时间       | 单位为秒。`burst` 模式下只在蓄力完成后第一次射击时有效   | 4.13.0 |
 
+#### 异步 API
+| 函数名                                                              | 说明   | 详细说明  | 添加版本  |
+|------------------------------------------------------------------|------|-------|-------|
+| `gunsmith_asyncRunDelayed(function(api), number)`                | 延迟执行 | 基于游戏刻 | 5.4.0 |
+| `gunsmith_asyncRunCycled(function(api, number), number, number)` | 异步循环 | 基于游戏刻 | 5.4.0 |
+
+- `gunsmith_asyncRunDelayed` 中传入的函数（第一个变量）需要有 1 个参数。参数内容为 API 实例。
+- `gunsmith_asyncRunCycled` 中传入的函数（第一个变量）需要有 2 个参数。第一个参数为 API 实例，第二个参数为当前循环计数。
+
+#### 异步 API 示例：
+```lua
+local function debug_print(api, i)
+    print("wawa "..tostring(i))
+    return true
+end
+
+function M.shoot(api)
+    api:shootOnce(api:isShootingNeedConsumeAmmo())
+    api:gunsmith_asyncRunDelayed(debug_print, 50)
+    api:gunsmith_asyncRunCycled(debug_print, 20, 5)
+end
+```
+开火后将在一段时间内异步输出以下内容：
+
+| 延迟  | 输出内容       |
+|-----|------------|
+| 20  | `wawa 0`   |
+| 40  | `wawa 1`   |
+| 50  | `wawa nil` |
+| 60  | `wawa 2`   |
+| 80  | `wawa 3`   |
+| 100 | `wawa 4`   |
+
 ## 逻辑机新增入口点
 这些入口点和 tacz 本体的 `shoot`, `start_bolt` 等入口点一样，在特定的时机被 Java 代码调用。
 
