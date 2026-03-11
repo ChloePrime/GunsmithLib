@@ -6,7 +6,10 @@ package mod.chloeprime.gunsmithlib.api.common;
  * @since 4.4.0
  */
 @SuppressWarnings("unused")
-public interface CommonScriptingExtension extends VanillaCooldownAPI, RangefinderAPI {
+public interface CommonScriptingExtension extends
+        VanillaCooldownAPI,
+        RangefinderAPI,
+        BetterAsyncAPI {
     /**
      * 获取当前脚本对应的枪械的 id
      *
