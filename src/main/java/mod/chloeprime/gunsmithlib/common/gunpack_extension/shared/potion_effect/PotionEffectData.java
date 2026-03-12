@@ -4,19 +4,22 @@ import com.google.common.base.Suppliers;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
+import mod.chloeprime.gunsmithlib.common.internal.MobEffectForceApplicable;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -78,6 +81,15 @@ public class PotionEffectData {
     private int max_stack_level;
 
     /**
+     * 如果为 true，则使用 {@link LivingEntity#forceAddEffect(MobEffectInstance, Entity)}
+     * 而非 {@link LivingEntity#addEffect(MobEffectInstance, Entity)} 添加状态效果。
+     *
+     * @since 5.5.0
+     */
+    @GunpackProperty
+    private boolean force;
+
+    /**
      * 药水云的药水等级
      *
      * @since 5.3.0
@@ -130,6 +142,10 @@ public class PotionEffectData {
         return max_stack_level;
     }
 
+    public final boolean isUsingForceApplyMethod() {
+        return force;
+    }
+
     public final int getAreaCloudLevel() {
         return Objects.requireNonNullElse(area_cloud_level, level);
     }
@@ -138,18 +154,22 @@ public class PotionEffectData {
         return Objects.requireNonNullElse(area_cloud_chance, chance);
     }
 
-    public void applyTo(LivingEntity target) {
-        applyTo(target.getRandom(), target::getEffect, target::addEffect, false);
+    public void applyTo(LivingEntity target, @Nullable Entity owner) {
+        applyTo(target.getRandom(), target::getEffect, target::addEffect, ((MobEffectForceApplicable) target)::gunsmith$forceAddEffectPrime, owner, false);
     }
 
     public boolean applyTo(AreaEffectCloud3D cloud) {
-        return applyTo(cloud.getRandom(), _effect -> null, cloud::addEffect, true);
+        var applyMethod = (BiConsumer<MobEffectInstance, @Nullable Entity>) (inst, entity) -> cloud.addEffect(inst);
+        return applyTo(cloud.getRandom(), _effect -> null, applyMethod, applyMethod, null, true);
     }
 
-    public boolean applyTo(
+    @ApiStatus.Internal
+    private boolean applyTo(
             RandomSource random,
             Function<Holder<MobEffect>, @Nullable MobEffectInstance> current,
-            Consumer<MobEffectInstance> target,
+            BiConsumer<MobEffectInstance, @Nullable Entity> applyMethod,
+            BiConsumer<MobEffectInstance, @Nullable Entity> forceApplyMethod,
+            @Nullable Entity cause,
             boolean isCloud
     ) {
         var applyChance = isCloud ? getAreaCloudChance() : getChance();
@@ -172,7 +192,7 @@ public class PotionEffectData {
             newLevel = appLevel;
         }
         if (newLevel > 0) {
-            target.accept(createInstance(effect, newLevel));
+            (isUsingForceApplyMethod() ? forceApplyMethod : applyMethod).accept(createInstance(effect, newLevel), cause);
             return true;
         } else {
             return false;

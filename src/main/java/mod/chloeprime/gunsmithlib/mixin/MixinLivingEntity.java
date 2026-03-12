@@ -5,14 +5,22 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.api.item.IGun;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldBehavior;
 import mod.chloeprime.gunsmithlib.common.internal.GunAttributeSyncState;
+import mod.chloeprime.gunsmithlib.common.internal.MobEffectForceApplicable;
 import mod.chloeprime.gunsmithlib.common.util.FloatConsumer;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction1;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction2;
 import mod.chloeprime.gunsmithlib.common.util.SpecialHurtable;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,8 +28,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Map;
+
 @Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity implements SpecialHurtable, GunAttributeSyncState {
+public abstract class MixinLivingEntity implements
+        SpecialHurtable,
+        GunAttributeSyncState,
+        MobEffectForceApplicable {
+
     // 枪盾
     @Inject(
             method = "isDamageSourceBlocked",
@@ -49,6 +63,26 @@ public abstract class MixinLivingEntity implements SpecialHurtable, GunAttribute
             cir.setReturnValue(true);
         }
     }
+
+    // forceAddEffect Prime
+
+    @Override
+    public void gunsmith$forceAddEffectPrime(MobEffectInstance effect, @Nullable Entity cause) {
+        var existing = this.activeEffects.get(effect.getEffect());
+        var addedEvent = new MobEffectEvent.Added((LivingEntity) (Object) this, existing, effect, cause);
+        MinecraftForge.EVENT_BUS.post(addedEvent);
+
+        if (existing == null) {
+            this.activeEffects.put(effect.getEffect(), effect);
+            this.onEffectAdded(effect, cause);
+        } else if (existing.update(effect)) {
+            this.onEffectUpdated(existing, true, cause);
+        }
+    }
+
+    @Shadow @Final private Map<MobEffect, MobEffectInstance> activeEffects;
+    @Shadow protected abstract void onEffectUpdated(MobEffectInstance pEffectInstance, boolean pForced, @Nullable Entity pEntity);
+    @Shadow protected abstract void onEffectAdded(MobEffectInstance pEffectInstance, @Nullable Entity pEntity);
 
     // 特殊伤害机制
     @Shadow public abstract void setHealth(float value);

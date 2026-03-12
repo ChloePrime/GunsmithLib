@@ -66,7 +66,7 @@ public class PotionEffectBehavior {
             return;
         }
         for (var effectData : bullet.gunsmithlib$getPotionEffects()) {
-            effectData.applyTo(victim);
+            effectData.applyTo(victim, (Entity) bullet);
         }
     }
 
