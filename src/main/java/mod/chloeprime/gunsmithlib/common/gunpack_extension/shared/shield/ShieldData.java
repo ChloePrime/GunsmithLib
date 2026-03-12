@@ -48,7 +48,15 @@ public class ShieldData {
          * 有点超模，慎用
          */
         @SerializedName("always")
-        ALWAYS
+        ALWAYS,
+        /**
+         * 由脚本（gunsmith_is_shield_working）控制。
+         * 不推荐配置在配件 data 上。
+         *
+         * @since 5.5.0
+         */
+        @SerializedName("custom")
+        CUSTOM
     }
 
     /**

@@ -114,6 +114,15 @@ public class ShieldBehavior {
         var isReloading = operator.getSynReloadState().getStateType() != ReloadState.StateType.NOT_RELOADING;
         var isAiming = operator.getSynAimingProgress() >= 0.5F;
         return data -> {
+            if (data.getCondition() == ShieldData.Condition.CUSTOM) {
+                if (user.isRemoved()) {
+                    return false;
+                }
+                var gun = Gunsmith.getGunInfo(user.getMainHandItem()).orElse(null);
+                if (gun != null) {
+                    return gun.runScript(user, "gunsmith_is_shield_working", Boolean.class).orElse(false);
+                }
+            }
             if (isReloading && data.disableShieldWhenReloading()) {
                 return false;
             }

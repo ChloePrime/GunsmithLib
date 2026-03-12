@@ -1,5 +1,10 @@
 {
   "gunsmithlib_extension": {
+    "shield": {
+      "block_vanilla_damage_angle": 180,
+      "block_bullet_damage_angle": 180,
+      "condition": "custom"
+    },
     "ricochet": {
       "min_angle_of_incidence": 30,
       "gravity_scale": 0.5
@@ -74,6 +79,9 @@
     "sneak": 1,
     "lie": 0.5,
     "aim": 0.2
+  },
+  "script": "gunsmithlib:test_script",
+  "script_param": {
   },
   // 近战相关
   "melee": {
