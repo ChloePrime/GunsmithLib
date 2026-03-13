@@ -51,6 +51,7 @@
     "client.MixinGunDisplay",
     "client.MixinGunDisplayInstance",
     "client.MixinGunHudOverlay",
+    "client.MixinGunItemRendererWrapper",
     "client.MixinHeatBarOverlay",
     "client.MixinLuaAnimationConstant",
     "client.MixinShootKey",

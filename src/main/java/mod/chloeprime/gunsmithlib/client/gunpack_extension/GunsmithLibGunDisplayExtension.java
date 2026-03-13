@@ -1,9 +1,12 @@
 package mod.chloeprime.gunsmithlib.client.gunpack_extension;
 
+import com.tacz.guns.api.TimelessAPI;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * @since 4.5.0
@@ -47,6 +50,23 @@ public class GunsmithLibGunDisplayExtension {
     @GunpackProperty
     private @Nullable ResourceLocation variant_icon;
 
+    /**
+     * 解锁半透明，
+     * 开启后渲染当前模型的效率会大幅降低。
+     * <p>
+     * 奇迹与魔法不是没有代价的......
+     *
+     * @since 5.5.0
+     */
+    @GunpackProperty
+    private boolean unlock_transparency;
+
+    public static Optional<GunsmithLibGunDisplayExtension> of(ItemStack gun) {
+        return TimelessAPI.getGunDisplay(gun)
+                .map(instance -> ((EnhancedGunDisplay) instance))
+                .flatMap(EnhancedGunDisplay::gunsmith$getGunsmithLibExtension);
+    }
+
     public boolean hideHeatBarOverlay() {
         return hide_heat_bar_overlay;
     }
@@ -61,5 +81,9 @@ public class GunsmithLibGunDisplayExtension {
 
     public @Nullable ResourceLocation getVariantIcon() {
         return variant_icon;
+    }
+
+    public boolean unlocksTransparency() {
+        return unlock_transparency;
     }
 }
