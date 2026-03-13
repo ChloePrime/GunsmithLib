@@ -21,6 +21,7 @@
     "MixinAttachmentDataUtils",
     "MixinBullet",
     "MixinChunkMap",
+    "MixinEntity",
     "MixinExplodeUtil",
     "MixinGunData",
     "MixinItemEntity",

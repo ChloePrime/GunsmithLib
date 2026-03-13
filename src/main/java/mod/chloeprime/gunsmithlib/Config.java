@@ -14,6 +14,10 @@ public class Config
             .comment("Enable calling hurt function with invokespecial on entities with a specific tag")
             .define("enable_special_hurt", true);
 
+    public static final ForgeConfigSpec.BooleanValue ENABLE_REMOVE_INTERCEPTION = BUILDER
+            .comment("If true, intercept suspicious attempts to remove bullet entities.")
+            .define("enable_remove_interception", true);
+
     /**
      * @since 3.2.1
      */
