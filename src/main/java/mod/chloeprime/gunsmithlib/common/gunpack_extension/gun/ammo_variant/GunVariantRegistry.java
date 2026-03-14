@@ -84,7 +84,7 @@ public class GunVariantRegistry {
                 }
                 var entry = new ArrayList<ResourceLocation>(set.allGunIds().size() + 1);
                 // add master display id
-                var master = firstPart.variants().getFirst().getGunIds().stream().findFirst();
+                var master = set.masterId().or(firstPart.variants().getFirst().getGunIds().stream()::findFirst);
                 if (master.isEmpty()) {
                     GunsmithLib.LOGGER.error("Master variant is empty for variant set {}", setId);
                     return;

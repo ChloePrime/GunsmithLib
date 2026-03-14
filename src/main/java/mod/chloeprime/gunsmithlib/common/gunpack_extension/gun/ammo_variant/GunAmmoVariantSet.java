@@ -20,16 +20,19 @@ import java.util.function.Function;
 
 public record GunAmmoVariantSet(
         List<Part> parts,
+        Optional<ResourceLocation> masterId,
         Set<ResourceLocation> allGunIds,
         Map<String, Part> partByName,
         Object2IntMap<Part> partToIndex
 ) {
     public static final Codec<GunAmmoVariantSet> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.list(Part.CODEC).fieldOf("parts").forGetter(GunAmmoVariantSet::parts)
+            Codec.list(Part.CODEC).fieldOf("parts").forGetter(GunAmmoVariantSet::parts),
+            ResourceLocation.CODEC.optionalFieldOf("master").forGetter(GunAmmoVariantSet::masterId)
     ).apply(instance, GunAmmoVariantSet::new));
 
-    public GunAmmoVariantSet(List<Part> parts) {
-        this(parts, mergeGunIds(parts), gatherPartByName(parts), index(parts));
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public GunAmmoVariantSet(List<Part> parts, Optional<ResourceLocation> masterId) {
+        this(parts, masterId, mergeGunIds(parts), gatherPartByName(parts), index(parts));
     }
 
     public static Optional<GunAmmoVariantSet> of(ItemStack gun) {
