@@ -37,7 +37,6 @@ public class HitParticleSystem {
         onAmmoHitAnything(ammo, event.getHitResult(), ammo.getGunId());
     }
 
-    @SuppressWarnings("deprecation")
     public static void spawnAt(Level level, Vector3d pos, HitParticleData data) {
         var isFar = data.isExplosiveParticleAlternate();
         var isAaa = data.isAaaParticle();
@@ -57,7 +56,7 @@ public class HitParticleSystem {
         if (!(level instanceof ServerLevel sl)) {
             return;
         }
-        var particle = data.getParticle(BuiltInRegistries.PARTICLE_TYPE.asLookup());
+        var particle = data.getParticle(level.registryAccess());
         if (particle == null) {
             return;
         }

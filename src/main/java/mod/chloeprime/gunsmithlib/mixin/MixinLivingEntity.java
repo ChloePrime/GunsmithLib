@@ -10,14 +10,15 @@ import mod.chloeprime.gunsmithlib.common.util.FloatConsumer;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction1;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction2;
 import mod.chloeprime.gunsmithlib.common.util.SpecialHurtable;
+import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -67,10 +68,12 @@ public abstract class MixinLivingEntity implements
     // forceAddEffect Prime
 
     @Override
+    @SuppressWarnings("UnstableApiUsage")
     public void gunsmith$forceAddEffectPrime(MobEffectInstance effect, @Nullable Entity cause) {
         var existing = this.activeEffects.get(effect.getEffect());
+        @SuppressWarnings("DataFlowIssue")
         var addedEvent = new MobEffectEvent.Added((LivingEntity) (Object) this, existing, effect, cause);
-        MinecraftForge.EVENT_BUS.post(addedEvent);
+        NeoForge.EVENT_BUS.post(addedEvent);
 
         if (existing == null) {
             this.activeEffects.put(effect.getEffect(), effect);
@@ -80,7 +83,7 @@ public abstract class MixinLivingEntity implements
         }
     }
 
-    @Shadow @Final private Map<MobEffect, MobEffectInstance> activeEffects;
+    @Shadow @Final private Map<Holder<MobEffect>, MobEffectInstance> activeEffects;
     @Shadow protected abstract void onEffectUpdated(MobEffectInstance pEffectInstance, boolean pForced, @Nullable Entity pEntity);
     @Shadow protected abstract void onEffectAdded(MobEffectInstance pEffectInstance, @Nullable Entity pEntity);
 
