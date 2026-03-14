@@ -13,6 +13,7 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.resource.CommonAssetsManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
@@ -383,4 +384,12 @@ public class GsHelper {
     }
 
     private static final AtomicBoolean uoeInDataMapLogged = new AtomicBoolean(false);
+
+    /**
+     * Deserialize a Lua table as if it is a JSON object,
+     * Using TaCZ's GSON instance.
+     */
+    public static <T> T lua2obj(LuaValue value, Class<T> clazz) {
+        return CommonAssetsManager.GSON.fromJson(LuaUtil.lua2json(value), clazz);
+    }
 }
