@@ -208,6 +208,12 @@ dependencies {
     // 镜喵背包
     implementation 'maven.modrinth:sophisticated-core:1.21.1-1.3.65.1096'
     implementation 'maven.modrinth:sophisticated-backpacks:1.21.1-3.24.21.1314'
+
+    // 光影加载器
+    runtimeOnly "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+    runtimeOnly "maven.modrinth:iris:1.8.12+1.21.1-neoforge"
+    runtimeOnly "maven.modrinth:acceleratedrendering:1.0.8-1.21.1-alpha"
+
     // 测试用mod
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
     localRuntime "mekanism:Mekanism:1.21.1-10.7.9.72"
