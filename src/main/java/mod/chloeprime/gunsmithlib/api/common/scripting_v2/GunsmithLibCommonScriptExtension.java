@@ -50,13 +50,13 @@ public class GunsmithLibCommonScriptExtension
     }
 
     @Override
-    public void async_run_delayed(LuaValue func, int delayTicks) {
-        v1.gunsmith_asyncRunDelayed(func, delayTicks);
+    public void async_run_delayed(LuaValue callback, int delayTicks, Object... params) {
+        v1.gunsmith_asyncRunDelayed(callback, delayTicks, params);
     }
 
     @Override
-    public void async_run_cycled(LuaValue func, int period, int count) {
-        v1.gunsmith_asyncRunCycled(func, period, count);
+    public void async_run_cycled(LuaValue callback, int period, int count, Object... params) {
+        v1.gunsmith_asyncRunCycled(callback, period, count, params);
     }
 
     // 下面是内部 API

@@ -10,14 +10,15 @@ import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.api.util.Rangefinder;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ChargeableTriggerSystem;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.common.util.LuaUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.LogicalSide;
 import org.jetbrains.annotations.ApiStatus;
-import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.Optional;
@@ -74,23 +75,32 @@ public interface AbstractCommonScriptingExtension extends CommonScriptingExtensi
     }
 
     @Override
-    default void gunsmith_asyncRunDelayed(LuaValue value, int delayTicks) {
+    default void gunsmith_asyncRunDelayed(LuaValue callback, int delayTicks, Object... params) {
         var gunId = gunsmithlib$getGunItemInterface().getGunId(gunsmithlib$getCurrentItem());
-        var luaFunc = value.checkfunction();
+        var luaFunc = callback.checkfunction();
         AsyncHelper.of(gunsmithlib$getSide())
                 .withCondition(AsyncHelper.isHoldingCurrentWeapon(this, gunId))
-                .delay(delayTicks).thenRun(() -> luaFunc.call(CoerceJavaToLua.coerce(this)));
+                .delay(delayTicks).thenRun(() -> {
+                    Varargs varargs = params == null
+                            ? CoerceJavaToLua.coerce(this)
+                            : LuaValue.varargsOf(CoerceJavaToLua.coerce(this), LuaUtil.varargsOf(params));
+                    luaFunc.invoke(varargs);
+                });
     }
 
     @Override
-    default void gunsmith_asyncRunCycled(LuaValue value, int period, int count) {
+    default void gunsmith_asyncRunCycled(LuaValue callback, int period, int count, Object... params) {
         var gunId = gunsmithlib$getGunItemInterface().getGunId(gunsmithlib$getCurrentItem());
-        var luaFunc = value.checkfunction();
+        var luaFunc = callback.checkfunction();
         int[] counter = {0};
         AsyncHelper.of(gunsmithlib$getSide())
                 .withCondition(AsyncHelper.isHoldingCurrentWeapon(this, gunId))
                 .countdown(period, count, task -> {
-                    if (!luaFunc.call(CoerceJavaToLua.coerce(this), LuaInteger.valueOf(counter[0])).checkboolean()) {
+                    Varargs varargs = params == null
+                            ? LuaValue.varargsOf(LuaUtil.coerceArray(this, counter[0]))
+                            : LuaValue.varargsOf(LuaUtil.coerceArray(this, counter[0]), LuaUtil.varargsOf(params));
+                    var result = luaFunc.invoke(varargs).arg1();
+                    if (result.isboolean() && !result.toboolean()) {
                         task.stop();
                     } else {
                         counter[0]++;

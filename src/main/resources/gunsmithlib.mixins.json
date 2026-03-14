@@ -34,6 +34,7 @@
     "MixinModernKineticGunScriptAPI",
     "MixinPlayer",
     "MixinReloadProcedure",
+    "bugfix.luaj.MixinJavaMember",
     "dfu.MixinGunPackLoader",
     "dfu.MixinGunpackUpgrader",
     "EntityKineticBulletAccessor",

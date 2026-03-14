@@ -4,10 +4,24 @@ import com.google.gson.*;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.Arrays;
 
 public class LuaUtil {
+    public static Varargs varargsOf(Object... objects) {
+        return LuaValue.varargsOf(coerceArray(objects));
+    }
+
+    public static LuaValue[] coerceArray(Object... objects) {
+        var values = new LuaValue[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            values[i] = CoerceJavaToLua.coerce(objects[i]);
+        }
+        return values;
+    }
+
     public static JsonElement lua2json(LuaValue value) {
         if (value.isnil()) {
             return JsonNull.INSTANCE;
