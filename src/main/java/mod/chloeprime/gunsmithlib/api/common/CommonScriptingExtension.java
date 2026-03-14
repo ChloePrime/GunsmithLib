@@ -1,5 +1,7 @@
 package mod.chloeprime.gunsmithlib.api.common;
 
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibCommonScriptExtension;
+
 /**
  * 双机共享的扩展 API
  *
@@ -10,6 +12,15 @@ public interface CommonScriptingExtension extends
         VanillaCooldownAPI,
         RangefinderAPI,
         BetterAsyncAPI {
+    /**
+     * 获得扩展 API 包装器。
+     * 推荐使用这个包装器而不是下面那堆有前缀的 api，
+     * 这样能大量节省代码行的长度。
+     *
+     * @since 5.6.0
+     */
+    GunsmithLibCommonScriptExtension gunsmithlib_extension();
+
     /**
      * 获取当前脚本对应的枪械的 id
      *

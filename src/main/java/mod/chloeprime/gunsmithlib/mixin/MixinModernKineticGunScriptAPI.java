@@ -5,6 +5,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibLogicScriptExtension;
 import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.OverheatFeedback;
@@ -26,6 +27,13 @@ import java.util.Optional;
 
 @Mixin(value = ModernKineticGunScriptAPI.class, remap = false)
 public class MixinModernKineticGunScriptAPI implements AbstractGunScriptAPIExtension {
+    private final @Unique GunsmithLibLogicScriptExtension gunsmith$newExtension = new GunsmithLibLogicScriptExtension((ModernKineticGunScriptAPI) (Object)this);
+
+    @Unique
+    public GunsmithLibLogicScriptExtension gunsmithlib_extension() {
+        return gunsmith$newExtension;
+    }
+
     // 背包供弹功能
 
     @ModifyReturnValue(method = "hasAmmoToConsume", at = @At("TAIL"))

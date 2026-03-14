@@ -6,11 +6,15 @@ import cn.chloeprime.commons.rpc.RPCTarget;
 import cn.chloeprime.commons.rpc.RemoteCallable;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector3d;
 import org.luaj.vm2.LuaValue;
 
 @ApiStatus.Internal
@@ -31,6 +35,18 @@ public interface AbstractGunScriptAPIExtension extends AbstractCommonScriptingEx
     default void gunsmith_addEffectTo(LivingEntity target, LuaValue effect) {
         var shooter = gunsmithlib$getShooter().orElse(null);
         GsHelper.lua2obj(effect, PotionEffectData.class).applyTo(target, shooter);
+    }
+
+    @Override
+    default void gunsmith_spawnParticle(Vector3d position, LuaValue[] effect) {
+        var level = gunsmithlib$getShooter().map(Entity::level).orElse(null);
+        if (level == null) {
+            return;
+        }
+        for (var particleTable : effect) {
+            var particle = GsHelper.lua2obj(particleTable, HitParticleData.class);
+            HitParticleSystem.spawnAt(level, position, particle);
+        }
     }
 
     @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)

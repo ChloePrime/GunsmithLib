@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle;
 import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -12,11 +13,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import org.joml.Vector3d;
 
 import java.util.Optional;
 
@@ -32,6 +35,36 @@ public class HitParticleSystem {
     public static void onAmmoHitEntity(AmmoHitEntityEvent event) {
         var ammo = event.getAmmo();
         onAmmoHitAnything(ammo, event.getHitResult(), ammo.getGunId());
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void spawnAt(Level level, Vector3d pos, HitParticleData data) {
+        var isFar = data.isExplosiveParticleAlternate();
+        var isAaa = data.isAaaParticle();
+        if (isAaa == Boolean.FALSE && AaaParticleProxy.INSTALLED) {
+            return;
+        }
+        if (isAaa == Boolean.TRUE) {
+            var id = data.getParticleId();
+            if (id == null) {
+                return;
+            }
+            var normal = new Vec3(data.getDX(), data.getDY(), data.getDZ()).normalize();
+            var mojPos = LinearAlgebraTypes.joml2moj(pos);
+            AaaParticleProxy.addParticle(level, isFar, id, mojPos, normal, data.getAaaParticleData());
+            return;
+        }
+        if (!(level instanceof ServerLevel sl)) {
+            return;
+        }
+        var particle = data.getParticle(BuiltInRegistries.PARTICLE_TYPE.asLookup());
+        if (particle == null) {
+            return;
+        }
+        // 释放粒子！
+        for (var player : sl.players()) {
+            sl.sendParticles(player, particle, isFar, pos.x(), pos.y(), pos.z(), data.getCount(), data.getDX(), data.getDY(), data.getDZ(), data.getSpeed());
+        }
     }
 
     private static void onAmmoHitAnything(Projectile ammo, HitResult hit, ResourceLocation gunId) {

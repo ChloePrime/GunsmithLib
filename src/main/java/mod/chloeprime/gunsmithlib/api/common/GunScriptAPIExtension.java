@@ -1,8 +1,11 @@
 package mod.chloeprime.gunsmithlib.api.common;
 
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibLogicScriptExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.util.TableSchema;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Vector3d;
 import org.luaj.vm2.LuaValue;
 
 /**
@@ -10,6 +13,9 @@ import org.luaj.vm2.LuaValue;
  */
 @SuppressWarnings("unused")
 public interface GunScriptAPIExtension extends CommonScriptingExtension {
+    @Override
+    GunsmithLibLogicScriptExtension gunsmithlib_extension();
+
     /**
      * 播放 GunsmithLib 内置的过热音效
      */
@@ -37,4 +43,6 @@ public interface GunScriptAPIExtension extends CommonScriptingExtension {
      * @param effect 药水效果，写法类似 data 文件中的 {@link PotionEffectData}
      */
     void gunsmith_addEffectTo(LivingEntity target, @TableSchema(PotionEffectData.class) LuaValue effect);
+
+    void gunsmith_spawnParticle(Vector3d position, @TableSchema(HitParticleData[].class) LuaValue[] effect);
 }

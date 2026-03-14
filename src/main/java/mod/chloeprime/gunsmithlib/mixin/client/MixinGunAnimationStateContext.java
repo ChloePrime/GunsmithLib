@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.mixin.client;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.GunsmithLibAnimationStateMachineScriptExtension;
 import mod.chloeprime.gunsmithlib.client.AbstractGunAnimationStateContextExtension;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
@@ -25,9 +26,19 @@ import java.util.function.Function;
 
 @Mixin(value = GunAnimationStateContext.class, remap = false)
 public abstract class MixinGunAnimationStateContext implements AbstractGunAnimationStateContextExtension {
+
     @Shadow private ItemStack currentGunItem;
     @Shadow private IGun iGun;
     @Shadow protected abstract <T> Optional<T> processCameraEntity(Function<Entity, T> processor);
+
+    // Scripting V2 Wrapper
+
+    private final @Unique GunsmithLibAnimationStateMachineScriptExtension gunsmith$newExtension = new GunsmithLibAnimationStateMachineScriptExtension((GunAnimationStateContext) (Object)this);
+
+    @Unique
+    public GunsmithLibAnimationStateMachineScriptExtension gunsmithlib_extension() {
+        return gunsmith$newExtension;
+    }
 
     // 扩展 API
 
