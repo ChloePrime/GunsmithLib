@@ -8,6 +8,7 @@ import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import mod.chloeprime.gunsmithlib.api.util.AmmoInfo;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.ammo.GunsmithLibAmmoDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAttachmentData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
@@ -15,8 +16,10 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDat
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunsmithLibAttributeModifierEntry;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.ricochet.RicochetData;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.NotNull;
@@ -77,6 +80,9 @@ public class GunsmithLibSharedDataExtension {
     @GunpackProperty
     private @Nullable RicochetData ricochet;
 
+    @GunpackProperty
+    private @Nullable RaytraceControlData raytrace_control;
+
     // 下面是具体实现
 
     public List<GunsmithLibAttributeModifierEntry> getAttributeModifiers() {
@@ -95,14 +101,16 @@ public class GunsmithLibSharedDataExtension {
         return area_effect_cloud_min_size_rate;
     }
 
-    public List<HitParticleData> getHitParticles() {
-        return Optional.ofNullable(hit_particles)
-                .map(Arrays::asList)
-                .orElse(List.of());
+    public @Nullable HitParticleData[] getHitParticles() {
+        return hit_particles;
     }
 
     public @Nullable RicochetData getRicochetData() {
         return ricochet;
+    }
+
+    public @Nullable RaytraceControlData getRaytraceControlData() {
+        return raytrace_control;
     }
 
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];
@@ -132,6 +140,31 @@ public class GunsmithLibSharedDataExtension {
 
     public static Optional<GunsmithLibSharedDataExtension> forAttachment(AttachmentInfo attachment) {
         return GunsmithLibAttachmentDataExtension.of(attachment).map(Function.identity());
+    }
+
+    @SuppressWarnings("OptionalIsPresent")
+    public static <T> Optional<T> forGunOrAmmo(
+            ItemStack gun,
+            Function<GunsmithLibSharedDataExtension, T> field
+    ) {
+        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
+        if (gunInfo == null) {
+            return Optional.empty();
+        }
+        var onGun = GunsmithLibSharedDataExtension
+                .forGun(gunInfo)
+                .map(field);
+        if (onGun.isPresent()) {
+            return onGun;
+        }
+        var onAmmo = Gunsmith
+                .getAmmoInfo(Gunsmith.createAmmoItemFromId(gunInfo.index().getGunData().getAmmoId()))
+                .flatMap(GunsmithLibSharedDataExtension::forAmmo)
+                .map(field);
+        if (onAmmo.isPresent()) {
+            return onAmmo;
+        }
+        return Optional.empty();
     }
 
     /**

@@ -7,14 +7,17 @@ import com.tacz.guns.util.TacHitResult;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.HomingProjectileBehavior;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlSystem;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction1;
 import mod.chloeprime.gunsmithlib.common.util.SpecialHurtable;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -147,6 +150,17 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
                 : ((source1, amount1) -> original.call(victim, source1, amount1));
         return method.invoke(source, amount);
     }
+
+    // 方块穿透控制
+    @WrapOperation(
+            method = "onBulletTick", remap = false,
+            at = @At(value = "INVOKE", remap = false, target = "Lcom/tacz/guns/util/block/BlockRayTrace;rayTraceBlocks(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;"))
+    private BlockHitResult setupRaytraceControlInfo(Level level, ClipContext context, Operation<BlockHitResult> original) {
+        RaytraceControlSystem.setupFor(context, getGunId());
+        return original.call(level, context);
+    }
+
+    @Shadow(remap = false) public abstract ResourceLocation getGunId();
 
     public MixinBullet(EntityType<? extends Projectile> type, Level level) {
         super(type, level);

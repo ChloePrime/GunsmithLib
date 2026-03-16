@@ -19,6 +19,7 @@
     "MixinAreaEffectCloud",
     "MixinAttachmentData",
     "MixinAttachmentDataUtils",
+    "MixinBlockRaytrace",
     "MixinBullet",
     "MixinChunkMap",
     "MixinEntity",

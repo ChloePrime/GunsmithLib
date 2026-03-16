@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.ricochet;
 
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
@@ -74,24 +73,7 @@ public class RicochetData {
         return max_bounciness;
     }
 
-    @SuppressWarnings("OptionalIsPresent")
     public static Optional<RicochetData> of(ItemStack gun) {
-        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
-        if (gunInfo == null) {
-            return Optional.empty();
-        }
-        var onGun = GunsmithLibSharedDataExtension
-                .forGun(gunInfo)
-                .map(GunsmithLibSharedDataExtension::getRicochetData);
-        if (onGun.isPresent()) {
-            return onGun;
-        }
-        var onAmmo = Gunsmith.getAmmoInfo(Gunsmith.createAmmoItemFromId(gunInfo.index().getGunData().getAmmoId()))
-                .flatMap(GunsmithLibSharedDataExtension::forAmmo)
-                .map(GunsmithLibSharedDataExtension::getRicochetData);
-        if (onAmmo.isPresent()) {
-            return onAmmo;
-        }
-        return Optional.empty();
+        return GunsmithLibSharedDataExtension.forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getRicochetData);
     }
 }

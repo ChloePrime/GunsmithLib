@@ -23,6 +23,11 @@
       "airburst_rangefinder_max_distance": 100,
       "proximity_fuse_distance": 1.5,
       "prevent_destroying_loot_items": true
+    },
+    "raytrace_control": {
+      "obstructs": [
+        "minecraft:iron_bars"
+      ]
     }
   },
   "ammo": "tacz:308",

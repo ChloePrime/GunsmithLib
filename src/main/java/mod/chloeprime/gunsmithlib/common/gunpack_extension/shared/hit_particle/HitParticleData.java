@@ -3,7 +3,6 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.commands.arguments.ParticleArgument;
@@ -13,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -146,24 +146,10 @@ public class HitParticleData {
      * @return 这把武器上实际生效的 particle data。
      */
     public static List<HitParticleData> of(ItemStack gun) {
-        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
-        if (gunInfo == null) {
-            return Collections.emptyList();
-        }
-        var onGun = GunsmithLibSharedDataExtension.forGun(gunInfo)
-                .map(GunsmithLibSharedDataExtension::getHitParticles)
-                .orElse(List.of());
-        if (!onGun.isEmpty()) {
-            return onGun;
-        }
-        var onAmmo = Gunsmith.getAmmoInfo(Gunsmith.createAmmoItemFromId(gunInfo.index().getGunData().getAmmoId()))
-                .flatMap(GunsmithLibSharedDataExtension::forAmmo)
-                .map(GunsmithLibSharedDataExtension::getHitParticles)
-                .orElse(List.of());
-        if (!onAmmo.isEmpty()) {
-            return onAmmo;
-        }
-        return Collections.emptyList();
+        return GunsmithLibSharedDataExtension
+                .forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getHitParticles)
+                .map(Arrays::asList)
+                .orElse(Collections.emptyList());
     }
 
     private ParticleOptions particle;
