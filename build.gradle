@@ -188,7 +188,7 @@ configurations {
 }
 
 dependencies {
-    implementation jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.2.1") {
+    implementation jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.3.0") {
         exclude group: '*', module: '*'
     }
     // TACZ
