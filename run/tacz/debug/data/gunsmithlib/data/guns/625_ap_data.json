@@ -1,5 +1,11 @@
 {
   "gunsmithlib_extension": {
+    "damage_source_control": {
+      "master_type": "minecraft:stalagmite",
+      "inject_is": [
+        "#minecraft:bypasses_resistance"
+      ]
+    },
     "hit_particles": [
       {
         "is_adaptive_block_particle": true,

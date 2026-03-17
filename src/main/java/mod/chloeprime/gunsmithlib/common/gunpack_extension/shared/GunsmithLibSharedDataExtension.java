@@ -14,6 +14,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.EnhancedAt
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunsmithLibAttributeModifierEntry;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.damage_source_control.DamageSourceControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlData;
@@ -25,10 +26,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -83,6 +81,9 @@ public class GunsmithLibSharedDataExtension {
     @GunpackProperty
     private @Nullable RaytraceControlData raytrace_control;
 
+    @GunpackProperty
+    private @Nullable DamageSourceControlData damage_source_control;
+
     // 下面是具体实现
 
     public List<GunsmithLibAttributeModifierEntry> getAttributeModifiers() {
@@ -111,6 +112,9 @@ public class GunsmithLibSharedDataExtension {
 
     public @Nullable RaytraceControlData getRaytraceControlData() {
         return raytrace_control;
+    }
+    public @Nullable DamageSourceControlData getDamageSourceControlData() {
+        return damage_source_control;
     }
 
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];
@@ -142,7 +146,6 @@ public class GunsmithLibSharedDataExtension {
         return GunsmithLibAttachmentDataExtension.of(attachment).map(Function.identity());
     }
 
-    @SuppressWarnings("OptionalIsPresent")
     public static <T> Optional<T> forGunOrAmmo(
             ItemStack gun,
             Function<GunsmithLibSharedDataExtension, T> field
@@ -151,6 +154,14 @@ public class GunsmithLibSharedDataExtension {
         if (gunInfo == null) {
             return Optional.empty();
         }
+        return forGunOrAmmo(gunInfo, field);
+    }
+
+    @SuppressWarnings("OptionalIsPresent")
+    public static <T> Optional<T> forGunOrAmmo(
+            GunInfo gunInfo,
+            Function<GunsmithLibSharedDataExtension, T> field
+    ) {
         var onGun = GunsmithLibSharedDataExtension
                 .forGun(gunInfo)
                 .map(field);
@@ -165,6 +176,52 @@ public class GunsmithLibSharedDataExtension {
             return onAmmo;
         }
         return Optional.empty();
+    }
+
+    public static <T> List<T> forGunOrAmmoWithAttachment(
+            ItemStack gun,
+            Function<GunsmithLibSharedDataExtension, T> field
+    ) {
+        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
+        if (gunInfo == null) {
+            return Collections.emptyList();
+        }
+        return forGunOrAmmoWithAttachment(gunInfo, field);
+    }
+
+    public static <T> List<T> forGunOrAmmoWithAttachment(
+            GunInfo gunInfo,
+            Function<GunsmithLibSharedDataExtension, T> field
+    ) {
+        var fromBase = forGunOrAmmo(gunInfo, field).orElse(null);
+        var fromAttach = (List<T>) null;
+        var iGun = gunInfo.gunItem();
+        var stack = gunInfo.gunStack();
+        for (var type : AttachmentType.values()) {
+            T onAttach = Gunsmith.getAttachmentInfo(iGun.getAttachment(stack, type))
+                    .flatMap(GunsmithLibSharedDataExtension::forAttachment)
+                    .map(field)
+                    .orElse(null);
+            if (onAttach != null) {
+                if (fromAttach == null) {
+                    fromAttach = new ArrayList<>(6);
+                }
+                fromAttach.add(onAttach);
+            }
+        }
+        if (fromBase == null && fromAttach == null) {
+            return Collections.emptyList();
+        }
+        if (fromBase == null) {
+            return fromAttach;
+        }
+        if (fromAttach == null) {
+            return List.of(fromBase);
+        }
+        var total = new ArrayList<T>(fromAttach.size() + 1);
+        total.add(fromBase);
+        total.addAll(fromAttach);
+        return Collections.unmodifiableList(total);
     }
 
     /**
