@@ -9,6 +9,8 @@ public interface EntityKineticBulletAccessor {
     @Accessor void setArmorIgnore(float value);
     @Accessor void setExplosionDelayCount(int value);
 
+    @Accessor boolean getExplosion();
+
     @Accessor float getGravity();
     @Accessor void setGravity(float value);
 }

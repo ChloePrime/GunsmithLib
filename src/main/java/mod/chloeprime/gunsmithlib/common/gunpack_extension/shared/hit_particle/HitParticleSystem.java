@@ -5,6 +5,7 @@ import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
+import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -83,11 +84,12 @@ public class HitParticleSystem {
             if (data == null) {
                 continue;
             }
-            var isFar = data.isExplosiveParticleAlternate();
-            var isAaa = data.isAaaParticle();
-            if (isAaa == Boolean.FALSE && AaaParticleProxy.INSTALLED) {
+            var isExplodeEvent = ammo instanceof EntityKineticBulletAccessor bullet && bullet.getExplosion();
+            if (!data.isActivated(isExplodeEvent)) {
                 continue;
             }
+            var isFar = data.isExplosiveParticleAlternate();
+            var isAaa = data.isAaaParticle();
             if (isAaa == Boolean.TRUE) {
                 var id = data.getParticleId();
                 if (id == null) {
@@ -125,6 +127,10 @@ public class HitParticleSystem {
 
     public static boolean isHidingExplodeParticle(ItemStack stack) {
         for (var datum : HitParticleData.of(stack)) {
+            // 防止 AAA 限定粒子在没有安装 AAA 时顶掉原版爆炸
+            if (!datum.isActivated(true)) {
+                continue;
+            }
             if (datum.isExplosiveParticleAlternate()) {
                 return true;
             }

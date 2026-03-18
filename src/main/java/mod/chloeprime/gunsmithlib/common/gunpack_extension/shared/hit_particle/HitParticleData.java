@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
+import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
@@ -150,6 +151,18 @@ public class HitParticleData {
                 .forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getHitParticles)
                 .map(Arrays::asList)
                 .orElse(Collections.emptyList());
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isActivated(boolean isExplosionEvent) {
+        var isAaa = (Boolean) isAaaParticle();
+        if (isAaa == Boolean.TRUE && !AaaParticleProxy.INSTALLED) {
+            return false;
+        }
+        if (isAaa == Boolean.FALSE && AaaParticleProxy.INSTALLED) {
+            return false;
+        }
+        return isExplosionEvent || !isExplosiveParticleAlternate();
     }
 
     private ParticleOptions particle;
