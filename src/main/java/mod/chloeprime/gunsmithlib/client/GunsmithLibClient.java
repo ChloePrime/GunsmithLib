@@ -34,6 +34,10 @@ import java.util.*;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class GunsmithLibClient {
+    private static @Nullable String prevGunId = null;
+    private static int prevAmmoAmount = -1;
+    private static boolean prevAmmoInBarrel = false;
+
     public static void initClient() {
         PapiManager.addPapi(RangefinderPapi.NAME, RangefinderPapi.INSTANCE);
         PapiManager.addPapi(AirburstDistancePapi.NAME, AirburstDistancePapi.INSTANCE);
@@ -71,6 +75,27 @@ public class GunsmithLibClient {
                 SoundInstance.createUnseededRandom(), false, 0, SoundInstance.Attenuation.NONE,
                 0, 0, 0, true);
         Minecraft.getInstance().getSoundManager().play(sound);
+    }
+
+    public static Optional<String> getPreviousGunId() {
+        return Optional.ofNullable(prevGunId);
+    }
+
+    public static int getPreviousAmmoAmount() {
+        return prevAmmoAmount;
+    }
+
+    public static boolean prevHasAmmoInBarrel() {
+        return prevAmmoInBarrel;
+    }
+
+    public static void setPreviousGunId(@Nullable ResourceLocation id) {
+        prevGunId = Optional.ofNullable(id).map(ResourceLocation::toString).orElse(null);
+    }
+
+    public static void setPreviousAmmoInfo(int ammoAmount, boolean hasAmmoInnBarrel) {
+        prevAmmoAmount = ammoAmount;
+        prevAmmoInBarrel = hasAmmoInnBarrel;
     }
 
     public static void triggerAnimation(String key) {
