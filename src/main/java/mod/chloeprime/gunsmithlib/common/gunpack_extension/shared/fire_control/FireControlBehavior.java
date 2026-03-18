@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -38,10 +39,16 @@ public class FireControlBehavior {
                 .orElse(OptionalDouble.empty());
 
         if (torque.isEmpty()) {
+            if (bullet.level().isClientSide()) {
+                return;
+            }
             // 让高速子弹直接指向目标
             var fixedTargetPos = fixTargetPos(bulletPos, aimResult, bulletSpeed);
             var newBulletMotion = fixedTargetPos.subtract(bulletPos).normalize().scale(bulletSpeed);
             bullet.setDeltaMovement(newBulletMotion);
+            var xz = newBulletMotion.with(Direction.Axis.Y, 0).length();
+            bullet.setYRot((float) Math.toDegrees(Mth.atan2(newBulletMotion.x(), newBulletMotion.z())));
+            bullet.setXRot((float) Math.toDegrees(Mth.atan2(newBulletMotion.y(), xz)));
         } else {
             // 让低速子弹缓慢转向目标
             HomingProjectileBehavior.onBulletCreate(event.getShooter(), bullet, torque.getAsDouble(), fcData.get().getTorqueLerpRate(), aimResult.entity());
