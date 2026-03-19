@@ -3,5 +3,6 @@
   "pack.gunsmithlib.desc" : "Can be used as an example usage too",
   "gunsmithlib.gun.625.name": "6×25mm AA System",
   "gunsmithlib.gun.625.desc": "Used for debugging explosive extensions",
-  "gunsmithlib.gun.m320_jumping.name": "M320 (Ricochet)"
+  "gunsmithlib.gun.m320_jumping.name": "M320 (Ricochet)",
+  "tacz.ammo.rpg_rocket.desc": "Foo\nBar"
 }
