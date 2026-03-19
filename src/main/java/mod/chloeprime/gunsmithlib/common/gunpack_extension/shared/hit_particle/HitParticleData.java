@@ -3,6 +3,8 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
@@ -147,6 +149,12 @@ public class HitParticleData {
      * @return 这把武器上实际生效的 particle data。
      */
     public static List<HitParticleData> of(ItemStack gun) {
+        return Gunsmith.getGunInfo(gun)
+                .map(HitParticleData::of)
+                .orElse(Collections.emptyList());
+    }
+
+    public static List<HitParticleData> of(GunInfo gun) {
         return GunsmithLibSharedDataExtension
                 .forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getHitParticles)
                 .map(Arrays::asList)
@@ -155,7 +163,7 @@ public class HitParticleData {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isActivated(boolean isExplosionEvent) {
-        var isAaa = (Boolean) isAaaParticle();
+        var isAaa = isAaaParticle();
         if (isAaa == Boolean.TRUE && !AaaParticleProxy.INSTALLED) {
             return false;
         }

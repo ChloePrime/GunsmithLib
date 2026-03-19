@@ -17,6 +17,7 @@ public class AaaParticleProxy {
             ResourceLocation id,
             Vec3 pos,
             Vec3 normal,
+            float scale,
             @Nullable AAAParticleData aaaParticleData
     ) {
         if (!INSTALLED) {
@@ -28,6 +29,7 @@ public class AaaParticleProxy {
                 id,
                 pos,
                 normal,
+                scale,
                 aaaParticleData);
     }
 }

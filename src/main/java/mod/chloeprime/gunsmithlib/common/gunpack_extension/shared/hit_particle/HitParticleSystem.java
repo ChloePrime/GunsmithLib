@@ -1,7 +1,9 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle;
 
 import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
+import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
@@ -51,7 +53,7 @@ public class HitParticleSystem {
             }
             var normal = new Vec3(data.getDX(), data.getDY(), data.getDZ()).normalize();
             var mojPos = LinearAlgebraTypes.joml2moj(pos);
-            AaaParticleProxy.addParticle(level, isFar, id, mojPos, normal, data.getAaaParticleData());
+            AaaParticleProxy.addParticle(level, isFar, id, mojPos, normal, 1, data.getAaaParticleData());
             return;
         }
         if (!(level instanceof ServerLevel sl)) {
@@ -78,9 +80,12 @@ public class HitParticleSystem {
                 : ammo.getLookAngle().normalize().scale(-1);
         var hitPos = hit.getLocation().add(normal.scale(0.25));
         // 获取当前生效的粒子 data
-        var gunIdStack = Gunsmith.createGunItemFromId(gunId, level.registryAccess());
+        var gunInfo = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId, level.registryAccess())).orElse(null);
+        if (gunInfo == null) {
+            return;
+        }
 
-        for (var data : HitParticleData.of(gunIdStack)) {
+        for (var data : HitParticleData.of(gunInfo)) {
             if (data == null) {
                 continue;
             }
@@ -95,7 +100,8 @@ public class HitParticleSystem {
                 if (id == null) {
                     continue;
                 }
-                AaaParticleProxy.addParticle(level, isFar, id, hitPos, normal, data.getAaaParticleData());
+                var scale = (isExplodeEvent && isFar) ? getExplodeScale(ammo, gunInfo) : 1;
+                AaaParticleProxy.addParticle(level, isFar, id, hitPos, normal, scale, data.getAaaParticleData());
                 continue;
             }
             // 解码粒子 id 和配置
@@ -121,6 +127,23 @@ public class HitParticleSystem {
             // 释放粒子！
             for (var player : serverLevel.players()) {
                 serverLevel.sendParticles(player, particle, isFar, hitPos.x(), hitPos.y(), hitPos.z(), data.getCount(), data.getDX(), data.getDY(), data.getDZ(), data.getSpeed());
+            }
+        }
+    }
+
+    private static float getExplodeScale(Projectile ammo, GunInfo gunInfo) {
+        if (!(ammo instanceof EntityKineticBulletAccessor bullet)) {
+            return 1;
+        } else if (!bullet.getExplosion()) {
+            return 1;
+        } else {
+            float baseRadius = Optional.ofNullable(gunInfo.index().getBulletData().getExplosionData())
+                    .map(ExplosionData::getRadius)
+                    .orElse(-1F);
+            if (baseRadius <= 0) {
+                return 1;
+            } else {
+                return bullet.getExplosionRadius() / baseRadius;
             }
         }
     }

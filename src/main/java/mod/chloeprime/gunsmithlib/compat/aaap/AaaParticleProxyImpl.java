@@ -17,6 +17,7 @@ class AaaParticleProxyImpl {
             ResourceLocation id,
             Vec3 pos,
             Vec3 normal,
+            float scale,
             @Nullable AAAParticleData aaaParticleData
     ) {
         double dx = normal.x();
@@ -30,7 +31,7 @@ class AaaParticleProxyImpl {
                 .position(pos)
                 .rotation((float) -rx, (float) -ry, 0);
         if (aaaParticleData != null) {
-            pei.scale(aaaParticleData.getScale());
+            pei.scale(aaaParticleData.getScale() * scale);
 
             var parameters = aaaParticleData.getParameters();
             for (int i = 0; i < parameters.size(); i++) {
@@ -40,6 +41,8 @@ class AaaParticleProxyImpl {
             for (int i = 0; i < triggers.size(); i++) {
                 pei.trigger(triggers.getInt(i));
             }
+        } else {
+            pei.scale(scale);
         }
         AAALevel.addParticle(level, force, pei);
     }
