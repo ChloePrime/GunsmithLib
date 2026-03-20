@@ -45,9 +45,11 @@ public class ProximityFuseSystem {
 
     @SubscribeEvent
     public static void onBulletReadyToTrace(BulletReadyToTraceEvent event) {
+        if (event.getSide().isClient()) {
+            return;
+        }
         var bullet = event.getEntity();
-
-        if (bullet.level().isClientSide || !bullet.isAlive() || !(bullet instanceof EntityKineticBulletAccessor accessor)) {
+        if (!bullet.isAlive() || !(bullet instanceof EntityKineticBulletAccessor accessor)) {
             return;
         }
 

@@ -1,16 +1,22 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
+import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
+import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.WeakHashMap;
 
 @EventBusSubscriber
 public class FireControlBehavior {
@@ -39,30 +45,58 @@ public class FireControlBehavior {
                 .orElse(OptionalDouble.empty());
 
         if (torque.isEmpty()) {
+            AIM_RESULTS.get().put(bullet, aimResult);
             if (bullet.level().isClientSide()) {
                 return;
             }
             // 让高速子弹直接指向目标
-            var fixedTargetPos = fixTargetPos(bulletPos, aimResult, bulletSpeed);
+            var fixedTargetPos = fixTargetPos(aimResult, bullet.getOwner());
             var newBulletMotion = fixedTargetPos.subtract(bulletPos).normalize().scale(bulletSpeed);
-            bullet.setDeltaMovement(newBulletMotion);
-            var xz = newBulletMotion.with(Direction.Axis.Y, 0).length();
-            bullet.setYRot((float) Math.toDegrees(Mth.atan2(newBulletMotion.x(), newBulletMotion.z())));
-            bullet.setXRot((float) Math.toDegrees(Mth.atan2(newBulletMotion.y(), xz)));
+            updateBulletMotion(bullet, newBulletMotion);
         } else {
             // 让低速子弹缓慢转向目标
             HomingProjectileBehavior.onBulletCreate(event.getShooter(), bullet, torque.getAsDouble(), fcData.get().getTorqueLerpRate(), aimResult.entity());
         }
     }
 
-    private static Vec3 fixTargetPos(Vec3 bulletPos, TargetSearcher.SearchResult result, double bulletSpeed) {
-        if (bulletSpeed <= 1e-3) {
-            return result.pos();
+    private static final ThreadLocal<Map<Entity, TargetSearcher.SearchResult>> AIM_RESULTS = ThreadLocal.withInitial(WeakHashMap::new);
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void beforeTrace(BulletReadyToTraceEvent event) {
+        if (event.getSide().isClient()) {
+            return;
         }
-        var hitTime = Math.floor(result.pos().subtract(bulletPos).length() / bulletSpeed) - 1;
-        var enemyMotion = result.entity() instanceof FlyingMob || result.entity().isNoGravity()
-                ? result.entity().getDeltaMovement()
-                : result.entity().getDeltaMovement().with(Direction.Axis.Y, 0);
-        return result.pos().add(enemyMotion.scale(hitTime));
+        var bullet = event.getEntity();
+        var aimResult = AIM_RESULTS.get().get(bullet);
+        if (aimResult == null) {
+            GunsmithLib.LOGGER.debug("no aim result.");
+            return;
+        }
+        var target = aimResult.entity();
+        if (!target.isAlive()) {
+            return;
+        }
+
+        var oldMotion = bullet.getDeltaMovement();
+        var speed = oldMotion.length();
+        if (speed <= 1e-4) {
+            return;
+        }
+
+        var bulletPos = bullet.position();
+        var newTarget = fixTargetPos(aimResult, bullet.getOwner());
+        var newMotion = newTarget.subtract(bulletPos).normalize().scale(speed);
+        updateBulletMotion(bullet, newMotion);
+    }
+
+    private static void updateBulletMotion(Entity bullet, Vec3 motion) {
+        bullet.setDeltaMovement(motion);
+        var xz = motion.with(Direction.Axis.Y, 0).length();
+        bullet.setYRot((float) Math.toDegrees(Mth.atan2(motion.x(), motion.z())));
+        bullet.setXRot((float) Math.toDegrees(Mth.atan2(motion.y(), xz)));
+    }
+
+    private static Vec3 fixTargetPos(TargetSearcher.SearchResult result, @Nullable Entity shooter) {
+        return result.realtimeHitPosition(shooter);
     }
 }

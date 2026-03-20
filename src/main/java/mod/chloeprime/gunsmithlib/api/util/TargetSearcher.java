@@ -1,10 +1,13 @@
 package mod.chloeprime.gunsmithlib.api.util;
 
+import cn.chloeprime.commons.math.Basis;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.resource.modifier.custom.EffectiveRangeModifier;
+import com.tacz.guns.util.HitboxHelper;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -24,8 +27,21 @@ public class TargetSearcher {
     public static final double MAX_DISTANCE = 64 * 16;
     public record SearchResult(
             Entity entity,
-            Vec3 pos
+            Vec3 pos,
+            Vec3 relativePos
     ) {
+        public SearchResult(
+                Entity entity,
+                Vec3 pos
+        ) {
+            this(entity, pos, Basis.fromEntityBody(entity).toLocal(pos.subtract(entity.position())));
+        }
+
+        public Vec3 realtimeHitPosition(@Nullable Entity shooter) {
+            var bb = HitboxHelper.getFixedBoundingBox(entity, shooter);
+            var pos = bb.getCenter().with(Direction.Axis.Y, bb.minY);
+            return pos.add(Basis.fromEntityBody(entity).toGlobal(relativePos));
+        }
     }
 
     public static Optional<SearchResult> search(LivingEntity shooter, GunInfo gun, float partialTicks) {

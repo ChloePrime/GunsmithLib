@@ -212,9 +212,12 @@ public class AirburstSystem {
 
     @SubscribeEvent
     public static void onBulletReadyToTrace(BulletReadyToTraceEvent event) {
+        if (event.getSide().isClient()) {
+            return;
+        }
         var bullet = event.getEntity();
         var pd = bullet.getPersistentData();
-        if (bullet.level().isClientSide || !pd.contains(PDK_AIRBURST_DISTANCE)) {
+        if (!pd.contains(PDK_AIRBURST_DISTANCE)) {
             return;
         }
 
