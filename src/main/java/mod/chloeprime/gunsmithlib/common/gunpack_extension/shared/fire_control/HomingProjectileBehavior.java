@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
+import com.tacz.guns.util.HitboxHelper;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.network.S2CSyncLockedTarget;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
@@ -52,7 +53,7 @@ public class HomingProjectileBehavior {
             return;
         }
         var oldDirection = oldVelocity.scale(1 / oldSpeed);
-        var targetDirection = target.getBoundingBox().getCenter().subtract(bullet.position()).normalize();
+        var targetDirection = HitboxHelper.getFixedBoundingBox(target, bullet.getOwner()).getCenter().subtract(bullet.position()).normalize();
         if (targetDirection.lengthSqr() <= 1e-8) {
             return;
         }
