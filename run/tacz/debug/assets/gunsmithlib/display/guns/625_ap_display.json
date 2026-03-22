@@ -1,6 +1,11 @@
 {
   "gunsmithlib_extension": {
-    "variant_icon": "gunsmithlib:textures/dreadnought_cat.png"
+    "variant_icon": "gunsmithlib:textures/dreadnought_cat.png",
+    "descriptional_affixes": {
+      "before": ["哇哇"],
+      "replace": ["可口可乐了了"],
+      "after": ["喝了"]
+    }
   },
   "model": "tacz:gun/minigun_geo",
   "texture": "tacz:gun/uv/minigun",

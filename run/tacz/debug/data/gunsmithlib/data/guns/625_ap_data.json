@@ -1,5 +1,9 @@
 {
   "gunsmithlib_extension": {
+    "fire_control": {
+      "angular_range": 10,
+      "range_override" : 500
+    },
     "damage_source_control": {
       "master_type": "minecraft:stalagmite",
       "inject_is": [

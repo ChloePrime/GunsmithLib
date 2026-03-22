@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.client.gunpack_extension;
 
 import com.tacz.guns.api.TimelessAPI;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.descriptial_affix.DescriptionalAffixData;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -61,6 +62,11 @@ public class GunsmithLibGunDisplayExtension {
     @GunpackProperty
     private boolean unlock_transparency;
 
+    @GunpackProperty
+    private @Nullable DescriptionalAffixData descriptional_affixes;
+
+    // 下面是实现
+
     public static Optional<GunsmithLibGunDisplayExtension> of(ItemStack gun) {
         return TimelessAPI.getGunDisplay(gun)
                 .map(instance -> ((EnhancedGunDisplay) instance))
@@ -85,5 +91,9 @@ public class GunsmithLibGunDisplayExtension {
 
     public boolean unlocksTransparency() {
         return unlock_transparency;
+    }
+
+    public @Nullable DescriptionalAffixData getDescriptionalAffixData() {
+        return descriptional_affixes;
     }
 }

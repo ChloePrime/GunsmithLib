@@ -34,5 +34,15 @@
   "subtitle.gunsmithlib.ballistic_computer": "Ballistic Computer Beeping",
   "subtitle.gunsmithlib.shield_blocks_bullet": "Bullet blocked by shield",
 
+  "gunsmithlib.affix.prefix": "| ",
+  "gunsmithlib.affix.explosive": "Explosive",
+  "gunsmithlib.affix.explosive_prgrammable": "Programmable Ammo",
+  "gunsmithlib.affix.debuff": "Debuff",
+  "gunsmithlib.affix.aim_assist": "Aim Assist",
+  "gunsmithlib.affix.fire_control": "Missile",
+  "gunsmithlib.affix.chargeable": "Chargeable",
+  "gunsmithlib.affix.heat": "Heat",
+  "gunsmithlib.affix.shield": "Shield",
+
   "gunsmithlib.message.airburst_rangefinder.too_far": "Too Far"
 }

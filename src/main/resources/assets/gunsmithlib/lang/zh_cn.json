@@ -34,5 +34,15 @@
   "subtitle.gunsmithlib.ballistic_computer": "弹道计算机嘀嘀声",
   "subtitle.gunsmithlib.shield_blocks_bullet": "子弹被枪盾格挡",
 
+  "gunsmithlib.affix.prefix": "| ",
+  "gunsmithlib.affix.explosive": "爆炸品",
+  "gunsmithlib.affix.explosive_prgrammable": "可编程弹药",
+  "gunsmithlib.affix.debuff": "异常状态",
+  "gunsmithlib.affix.aim_assist": "辅助瞄准",
+  "gunsmithlib.affix.fire_control": "导弹",
+  "gunsmithlib.affix.chargeable": "可充电",
+  "gunsmithlib.affix.heat": "高温",
+  "gunsmithlib.affix.shield": "盾牌",
+
   "gunsmithlib.message.airburst_rangefinder.too_far": "太远了"
 }
