@@ -9,9 +9,11 @@ import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.TagKeyOr;
 import net.minecraft.core.Holder;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -60,11 +62,16 @@ public class DamageSourceControlSystem {
         if (data.isEmpty()) {
             return;
         }
+        var victimIsCreativePlayer = event.getHurtEntity() instanceof Player player && player.getAbilities().instabuild;
         for (var datum : data) {
             var source = event.getDamageSource(GunDamageSourcePart.NON_ARMOR_PIERCING);
             var sourceAp = event.getDamageSource(GunDamageSourcePart.ARMOR_PIERCING);
             for (var is : datum.getIsList()) {
                 if (is instanceof TagKeyOr.Tag<DamageType> tag) {
+                    // 阻止无敌贯穿 tag 伤害创造玩家
+                    if (victimIsCreativePlayer && DamageTypeTags.BYPASSES_INVULNERABILITY.equals(tag.value())) {
+                        continue;
+                    }
                     injectIs(source, sourceAp, tag.value());
                 } else if (is instanceof TagKeyOr.Object<DamageType> obj) {
                     logUnsupported(obj.value());
