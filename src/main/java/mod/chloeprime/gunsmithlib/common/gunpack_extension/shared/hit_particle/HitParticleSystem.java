@@ -1,10 +1,9 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle;
 
-import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
 import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
-import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
@@ -29,13 +28,8 @@ import java.util.Optional;
 @EventBusSubscriber
 public class HitParticleSystem {
     @SubscribeEvent
-    public static void onAmmoHitBlock(AmmoHitBlockEvent event) {
-        var ammo = event.getAmmo();
-        onAmmoHitAnything(ammo, event.getHitResult(), ammo.getGunId());
-    }
-
-    @SubscribeEvent
-    public static void onAmmoHitEntity(AmmoHitEntityEvent event) {
+    public static void onAmmoHitAnything(InternalEvent.AmmoHitAnything.Post eventWrapper) {
+        var event = eventWrapper.getImpl();
         var ammo = event.getAmmo();
         onAmmoHitAnything(ammo, event.getHitResult(), ammo.getGunId());
     }

@@ -5,9 +5,11 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.TacHitResult;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
+import mod.chloeprime.gunsmithlib.api.common.AmmoSelfExplodeEvent;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.HomingProjectileBehavior;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlSystem;
+import mod.chloeprime.gunsmithlib.common.internal.AmmoHitAnythingEventPoster;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.common.util.HurtFunction1;
@@ -22,7 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -49,7 +50,7 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
 
     @Shadow(remap = false) private int pierce;
 
-    // 命中位置记录
+    // 命中位置记录和发布 AmmoHitAnythingEvent
 
     @Override
     public Vec3 gunsmithlib$getHitPos() {
@@ -64,14 +65,31 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
         gunsmithlib$hitPos = result.getLocation();
     }
 
+    @Inject(
+            method = "onBulletTick", remap = false,
+            at = @At(value = "INVOKE", remap = false, target = "Lcom/tacz/guns/util/ExplodeUtil;createExplosion(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;FFZZLnet/minecraft/world/phys/Vec3;)V"),
+            cancellable = true)
+    private void onBulletSelfExplode(CallbackInfo ci) {
+        var self = (EntityKineticBullet) (Object) this;
+        var canceled = AmmoHitAnythingEventPoster.selfPre(new AmmoSelfExplodeEvent.Pre(level(), self)).isCanceled();
+        if (canceled) {
+            ci.cancel();
+        } else {
+            AmmoHitAnythingEventPoster.selfPost(new AmmoSelfExplodeEvent.Post(level(), self));
+        }
+    }
+
     @Inject(method = "onHitEntity", remap = false, at = @At("HEAD"), cancellable = true)
     private void onHittingEntity(TacHitResult result, Vec3 startVec, Vec3 endVec, CallbackInfo ci) {
         gunsmithlib$hitPos = result.getLocation();
         // Post AmmoHitEntityEvent
         var self = (EntityKineticBullet) (Object) this;
-        var canceled = NeoForge.EVENT_BUS.post(new AmmoHitEntityEvent(level(), result, result.getEntity(), self, result.isHeadshot())).isCanceled();
+        var event = new AmmoHitEntityEvent(level(), result, result.getEntity(), self, result.isHeadshot());
+        var canceled = AmmoHitAnythingEventPoster.entityPre(event).isCanceled();
         if (canceled) {
             ci.cancel();
+        } else {
+            AmmoHitAnythingEventPoster.entityPost(event);
         }
     }
 
