@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control;
 
-import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
@@ -69,7 +68,6 @@ public class FireControlBehavior {
         var bullet = event.getEntity();
         var aimResult = AIM_RESULTS.get().get(bullet);
         if (aimResult == null) {
-            GunsmithLib.LOGGER.debug("no aim result.");
             return;
         }
         var target = aimResult.entity();
