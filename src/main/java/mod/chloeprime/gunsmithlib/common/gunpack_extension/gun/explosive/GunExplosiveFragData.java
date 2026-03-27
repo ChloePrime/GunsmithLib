@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
+import cn.chloeprime.commons.ContextUtil;
 import com.google.common.base.Suppliers;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
@@ -52,7 +53,7 @@ public class GunExplosiveFragData {
             .setId(config_id)
             .setAmmoCount(Integer.MAX_VALUE)
             .setFireMode(FireMode.SEMI)
-            .build());
+            .build(ContextUtil.getRegistryAccess()));
 
     public static Optional<GunExplosiveFragData> of(ItemStack gun) {
         return Gunsmith.getGunInfo(gun).flatMap(GunExplosiveFragData::of);

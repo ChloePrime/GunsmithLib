@@ -8,6 +8,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSha
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import mod.chloeprime.gunsmithlib.common.util.TagKeyOr;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -86,14 +87,14 @@ public class DamageSourceControlData {
     private transient final Supplier<List<TagKeyOr<DamageType>>> is = TagKeyOr.compile(Registries.DAMAGE_TYPE, () -> inject_is);
     private transient final Supplier<List<TagKeyOr<DamageType>>> isNot = TagKeyOr.compile(Registries.DAMAGE_TYPE, () -> inject_is_not);
 
-    public static List<DamageSourceControlData> of(ItemStack gun) {
+    public static List<DamageSourceControlData> of(ItemStack gun, RegistryAccess regAccess1211) {
         return Gunsmith.getGunInfo(gun)
-                .map(DamageSourceControlData::of)
+                .map(gi -> of(gi, regAccess1211))
                 .orElse(Collections.emptyList());
     }
 
-    public static List<DamageSourceControlData> of(GunInfo gun) {
-        return GunsmithLibSharedDataExtension.forGunOrAmmoWithAttachment(gun, GunsmithLibSharedDataExtension::getDamageSourceControlData);
+    public static List<DamageSourceControlData> of(GunInfo gun, RegistryAccess regAccess1211) {
+        return GunsmithLibSharedDataExtension.forGunOrAmmoWithAttachment(gun, GunsmithLibSharedDataExtension::getDamageSourceControlData, regAccess1211);
     }
 
     private static @Nullable Holder<DamageType> getDamageType(@Nullable String id) {

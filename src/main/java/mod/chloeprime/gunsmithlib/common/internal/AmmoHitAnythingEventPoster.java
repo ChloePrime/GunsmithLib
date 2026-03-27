@@ -5,24 +5,21 @@ import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitAnythingEvent;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.api.common.AmmoSelfExplodeEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.*;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class AmmoHitAnythingEventPoster {
-    private static final Supplier<IEventBus> BUS = Suppliers.memoize(() -> MinecraftForge.EVENT_BUS);
+    private static final Supplier<IEventBus> BUS = Suppliers.memoize(() -> NeoForge.EVENT_BUS);
 
     public static AmmoHitEntityEvent entityPre(AmmoHitEntityEvent event) {
         var bus = BUS.get();
         var anyPre = new AmmoHitAnythingEvent.Pre(event.getLevel(), event.getHitResult(), event.getAmmo());
         var anyPreInternal = new InternalEvent.AmmoHitAnything.Pre(anyPre);
-        if (bus.post(anyPreInternal) | bus.post(anyPre)) {
+        if (bus.post(anyPreInternal).isCanceled() | bus.post(anyPre).isCanceled()) {
             event.setCanceled(true);
         }
         bus.post(event);
@@ -41,7 +38,7 @@ public class AmmoHitAnythingEventPoster {
         var bus = BUS.get();
         var anyPre = new AmmoHitAnythingEvent.Pre(event.getLevel(), event.getHitResult(), event.getAmmo());
         var anyPreInternal = new InternalEvent.AmmoHitAnything.Pre(anyPre);
-        if (bus.post(anyPreInternal) | bus.post(anyPre)) {
+        if (bus.post(anyPreInternal).isCanceled() | bus.post(anyPre).isCanceled()) {
             event.setCanceled(true);
         }
     }
@@ -54,7 +51,7 @@ public class AmmoHitAnythingEventPoster {
         bus.post(anyPost);
     }
 
-    public static Event selfPre(AmmoSelfExplodeEvent.Pre event) {
+    public static ICancellableEvent selfPre(AmmoSelfExplodeEvent.Pre event) {
         var bus = BUS.get();
         bus.post(new InternalEvent.AmmoHitAnything.Pre(event));
         bus.post(event);

@@ -4,8 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
-import com.tacz.guns.resource.pojo.data.gun.BulletData;
-import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
@@ -19,15 +17,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import org.joml.Vector3d;
 
 import java.util.Objects;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public class FragSystem {
     private static final GameProfile FAKE_PLAYER_PROFILE = new GameProfile(UUID.fromString("bc6541b7-6ddb-42e8-aa51-764e8d7fc701"), "[Frag Creator]");
 
@@ -43,7 +41,7 @@ public class FragSystem {
         if (level.isClientSide() || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        var gun = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(event.getAmmo().getGunId())).orElse(null);
+        var gun = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(event.getAmmo().getGunId(), ammo.registryAccess())).orElse(null);
         var data = gun == null ? null : GunExplosiveFragData.of(gun).orElse(null);
         if (data == null) {
             return;

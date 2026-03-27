@@ -174,7 +174,7 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
             method = "onBulletTick", remap = false,
             at = @At(value = "INVOKE", remap = false, target = "Lcom/tacz/guns/util/block/BlockRayTrace;rayTraceBlocks(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;"))
     private BlockHitResult setupRaytraceControlInfo(Level level, ClipContext context, Operation<BlockHitResult> original) {
-        RaytraceControlSystem.setupFor(context, getGunId());
+        RaytraceControlSystem.setupFor(context, getGunId(), registryAccess());
         return original.call(level, context);
     }
 

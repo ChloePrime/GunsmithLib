@@ -21,16 +21,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public abstract class DescriptionalGunAffix {
     private static final List<DescriptionalGunAffix> ENTRIES = Collections.synchronizedList(new ArrayList<>());
     private static final int MARGIN = 4;
@@ -238,7 +238,7 @@ public abstract class DescriptionalGunAffix {
                     .filter(effects -> !effects.isEmpty() && effects.stream()
                             .map(PotionEffectData::getEffect)
                             .flatMap(Optional::stream)
-                            .anyMatch(effect -> effect.getCategory() == MobEffectCategory.HARMFUL))
+                            .anyMatch(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL))
                     .isPresent();
         }
     }

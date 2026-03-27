@@ -20,6 +20,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.H
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.ricochet.RicochetData;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -180,25 +181,27 @@ public class GunsmithLibSharedDataExtension {
 
     public static <T> List<T> forGunOrAmmoWithAttachment(
             ItemStack gun,
-            Function<GunsmithLibSharedDataExtension, T> field
+            Function<GunsmithLibSharedDataExtension, T> field,
+            RegistryAccess regAccess1211
     ) {
         var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
         if (gunInfo == null) {
             return Collections.emptyList();
         }
-        return forGunOrAmmoWithAttachment(gunInfo, field);
+        return forGunOrAmmoWithAttachment(gunInfo, field, regAccess1211);
     }
 
     public static <T> List<T> forGunOrAmmoWithAttachment(
             GunInfo gunInfo,
-            Function<GunsmithLibSharedDataExtension, T> field
+            Function<GunsmithLibSharedDataExtension, T> field,
+            RegistryAccess regAccess1211
     ) {
         var fromBase = forGunOrAmmo(gunInfo, field).orElse(null);
         var fromAttach = (List<T>) null;
         var iGun = gunInfo.gunItem();
         var stack = gunInfo.gunStack();
         for (var type : AttachmentType.values()) {
-            T onAttach = Gunsmith.getAttachmentInfo(iGun.getAttachment(stack, type))
+            T onAttach = Gunsmith.getAttachmentInfo(iGun.getAttachment(regAccess1211, stack, type))
                     .flatMap(GunsmithLibSharedDataExtension::forAttachment)
                     .map(field)
                     .orElse(null);

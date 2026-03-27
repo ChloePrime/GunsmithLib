@@ -2,7 +2,7 @@ package mod.chloeprime.gunsmithlib.api.client;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -72,43 +72,37 @@ public abstract class RenderGunTooltipTextEvent extends GunTooltipEvent {
         }
     }
 
-    @Cancelable
-    public static class BeforeDescription extends RenderGunTooltipTextEvent {
+    public static class BeforeDescription extends RenderGunTooltipTextEvent implements ICancellableEvent {
         public BeforeDescription(GunTooltipContext context, RenderContext renderContext) {
             super(context, renderContext);
         }
     }
 
-    @Cancelable
-    public static class AfterDescription extends RenderGunTooltipTextEvent {
+    public static class AfterDescription extends RenderGunTooltipTextEvent implements ICancellableEvent {
         public AfterDescription(GunTooltipContext context, RenderContext renderContext) {
             super(context, renderContext);
         }
     }
 
-    @Cancelable
-    public static class AfterAmmoInfo extends RenderGunTooltipTextEvent {
+    public static class AfterAmmoInfo extends RenderGunTooltipTextEvent implements ICancellableEvent {
         public AfterAmmoInfo(GunTooltipContext context, RenderContext renderContext) {
             super(context, renderContext);
         }
     }
 
-    @Cancelable
-    public static class AfterBaseInfo extends RenderGunTooltipTextEvent {
+    public static class AfterBaseInfo extends RenderGunTooltipTextEvent implements ICancellableEvent {
         public AfterBaseInfo(GunTooltipContext context, RenderContext renderContext) {
             super(context, renderContext);
         }
     }
 
-    @Cancelable
-    public static class AfterExtraDamageInfo extends RenderGunTooltipTextEvent {
+    public static class AfterExtraDamageInfo extends RenderGunTooltipTextEvent implements ICancellableEvent {
         public AfterExtraDamageInfo(GunTooltipContext context, RenderContext renderContext) {
             super(context, renderContext);
         }
     }
 
-    @Cancelable
-    public static class AfterUpgradeTip extends RenderGunTooltipTextEvent {
+    public static class AfterUpgradeTip extends RenderGunTooltipTextEvent implements ICancellableEvent {
         public AfterUpgradeTip(GunTooltipContext context, RenderContext renderContext) {
             super(context, renderContext);
         }

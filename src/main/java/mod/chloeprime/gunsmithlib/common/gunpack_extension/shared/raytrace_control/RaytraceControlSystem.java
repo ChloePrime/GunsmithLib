@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_cont
 import com.google.common.collect.MapMaker;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.util.TagKeyOr;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Block;
@@ -16,11 +17,11 @@ import java.util.function.Predicate;
 public class RaytraceControlSystem {
     public static final Map<ClipContext, RaytraceControlData> RC_DATA_FIELD = new MapMaker().weakKeys().makeMap();
 
-    public static void setupFor(ClipContext context, ResourceLocation gunId) {
+    public static void setupFor(ClipContext context, ResourceLocation gunId, RegistryAccess registryAccess1211) {
         Objects.requireNonNull(context);
         Objects.requireNonNull(gunId);
 
-        var data = RaytraceControlData.of(Gunsmith.createGunItemFromId(gunId)).orElse(null);
+        var data = RaytraceControlData.of(Gunsmith.createGunItemFromId(gunId, registryAccess1211)).orElse(null);
         if (data == null) {
             return;
         }

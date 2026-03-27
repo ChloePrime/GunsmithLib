@@ -16,10 +16,11 @@ import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.client.ClientInternalEvents;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper1211;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.objectweb.asm.Opcodes;
@@ -81,14 +82,14 @@ public class MixinClientGunTooltip {
     private void afterInit(GunTooltip tooltip, CallbackInfo ci) {
         var self = (ClientGunTooltip) (Object) this;
         var event = new GunTooltipEvent.Initialize(new GunTooltipContext(self, gunsmithlib$gun()));
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
     }
 
     @ModifyReturnValue(method = "getHeight", at = @At("RETURN"))
     private int modifyHeight(int original) {
         var self = (ClientGunTooltip) (Object) this;
         var event = new GunTooltipEvent.ComputeHeight(new GunTooltipContext(self, gunsmithlib$gun()), original);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getHeight();
     }
 
@@ -200,9 +201,9 @@ public class MixinClientGunTooltip {
     ) {
         var context = new GunTooltipContext(instance, gunsmithlib$gun());
         var event = this.gunsmithlib$lastEvent = eventConstructor.apply(context, ctx);
-        var internal = MinecraftForge.EVENT_BUS.post(new ClientInternalEvents.RenderGunTooltipTextPre(event));
-        var external = MinecraftForge.EVENT_BUS.post(event);
-        var canceled = internal || external;
+        var internal = NeoForge.EVENT_BUS.post(new ClientInternalEvents.RenderGunTooltipTextPre(event));
+        var external = NeoForge.EVENT_BUS.post(event);
+        var canceled = GsHelper1211.isCanceled(internal) || GsHelper1211.isCanceled(external);
         if (!canceled) {
             event.doRender();
         }

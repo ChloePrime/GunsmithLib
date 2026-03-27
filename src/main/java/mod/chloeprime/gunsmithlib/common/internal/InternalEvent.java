@@ -7,7 +7,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class InternalEvent<E extends Event> extends Event {
+public class InternalEvent<E extends Event> extends Event implements ICancellableEvent {
     private final E impl;
 
     public InternalEvent(E impl) {

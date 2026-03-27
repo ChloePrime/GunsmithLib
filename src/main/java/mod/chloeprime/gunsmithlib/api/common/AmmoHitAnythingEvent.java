@@ -3,8 +3,8 @@ package mod.chloeprime.gunsmithlib.api.common;
 import com.tacz.guns.entity.EntityKineticBullet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 public class AmmoHitAnythingEvent extends Event {
     private final Level level;
@@ -29,8 +29,7 @@ public class AmmoHitAnythingEvent extends Event {
         return ammo;
     }
 
-    @Cancelable
-    public static class Pre extends AmmoHitAnythingEvent {
+    public static class Pre extends AmmoHitAnythingEvent implements ICancellableEvent {
         public Pre(Level level, HitResult hitResult, EntityKineticBullet ammo) {
             super(level, hitResult, ammo);
         }

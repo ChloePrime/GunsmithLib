@@ -2,7 +2,7 @@ package mod.chloeprime.gunsmithlib.api.client;
 
 import com.tacz.guns.client.tooltip.ClientGunTooltip;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.Optional;
 

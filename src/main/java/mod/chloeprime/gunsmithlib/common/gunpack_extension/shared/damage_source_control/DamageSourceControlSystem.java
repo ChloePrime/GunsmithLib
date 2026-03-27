@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.damage_source_control;
 
+import cn.chloeprime.commons.ContextUtil;
 import cn.chloeprime.commons.rpg.DamageSources;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.GunDamageSourcePart;
@@ -13,12 +14,15 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber
+import java.util.Optional;
+
+@EventBusSubscriber
 public class DamageSourceControlSystem {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void setMasterType(EntityHurtByGunEvent.Pre event) {
@@ -26,9 +30,12 @@ public class DamageSourceControlSystem {
             return;
         }
         var shooter = event.getAttacker();
+        var regAccess1211 = Optional.ofNullable(event.getBullet())
+                .map(Entity::registryAccess)
+                .orElseGet(ContextUtil::getRegistryAccess);
         var gun = shooter != null
                 ? shooter.getMainHandItem()
-                : Gunsmith.createGunItemFromId(event.getGunId());
+                : Gunsmith.createGunItemFromId(event.getGunId(), regAccess1211);
         var data = (DamageSourceControlData) GunsmithLibSharedDataExtension
                 .forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getDamageSourceControlData)
                 .orElse(null);
@@ -50,15 +57,19 @@ public class DamageSourceControlSystem {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
+    @SuppressWarnings("DeconstructionCanBeUsed") // to reduce merge conflicts.
     public static void injectDamageSourceTags(EntityHurtByGunEvent.Pre event) {
         if (event.getLogicalSide().isClient()) {
             return;
         }
         var shooter = event.getAttacker();
+        var regAccess1211 = Optional.ofNullable(event.getBullet())
+                .map(Entity::registryAccess)
+                .orElseGet(ContextUtil::getRegistryAccess);
         var gun = shooter != null
                 ? shooter.getMainHandItem()
-                : Gunsmith.createGunItemFromId(event.getGunId());
-        var data = DamageSourceControlData.of(gun);
+                : Gunsmith.createGunItemFromId(event.getGunId(), regAccess1211);
+        var data = DamageSourceControlData.of(gun, regAccess1211);
         if (data.isEmpty()) {
             return;
         }
