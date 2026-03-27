@@ -1,0 +1,132 @@
+{
+  "gunsmithlib_extension": {
+    "hit_particles": [
+      {
+        "particle_id": "minecraft:crit",
+        "is_aaa_particle": false,
+        "explosive_particle_alternate": true,
+        "speed": 2,
+        "count": 80
+      },
+      {
+        "particle_id": "gunsmithlib:fire",
+        "explosive_particle_alternate": true,
+        "is_aaa_particle": true,
+        "aaa_particle_data": {
+          "scale": 0.8
+        }
+      }
+    ],
+    "gun_explosive": {
+      "airburst_distances": [25],
+      "airburst_distances_distribution": 0.25,
+      "prevent_destroying_loot_items": true
+    },
+    "raytrace_control": {
+      "obstructs": [
+        "minecraft:iron_bars"
+      ]
+    },
+    "hidden": true
+  },
+  "ammo": "tacz:308",
+  "can_crawl": false,
+  "bolt": "open_bolt",
+  "rpm": 1200,
+  "bullet": {
+    "life": 1,
+    "bullet_amount": 1,
+    "damage": 8,
+    "tracer_count_interval": 0,
+    "extra_damage": {
+      "armor_ignore": 0.5,
+      "head_shot_multiplier": 1.5,
+      "damage_adjust": [
+        {"distance": 50, "damage": 8},
+        {"distance": 95, "damage": 7},
+        {"distance": "infinite", "damage": 6}
+      ]
+    },
+    "speed": 50,
+    "gravity": 0.15,
+    "knockback": 0.1,
+    "friction": 0.025,
+    "pierce": 0,
+    "explosion": {
+      "explode": true,
+      "damage": 40,
+      "radius": 5,
+      "knockback": true,
+      "delay": 0.25
+    }
+  },
+  "reload": {
+    "type": "inventory",
+    "feed": {
+      "empty": 2.25,
+      "tactical": 1.55
+    },
+    "cooldown": {
+      "empty": 2.6,
+      "tactical": 2.0
+    }
+  },
+  "draw_time": 1.4,
+  "put_away_time": 0.85,
+  "aim_time": 0.25,
+  "sprint_time": 0.44,
+  "weight": 15.5,
+  "movement_speed": {
+    "base": 0.0,
+    "aim": -0.5,
+    "reload": -0.2
+  },
+  "fire_mode": [
+    "auto",
+    "semi"
+  ],
+  "burst_data": {
+    "continuous_shoot": true,
+    "count": 6,
+    "bpm": 1200,
+    "min_interval": 0.5
+  },
+  "crawl_recoil_multiplier": 0.5,
+  "recoil": {
+    "pitch": [
+      {"time": 0, "value": [0.6, 0.6]},
+      {"time": 0.25, "value": [0.6, 0.6]},
+      {"time": 0.45, "value": [-0.15, -0.15]},
+      {"time": 0.6, "value": [0, 0]}
+    ],
+    "yaw": [
+      {"time": 0, "value": [-0.3, 0.2]},
+      {"time": 0.2, "value": [-0.3, 0.2]},
+      {"time": 0.4, "value": [0, 0]}
+    ]
+  },
+  "script": "gunsmithlib:bullet_life_randomizer",
+  "script_param": {
+  },
+  "hurt_bob_tweak_multiplier": 0.05,
+  "inaccuracy": {
+    "stand": 2.25,
+    "move": 3,
+    "sneak": 2.25,
+    "lie": 2.25,
+    "aim": 0.9
+  },
+  "melee": {
+    "distance": 1,
+    "cooldown": 1,
+    "default": {
+      "animation_type": "melee_push",
+      "distance": 2,
+      "range_angle": 60,
+      "cooldown": 0,
+      "damage": 10,
+      "knockback": 1.5,
+      "prep": 0.1
+    }
+  }
+}
