@@ -217,7 +217,7 @@ dependencies {
     // 测试用mod
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
     localRuntime "mekanism:Mekanism:1.21.1-10.7.9.72"
-
+    localRuntime "curse.maven:explosive-enhancement-reforged-1036246:6520579"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
