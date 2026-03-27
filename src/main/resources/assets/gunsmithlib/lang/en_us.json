@@ -37,6 +37,8 @@
   "gunsmithlib.affix.prefix": "| ",
   "gunsmithlib.affix.explosive": "Explosive",
   "gunsmithlib.affix.explosive_prgrammable": "Programmable Ammo",
+  "gunsmithlib.affix.frag": "Fragments",
+  "gunsmithlib.affix.cluster": "Cluster Bomb",
   "gunsmithlib.affix.debuff": "Debuff",
   "gunsmithlib.affix.aim_assist": "Aim Assist",
   "gunsmithlib.affix.fire_control": "Missile",

@@ -55,6 +55,9 @@ public class GunExplosiveData {
     @GunpackProperty
     private boolean prevent_destroying_loot_items;
 
+    @GunpackProperty
+    private @Nullable GunExplosiveFragData fragments;
+
     public @Nonnull DoubleList getAirburstDistances() {
         return Optional.ofNullable(airburst_distances)
                 .map(DoubleList::of)
@@ -79,6 +82,10 @@ public class GunExplosiveData {
 
     public boolean willPreventDestroyingLootItems() {
         return prevent_destroying_loot_items;
+    }
+
+    public @Nullable GunExplosiveFragData getFragData() {
+        return fragments;
     }
 
     public static Optional<GunExplosiveData> fromGun(ItemStack stack) {

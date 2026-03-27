@@ -4,11 +4,13 @@ import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import mod.chloeprime.gunsmithlib.api.client.GunTooltipEvent;
 import mod.chloeprime.gunsmithlib.api.client.RenderGunTooltipTextEvent;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.GunsmithLibGunDisplayExtension;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.descriptial_affix.DescriptionalAffixData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy.EnergyWeaponData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveFragData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.OldFireControlData;
@@ -127,6 +129,7 @@ public abstract class DescriptionalGunAffix {
     public static void init() {
         register(new Explosivity());
         register(new ProgrammableExplosivity());
+        register(new ChildBullet());
         register(new Debuff());
         register(new SmartAmmo());
         register(new Chargeable());
@@ -192,6 +195,34 @@ public abstract class DescriptionalGunAffix {
             return data.getProximityFuseDistance() > 0
                     || data.getAirburstRangefinderMaxDistance().isPresent()
                     || !data.getAirburstDistances().isEmpty();
+        }
+    }
+
+    public static class ChildBullet extends DescriptionalGunAffixBase {
+        private static final Component FRAG = Component.translatable("gunsmithlib.affix.frag").withStyle(ChatFormatting.WHITE);
+        private static final Component CLUSTER = Component.translatable("gunsmithlib.affix.cluster").withStyle(ChatFormatting.WHITE);
+
+        public ChildBullet() {
+            super(FRAG);
+        }
+
+        @Override
+        public boolean shouldShow(GunInfo gunInfo) {
+            return GunExplosiveFragData.of(gunInfo).isPresent();
+        }
+
+        @Override
+        public Optional<Component> getText(GunInfo gunInfo) {
+            return isClusterBomb(gunInfo) ? Optional.of(CLUSTER) : super.getText(gunInfo);
+        }
+
+        private boolean isClusterBomb(GunInfo gunInfo) {
+            return GunExplosiveFragData.of(gunInfo)
+                    .flatMap(GunExplosiveFragData::getConfigSource)
+                    .flatMap(Gunsmith::getGunInfo)
+                    .map(gi -> gi.index().getBulletData().getExplosionData())
+                    .filter(ExplosionData::isExplode)
+                    .isPresent();
         }
     }
 

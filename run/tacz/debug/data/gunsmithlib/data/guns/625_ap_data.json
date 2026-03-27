@@ -27,8 +27,7 @@
         "speed": 0.125,
         "count": 4
       }
-    ],
-    "hidden": true
+    ]
   },
   "ammo": "tacz:50bmg",
   "can_crawl": false,

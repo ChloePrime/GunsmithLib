@@ -37,6 +37,8 @@
   "gunsmithlib.affix.prefix": "| ",
   "gunsmithlib.affix.explosive": "爆炸品",
   "gunsmithlib.affix.explosive_prgrammable": "可编程弹药",
+  "gunsmithlib.affix.frag": "破片",
+  "gunsmithlib.affix.cluster": "集束炸弹",
   "gunsmithlib.affix.debuff": "异常状态",
   "gunsmithlib.affix.aim_assist": "辅助瞄准",
   "gunsmithlib.affix.fire_control": "导弹",

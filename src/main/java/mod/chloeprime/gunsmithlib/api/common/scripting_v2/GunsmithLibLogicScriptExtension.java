@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 
+import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
@@ -7,6 +8,7 @@ import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import mod.chloeprime.gunsmithlib.common.util.LauncherContext;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.common.util.TableSchema;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +24,41 @@ import org.luaj.vm2.LuaValue;
  */
 @SuppressWarnings("unused")
 public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExtension {
+    /**
+     * 获取发射器的 id。
+     * 对于子母弹的情况，获取母弹射物的发射器的 id。
+     * 其他时候返回当前枪械的 id。
+     *
+     * @since 5.9.0
+     */
+    public String get_root_gun_id() {
+        var ctx = LauncherContext.STACK.get().peek();
+        return ctx == null ? get_gun_id() : ctx.gunId().toString();
+    }
+
+    /**
+     * 获取根发射器的 api 对象。
+     * 对于子母弹的情况，获取母弹射物的发射器的 api 对象。
+     * 其他时候返回当前枪械的 api 对象。
+     * <p>
+     * 不推荐使用这个方法。子母弹发射时枪械物品是从枪械 id 中重建的，相当于新造出来的枪。
+     *
+     * @since 5.9.0
+     */
+    @ApiStatus.Experimental
+    public ModernKineticGunScriptAPI get_root_gun_api() {
+        var ctx = LauncherContext.STACK.get().peek();
+        if (ctx == null) {
+            return this.api;
+        }
+        var shooter = this.api.getShooter();
+        var api = new ModernKineticGunScriptAPI();
+        api.setItemStack(ctx.gunStack());
+        api.setShooter(shooter);
+        api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
+        return api;
+    }
+
     public final Vector3d get_shooter_position() {
         var shooter = api.getShooter();
         if (shooter == null) {

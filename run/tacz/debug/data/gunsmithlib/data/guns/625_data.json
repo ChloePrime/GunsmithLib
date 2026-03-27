@@ -22,7 +22,13 @@
       "airburst_distances_distribution": 0.25,
       "airburst_rangefinder_max_distance": 100,
       "proximity_fuse_distance": 1.5,
-      "prevent_destroying_loot_items": true
+      "prevent_destroying_loot_items": true,
+      "fragments": {
+        "config_id": "gunsmithlib:625_frag",
+        "count": 128,
+        "min_frag_velocity": 2,
+        "max_frag_velocity": 2
+      }
     },
     "raytrace_control": {
       "obstructs": [
