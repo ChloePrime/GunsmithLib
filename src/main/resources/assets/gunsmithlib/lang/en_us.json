@@ -35,6 +35,7 @@
   "subtitle.gunsmithlib.shield_blocks_bullet": "Bullet blocked by shield",
 
   "gunsmithlib.affix.prefix": "| ",
+  "gunsmithlib.affix.arcana_hint": "§e⚠ §cCan't switch ammo type until TaCZ: Arcana is available for MC 1.21.1",
   "gunsmithlib.affix.explosive": "Explosive",
   "gunsmithlib.affix.explosive_prgrammable": "Programmable Ammo",
   "gunsmithlib.affix.frag": "Fragments",

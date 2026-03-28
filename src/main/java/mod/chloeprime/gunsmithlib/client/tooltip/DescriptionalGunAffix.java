@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.client.tooltip;
 
+import com.google.common.collect.Iterables;
 import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import mod.chloeprime.gunsmithlib.api.client.GunTooltipEvent;
 import mod.chloeprime.gunsmithlib.api.client.RenderGunTooltipTextEvent;
@@ -17,6 +18,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.O
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -37,6 +39,7 @@ public abstract class DescriptionalGunAffix {
     private static final int LINE_HEIGHT = 10;
 
     public abstract boolean shouldShow(GunInfo gunInfo);
+    public abstract boolean shouldShowPrefix(GunInfo gunInfo);
     public abstract Optional<Component> getText(GunInfo gunInfo);
 
     public static void register(DescriptionalGunAffix affix) {
@@ -48,7 +51,7 @@ public abstract class DescriptionalGunAffix {
     }
 
     @SubscribeEvent
-    public static void onTooltipHeight(GunTooltipEvent.ComputeHeight event) {
+    public static void onTooltipHeight(GunTooltipEvent.ComputeSize event) {
         var gun = event.getGunInfo().orElse(null);
         if (gun == null) {
             return;
@@ -58,22 +61,42 @@ public abstract class DescriptionalGunAffix {
         var extra = configured != null
                 ? configured.getBefore().map(List::size).orElse(0) + configured.getAfter().map(List::size).orElse(0)
                 : 0;
-
         var replace = configured == null ? null : configured.getReplace().orElse(null);
-        int lines;
 
-        if (replace != null) {
-            lines = replace.size() + extra;
-        } else {
-            lines = extra;
-            for (var entry : ENTRIES) {
-                if (entry.shouldShow(gun)) {
-                    lines++;
+        // 计算宽度
+        if (event instanceof GunTooltipEvent.ComputeWidth eventW) {
+            var before = Optional.ofNullable(configured).flatMap(DescriptionalAffixData::getBefore).orElse(Collections.emptyList());
+            var after = Optional.ofNullable(configured).flatMap(DescriptionalAffixData::getAfter).orElse(Collections.emptyList());
+            var font = Minecraft.getInstance().font;
+            for (String line : Iterables.concat(before, after)) {
+                eventW.pumpWidth(font.width(line));
+            }
+            if (replace != null) {
+                for (String line : replace) {
+                    eventW.pumpWidth(font.width(line));
+                }
+            } else {
+                for (var entry : ENTRIES) {
+                    entry.getText(gun).ifPresent(line -> eventW.pumpWidth(font.width(line)));
                 }
             }
         }
-        if (lines > 0) {
-            event.pumpHeight(MARGIN + lines * LINE_HEIGHT);
+        // 计算高度
+        if (event instanceof GunTooltipEvent.ComputeHeight eventH) {
+            int lines;
+            if (replace != null) {
+                lines = replace.size() + extra;
+            } else {
+                lines = extra;
+                for (var entry : ENTRIES) {
+                    if (entry.shouldShow(gun)) {
+                        lines++;
+                    }
+                }
+            }
+            if (lines > 0) {
+                eventH.pumpHeight(MARGIN + lines * LINE_HEIGHT);
+            }
         }
     }
 
@@ -97,7 +120,7 @@ public abstract class DescriptionalGunAffix {
                         event.pumpHeight(MARGIN);
                     }
                     var text = entry.getText(gun).orElse(Component.literal("?"));
-                    event.enqueue(ctx -> render(ctx, text, true));
+                    event.enqueue(ctx -> render(ctx, text, entry.shouldShowPrefix(gun)));
                 }
             }
         }
@@ -127,6 +150,7 @@ public abstract class DescriptionalGunAffix {
 
     @ApiStatus.Internal
     public static void init() {
+        register(new YouShouldInstallArcanaAffix());
         register(new Explosivity());
         register(new ProgrammableExplosivity());
         register(new ChildBullet());
@@ -148,6 +172,11 @@ public abstract class DescriptionalGunAffix {
 
         public DescriptionalGunAffixBase(Component text) {
             this.text = text;
+        }
+
+        @Override
+        public boolean shouldShowPrefix(GunInfo gunInfo) {
+            return true;
         }
 
         public Component getTextImpl(GunInfo gunInfo) {

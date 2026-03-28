@@ -35,6 +35,7 @@
   "subtitle.gunsmithlib.shield_blocks_bullet": "子弹被枪盾格挡",
 
   "gunsmithlib.affix.prefix": "| ",
+  "gunsmithlib.affix.arcana_hint": "§e⚠ §c弹种切换功能在 TaCZ: Arcana 支持 1.21.1 前暂不可用",
   "gunsmithlib.affix.explosive": "爆炸品",
   "gunsmithlib.affix.explosive_prgrammable": "可编程弹药",
   "gunsmithlib.affix.frag": "破片",

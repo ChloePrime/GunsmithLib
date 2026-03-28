@@ -7,7 +7,9 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.common.MiscAttributeAdapter;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.arcana_check.ArcanaExtras;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.OldFireControlData;
+import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,18 +28,27 @@ public class MixinGunData implements EnhancedGunData {
         return (int) MiscAttributeAdapter.rpm(shooter);
     }
 
-    @SuppressWarnings("unused")
+    @GunpackProperty
     @SerializedName("gunsmithlib_extension")
     private @Unique @Nullable GunsmithLibGunDataExtension gunsmith$extension;
 
+    @GunpackProperty
+    @SerializedName("extras")
+    private @Unique @Nullable ArcanaExtras gunsmith$arcana_extras;
+
     @Deprecated
-    @SuppressWarnings("unused")
+    @GunpackProperty
     @SerializedName("tacz_fire_control_extension:fire_control_system")
     private @Unique @Nullable OldFireControlData gunsmith$oldFireControlData;
 
     @Override
     public Optional<GunsmithLibGunDataExtension> gunsmith$getGunsmithLibExtension() {
         return Optional.ofNullable(gunsmith$extension);
+    }
+
+    @Override
+    public Optional<ArcanaExtras> gunsmith$getArcanaExtras() {
+        return Optional.ofNullable(gunsmith$arcana_extras);
     }
 
     @Override

@@ -27,7 +27,40 @@ public abstract class GunTooltipEvent extends Event {
         }
     }
 
-    public static class ComputeHeight extends GunTooltipEvent {
+
+    public static sealed class ComputeSize extends GunTooltipEvent {
+        public ComputeSize(GunTooltipContext context) {
+            super(context);
+        }
+    }
+
+    public static non-sealed class ComputeWidth extends ComputeSize {
+        private final int originalWidth;
+        private int width;
+
+        public ComputeWidth(GunTooltipContext context, int width) {
+            super(context);
+            this.width = this.originalWidth = width;
+        }
+
+        public int getOriginalWidth() {
+            return originalWidth;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public void pumpWidth(int widthIn) {
+            this.width = Math.max(widthIn, this.width);
+        }
+
+        public void setWidth(int widthIn) {
+            this.width = widthIn;
+        }
+    }
+
+    public static non-sealed class ComputeHeight extends ComputeSize {
         private final int originalHeight;
         private int height;
 
