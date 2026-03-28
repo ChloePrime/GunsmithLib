@@ -85,7 +85,7 @@ public class MixinClientGunTooltip {
         NeoForge.EVENT_BUS.post(event);
     }
 
-    @ModifyReturnValue(method = "getHeight", at = @At("RETURN"))
+    @ModifyReturnValue(method = "getHeight", remap = true, at = @At("RETURN"))
     private int modifyHeight(int original) {
         var self = (ClientGunTooltip) (Object) this;
         var event = new GunTooltipEvent.ComputeHeight(new GunTooltipContext(self, gunsmithlib$gun()), original);
