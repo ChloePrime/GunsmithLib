@@ -73,6 +73,7 @@ public class HitParticleSystem {
                 ? Vec3.atLowerCornerOf(blockHit.getDirection().getNormal())
                 : ammo.getLookAngle().normalize().scale(-1);
         var hitPos = hit.getLocation().add(normal.scale(0.25));
+        var hitPosAaa = hit.getLocation().add(ammo.getDeltaMovement().normalize().scale(-0.125));
         // 获取当前生效的粒子 data
         var gunInfo = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId, level.registryAccess())).orElse(null);
         if (gunInfo == null) {
@@ -95,7 +96,7 @@ public class HitParticleSystem {
                     continue;
                 }
                 var scale = (isExplodeEvent && isFar) ? getExplodeScale(ammo, gunInfo) : 1;
-                AaaParticleProxy.addParticle(level, isFar, id, hitPos, normal, scale, data.getAaaParticleData());
+                AaaParticleProxy.addParticle(level, isFar, id, hitPosAaa, normal, scale, data.getAaaParticleData());
                 continue;
             }
             // 解码粒子 id 和配置
