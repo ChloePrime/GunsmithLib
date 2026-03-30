@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.mixin.client.bugfix.tacz;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
@@ -7,6 +8,7 @@ import com.tacz.guns.client.renderer.entity.EntityBulletRenderer;
 import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.GunsmithClientConfig;
+import mod.chloeprime.gunsmithlib.client.bugfix.tacz.TracerStartPosFixStatics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.joml.Vector3f;
@@ -15,6 +17,17 @@ import org.spongepowered.asm.mixin.injection.*;
 
 @Mixin(value = EntityBulletRenderer.class, remap = false)
 public class TracerStartPosFixMixin {
+    @ModifyExpressionValue(
+            method = "/lambda\\$renderTracerAmmo\\$\\d+/",
+            at = @At(value = "CONSTANT", args = "doubleValue=50.0"))
+    private double fixTracerTooLowAtLowRange(
+            double original,
+            EntityKineticBullet bullet
+    ) {
+        double range = TracerStartPosFixStatics.CLIENT_RANGES.getOrDefault(bullet, original);
+        return Math.min(range, original);
+    }
+
     @ModifyVariable(
             method = "/lambda\\$renderTracerAmmo\\$\\d+/",
             name = "offset",
@@ -34,6 +47,6 @@ public class TracerStartPosFixMixin {
             return original;
         }
         var aimProgress = IClientPlayerGunOperator.fromLocalPlayer(shooter).getClientAimingProgress(partialTicks);
-        return new Vector3f(original.x(), Mth.lerp(aimProgress, original.y(), -1), original.z());
+        return new Vector3f(original.x(), Mth.lerp(aimProgress, original.y(), -0.75F), original.z());
     }
 }
