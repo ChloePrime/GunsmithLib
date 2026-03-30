@@ -48,5 +48,14 @@ public class Config
                     Added in version 4.4.3""")
             .define("interact_key_inferencing", true);
 
+    public static final ModConfigSpec.BooleanValue IMPROVE_TRACER_ROTATION_STABILITY = BUILDER
+            .comment("""
+                    Disable server side position correction for bullets.
+                    This fixes tracer effect being randomly rotated after initial tick.
+                    If unsure, keep this true.
+                    
+                    Added in version 5.9.3""")
+            .define("improve_tracer_rotation_stability", true);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 }

@@ -123,7 +123,7 @@ public class Gunsmith {
     private static final double EYE_TO_HAND_Y = 5.0 / 16;
     private static final Vec3 UP = new Vec3(0, 1, 0);
 
-    private static boolean hasScope(LivingEntity shooter) {
+    public static boolean hasScope(LivingEntity shooter) {
         var info = getGunInfo(shooter.getMainHandItem()).orElse(null);
         if (info == null) {
             return false;

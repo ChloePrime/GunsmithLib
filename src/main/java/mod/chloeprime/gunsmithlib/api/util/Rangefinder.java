@@ -23,6 +23,10 @@ public class Rangefinder {
     public interface Result {
         double getLength();
 
+        default double getLengthOrDefault(double fallback) {
+            return getLength();
+        }
+
         default HitResult asHitResult() {
             return Objects.requireNonNull((HitResult) this);
         }
@@ -67,7 +71,7 @@ public class Rangefinder {
     public static class MissResult extends HitResult implements Result {
         private final double length;
 
-        protected MissResult(double length, Vec3 hitLocation) {
+        public MissResult(double length, Vec3 hitLocation) {
             super(hitLocation);
             this.length = length;
         }
@@ -80,6 +84,11 @@ public class Rangefinder {
         @Override
         public double getLength() {
             return length;
+        }
+
+        @Override
+        public double getLengthOrDefault(double fallback) {
+            return length == 0 ? fallback : Result.super.getLengthOrDefault(fallback);
         }
     }
 
@@ -139,7 +148,7 @@ public class Rangefinder {
         if (hitEntity != null) {
             return new EntityResult(length, hitEntity, hitLocation);
         }
-        return new MissResult(length, hitLocation);
+        return new MissResult(length <= 1e-4 ? 0 : length, hitLocation);
     }
 
     private static Optional<Stream<EntityHitResult>> clipEntities(Projectile projectile, Entity shooter, Vec3 from, Vec3 to, int limit) {

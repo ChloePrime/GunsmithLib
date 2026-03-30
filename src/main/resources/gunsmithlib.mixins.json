@@ -37,6 +37,7 @@
     "MixinPlayer",
     "MixinReloadProcedure",
     "bugfix.luaj.MixinJavaMember",
+    "bugfix.tacz.TracerStartPosFixDisableBulletTrackingMixin",
     "dfu.MixinGunPackLoader",
     "dfu.MixinGunpackUpgrader",
     "EntityKineticBulletAccessor",
@@ -62,7 +63,8 @@
     "client.MouseButtonInputEventAccessor",
     "client.RecoilAttributeMixin",
     "client.animation.MixinGunAnimationStateContext",
-    "client.animation.MixinObjectAnimationRunner"
+    "client.animation.MixinObjectAnimationRunner",
+    "client.bugfix.tacz.TracerStartPosFixMixin"
   ],
   "injectors": {
     "defaultRequire": 1

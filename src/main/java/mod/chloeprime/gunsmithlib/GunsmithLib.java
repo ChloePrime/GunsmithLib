@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
+import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
 import mod.chloeprime.gunsmithlib.common.entity.RangefinderMarker;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantStorage;
@@ -29,6 +30,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.PercentageAttribute;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -54,6 +56,9 @@ public class GunsmithLib {
         EntityTypes.DFR.register(bus);
         bus.addListener(this::commonSetup);
         container.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        if (FMLLoader.getDist().isClient()) {
+            GunsmithLibClient.onClientConstruct(container::registerConfig);
+        }
         // MC1.21+ Only
         DataComponents.DFR.register(bus);
         DataAttachments.DFR.register(bus);
