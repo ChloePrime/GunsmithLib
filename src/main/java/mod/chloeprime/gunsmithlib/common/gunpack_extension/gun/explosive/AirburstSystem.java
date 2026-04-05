@@ -10,6 +10,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.api.util.Rangefinder;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
+import mod.chloeprime.gunsmithlib.common.internal.AmmoHitAnythingEventPoster;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
@@ -246,6 +247,8 @@ public class AirburstSystem {
             if (!canceled) {
                 GsHelper.syncBulletExplodePos(bullet, explodePos);
                 accessor.setExplosionDelayCount(0);
+                // 防止爆炸粒子放两遍
+                AmmoHitAnythingEventPoster.exemptFromSelfExplodeEvent(bullet);
             }
         }
     }

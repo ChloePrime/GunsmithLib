@@ -71,6 +71,9 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
             cancellable = true)
     private void onBulletSelfExplode(CallbackInfo ci) {
         var self = (EntityKineticBullet) (Object) this;
+        if (AmmoHitAnythingEventPoster.isExemptedFromSelfExplodeEvent(self)) {
+            return;
+        }
         var canceled = AmmoHitAnythingEventPoster.selfPre(new AmmoSelfExplodeEvent.Pre(level(), self)).isCanceled();
         if (canceled) {
             ci.cancel();

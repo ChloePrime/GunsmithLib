@@ -86,6 +86,8 @@ public class ProximityFuseSystem {
                 // 爆炸！
                 GsHelper.syncBulletExplodePos(bullet, rayCastStart);
                 accessor.setExplosionDelayCount(0);
+                // 防止爆炸粒子放两遍
+                AmmoHitAnythingEventPoster.exemptFromSelfExplodeEvent(bullet);
                 if (hitEntityEvent != null) {
                     AmmoHitAnythingEventPoster.entityPost(hitEntityEvent);
                 }
