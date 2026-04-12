@@ -36,6 +36,7 @@
     "MixinModernKineticGunScriptAPI",
     "MixinPlayer",
     "MixinReloadProcedure",
+    "SmithingTransformRecipeAccessor",
     "bugfix.luaj.MixinJavaMember",
     "bugfix.tacz.TracerStartPosFixDisableBulletTrackingMixin",
     "dfu.MixinGunPackLoader",
