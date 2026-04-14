@@ -5,7 +5,6 @@ import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -99,7 +98,7 @@ public class PotionEffectBehavior {
                 hitPos.x(), hitPos.y(), hitPos.z(),
                 radius
         );
-        float minRadiusRate = Mth.clamp(bullet.gunsmithlib$getPotionCloudMinSizeRate(), 0, 1);
+        float minRadiusRate = Math.max(0, bullet.gunsmithlib$getPotionCloudMinSizeRate());
         // 设置药水云的其他属性
         cloud.setDuration(duration);
         cloud.setWaitTime(0);
