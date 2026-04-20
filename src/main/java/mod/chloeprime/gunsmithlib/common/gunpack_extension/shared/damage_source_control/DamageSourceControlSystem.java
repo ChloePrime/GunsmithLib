@@ -73,7 +73,7 @@ public class DamageSourceControlSystem {
         if (data.isEmpty()) {
             return;
         }
-        var victimIsCreativePlayer = event.getHurtEntity() instanceof Player player && player.getAbilities().instabuild;
+        var victimIsCreativePlayer = event.getHurtEntity() instanceof Player player && player.isCreative();
         for (var datum : data) {
             var source = event.getDamageSource(GunDamageSourcePart.NON_ARMOR_PIERCING);
             var sourceAp = event.getDamageSource(GunDamageSourcePart.ARMOR_PIERCING);
