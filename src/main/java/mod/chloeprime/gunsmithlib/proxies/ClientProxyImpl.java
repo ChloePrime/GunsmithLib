@@ -46,6 +46,10 @@ class ClientProxyImpl {
         fallbackRegistryAccess = event.getRegistryAccess();
     }
 
+    static Optional<Level> clientLevel() {
+        return Optional.ofNullable(MC.level);
+    }
+
     static Vec3 bobCompensation(Vec3 original) {
         if (MC.options.getCameraType() != CameraType.FIRST_PERSON || !MC.options.bobView().get()) {
             return original;

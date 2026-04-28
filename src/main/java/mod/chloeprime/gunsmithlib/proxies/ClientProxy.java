@@ -40,6 +40,17 @@ public class ClientProxy {
         return level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
     }
 
+    public static Optional<Level> clientLevel() {
+        if (DEDICATED_SERVER) {
+            GunsmithLib.LOGGER.warn("Trying to access client level on dedicated server.");
+            return Optional.empty();
+        }
+        if (!FMLLoader.isProduction() && EffectiveSide.get().isServer()) {
+            GunsmithLib.LOGGER.warn("Trying to access client level on logical server.");
+        }
+        return ClientProxyImpl.clientLevel();
+    }
+
     public static Optional<Entity> getEntityByUuid(Level level, UUID uuid) {
         if (level instanceof ServerLevel serverLevel) {
             return Optional.ofNullable(serverLevel.getEntity(uuid));
