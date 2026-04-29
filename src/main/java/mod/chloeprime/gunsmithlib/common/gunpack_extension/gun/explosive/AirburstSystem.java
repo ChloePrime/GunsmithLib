@@ -238,7 +238,12 @@ public class AirburstSystem {
             boolean canceled;
             if (bullet instanceof EntityKineticBullet ekb) {
                 var dir = posAfter.subtract(posBefore);
-                var hit = new BlockHitResult(explodePos, Direction.getNearest(dir.x(), dir.y(), dir.z()), BlockPos.containing(explodePos), true);
+                var hit = new BlockHitResult(explodePos, Direction.getNearest(dir.x(), dir.y(), dir.z()), BlockPos.containing(explodePos), true) {
+                    @Override
+                    public @Nonnull Type getType() {
+                        return Type.MISS;
+                    }
+                };
                 canceled = NeoForge.EVENT_BUS.post(new AmmoHitBlockEvent(bullet.level(), hit, Blocks.AIR.defaultBlockState(), ekb)).isCanceled();
             } else {
                 canceled = false;

@@ -27,7 +27,8 @@
         "config_id": "gunsmithlib:625_frag",
         "count": 128,
         "min_frag_velocity": 2,
-        "max_frag_velocity": 2
+        "max_frag_velocity": 2,
+        "distribution": "uniform"
       }
     },
     "raytrace_control": {

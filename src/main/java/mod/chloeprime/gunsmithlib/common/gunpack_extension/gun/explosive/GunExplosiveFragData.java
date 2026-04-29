@@ -29,12 +29,22 @@ public class GunExplosiveFragData {
     @GunpackProperty
     private double max_frag_velocity = 1;
 
+    /**
+     * @since 5.11.0
+     */
+    @GunpackProperty
+    private FragDistribution distribution = FragDistribution.RANDOM;
+
     public final Optional<ItemStack> getConfigSource() {
         return Optional.ofNullable(item.get()).filter(item -> !item.isEmpty());
     }
 
     public final int getCount() {
         return count;
+    }
+
+    public FragDistribution getDistribution() {
+        return distribution;
     }
 
     public final double getMinFragVelocity() {
@@ -48,6 +58,7 @@ public class GunExplosiveFragData {
     public final double sampleFragVelocity(RandomSource rng) {
         return Mth.lerp(rng.nextDouble(), getMinFragVelocity(), getMaxFragVelocity());
     }
+
 
     private final Supplier<ItemStack> item = Suppliers.memoize(() -> GunItemBuilder.create()
             .setId(config_id)

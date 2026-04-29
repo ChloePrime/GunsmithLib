@@ -56,7 +56,7 @@
       "explode": true,
       "damage": 40,
       "radius": 5,
-      "knockback": true,
+      "knockback": false,
       "delay": 0.25
     }
   },
