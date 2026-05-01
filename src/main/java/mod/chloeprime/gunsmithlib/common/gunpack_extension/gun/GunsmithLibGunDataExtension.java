@@ -61,8 +61,11 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      * 注：蓄力模式仅在半自动开火模式下生效。
      *
      * @since 4.13.0
+     * @deprecated 请使用 TACZ 1.1.8 自带的蓄力系统。
      */
+    @Deprecated
     @GunpackProperty
+    @SuppressWarnings("DeprecatedIsStillUsed")
     private boolean chargeable = false;
 
     /**
