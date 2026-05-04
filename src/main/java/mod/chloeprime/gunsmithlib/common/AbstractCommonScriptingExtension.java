@@ -4,6 +4,9 @@ import cn.chloeprime.commons.async.TaskScheduler;
 import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
+import com.tacz.guns.item.ModernKineticGunScriptAPI;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.CommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
@@ -64,8 +67,14 @@ public interface AbstractCommonScriptingExtension extends CommonScriptingExtensi
         return Rangefinder.clip(shooter, shooter.getEyePosition(), shooter.getLookAngle(), pierce, range).getLength();
     }
 
+    /**
+     * @return 未定义行为（UB）
+     * @deprecated 请使用 {@link GunAnimationStateContext#getChargeProgress} 或 {@link ModernKineticGunScriptAPI#getChargeProgress}
+     */
     @Override
+    @Deprecated(since = "6.0.0")
     default double gunsmith_getChargingTime() {
+        GunsmithLib.LOGGER.warn(ChargeableTriggerSystem.DEPRECATION_MESSAGE);
         var shooter = gunsmithlib$getShooter().orElse(null);
         var gunStack = gunsmithlib$getCurrentItem();
         if (shooter == null || gunStack == null) {

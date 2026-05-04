@@ -21,6 +21,13 @@ import java.util.Optional;
 
 @EventBusSubscriber
 public class ChargeableTriggerSystem {
+    /**
+     * @since 6.0.0
+     */
+    public static final String DEPRECATION_MESSAGE =
+            "Trying to get GunsmithLib's charge system, which is deprecated and not functional. " +
+            "Please migrate to TaCZ 1.1.8's charge system.";
+
     @RemoteCallable(flow = RPCFlow.CLIENT_TO_SERVER)
     public static void beginCharging() {
         var sender = RPCContext.isCalledThroughRPC() ? RPCContext.getSenderPlayer() : null;

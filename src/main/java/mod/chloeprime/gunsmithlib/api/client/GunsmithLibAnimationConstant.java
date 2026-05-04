@@ -52,6 +52,8 @@ public class GunsmithLibAnimationConstant {
      * "gunsmithlib:begin_charging"
      *
      * @since 4.13.0
+     * @deprecated 请迁移到 TaCZ 1.1.8 自带的蓄力系统
      */
+    @Deprecated(since = "6.0.0")
     public static final String GUNSMITHLIB_INPUT_BEGIN_CHARGING = GunsmithLib.loc("begin_charging").toString();
 }

@@ -1,5 +1,8 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun;
 
+import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveData;
@@ -57,18 +60,6 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     private @Nullable GunExplosiveData gun_explosive;
 
     /**
-     * 是否为蓄力模式。
-     * 注：蓄力模式仅在半自动开火模式下生效。
-     *
-     * @since 4.13.0
-     * @deprecated 请使用 TACZ 1.1.8 自带的蓄力系统。
-     */
-    @Deprecated
-    @GunpackProperty
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    private boolean chargeable = false;
-
-    /**
      * 如为 true，则不会出现在 TaCZ 的创造模式标签页里。
      *
      * @since 5.1.0
@@ -106,8 +97,14 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
         return gun_explosive;
     }
 
+    /**
+     * @return {@code false}
+     * @deprecated 请使用 {@link GunData#getChargeData(FireMode)}
+     */
+    @Deprecated
     public boolean isChargeable() {
-        return chargeable;
+        GunsmithLib.LOGGER.warn(ChargeableTriggerSystem.DEPRECATION_MESSAGE);
+        return false;
     }
 
     public boolean isHidden() {

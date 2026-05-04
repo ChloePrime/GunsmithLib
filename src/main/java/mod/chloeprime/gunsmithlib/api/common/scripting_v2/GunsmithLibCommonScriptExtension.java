@@ -1,5 +1,7 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 
+import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
+import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.BetterAsyncExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.RangefinderExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.VanillaCooldownExtension;
@@ -24,7 +26,11 @@ public class GunsmithLibCommonScriptExtension
 
     /**
      * 获取武器蓄力时间，单位为秒。
+     *
+     * @return 未定义行为（UB）
+     * @deprecated 请使用 {@link GunAnimationStateContext#getChargeProgress} 或 {@link ModernKineticGunScriptAPI#getChargeProgress}
      */
+    @Deprecated(since = "6.0.0")
     public double get_charge_time() {
         return v1.gunsmith_getChargingTime();
     }
