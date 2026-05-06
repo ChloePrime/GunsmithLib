@@ -224,18 +224,8 @@
 ## 多弹种功能：
 不在 data 文件中进行定义，请参见 [gun_variants.md](gun_variants.md)。<br>
 display 文件中有少量多弹种功能的可配置项。
-
-
-## 蓄力扳机系统
-```json5
-{
-  "gunsmithlib_extension": {
-    // 没错，就这一个配置项（
-    // 实际使用的时候需要脚本配合的，参加 scripting.md
-    "chargeable": true
-  },
-}
-```
+<br>
+**6.0.0 更新：** 现已支持设定优先级与多个弹种组包含同一武器！
 
 ## 从创造标签页中隐藏
 只对 TaCZ 的标签页生效，且只能写在枪械的 data 里。
