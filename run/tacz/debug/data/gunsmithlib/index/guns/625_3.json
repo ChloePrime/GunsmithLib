@@ -1,0 +1,9 @@
+{
+  "name": "gunsmithlib.gun.625.name",
+  "tooltip": "gunsmithlib.gun.625.desc",
+  "display": "gunsmithlib:625_display",
+  "data": "gunsmithlib:625_data",
+  "type": "mg",
+  "item_type": "modern_kinetic",
+  "sort": 2100000000
+}

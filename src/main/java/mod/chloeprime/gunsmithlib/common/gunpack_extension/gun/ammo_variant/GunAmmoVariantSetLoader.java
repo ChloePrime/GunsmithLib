@@ -8,14 +8,12 @@ import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.common.util.SimpleCodecResourceReloadListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
@@ -32,8 +30,6 @@ public class GunAmmoVariantSetLoader extends SimpleCodecResourceReloadListener<G
     @ParametersAreNonnullByDefault
     protected void apply(Map<ResourceLocation, GunAmmoVariantSet> data, ResourceManager resourceManager, ProfilerFiller profiler) {
         receiveData(data);
-        sendToAllClientsConnected();
-        GunVariantRegistry.injectGunDisplayInstanceRedirectingDataToAllClients();
     }
 
     @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)
@@ -47,15 +43,7 @@ public class GunAmmoVariantSetLoader extends SimpleCodecResourceReloadListener<G
         var lock = GunVariantRegistry.SINGLEPLAYER_LOCK.writeLock();
         try {
             lock.lock();
-            GunVariantRegistry.REGISTRY.clear();
-            GunVariantRegistry.REGISTRY.putAll(data);
-
-            GunVariantRegistry.BY_GUN_ID.clear();
-            for (var entry : data.values()) {
-                for (ResourceLocation gunId : entry.allGunIds()) {
-                    GunVariantRegistry.BY_GUN_ID.put(gunId, entry);
-                }
-            }
+            GunVariantRegistry.mergeByGunId(data.values());
         } finally {
             lock.unlock();
         }
@@ -67,24 +55,12 @@ public class GunAmmoVariantSetLoader extends SimpleCodecResourceReloadListener<G
     }
 
     @SubscribeEvent
-    @SuppressWarnings("CodeBlock2Expr")
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer ssp) {
-            encodeJsonToNBT(INSTANCE.raw).ifPresent(tag -> {
-                RPC.call(RPCTarget.to(ssp), GunAmmoVariantSetLoader::receiveData, tag);
-            });
-        }
-    }
-
-    public static void sendToAllClientsConnected() {
-        var server = ServerLifecycleHooks.getCurrentServer();
-        if (server == null) {
-            return;
-        }
+    public static void syncRegistryDataOnDatapackSync(OnDatapackSyncEvent event) {
         encodeJsonToNBT(INSTANCE.raw).ifPresent(tag -> {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            event.getRelevantPlayers().forEach(player -> {
                 RPC.call(RPCTarget.to(player), GunAmmoVariantSetLoader::receiveData, tag);
-            }
+                GunVariantRegistry.injectGunDisplayInstanceRedirectingDataToClient(player);
+            });
         });
     }
 }

@@ -1,12 +1,13 @@
 {
-  "priority": "std:0",
+  "priority": "std:2",
   "parts": [
     {
       "name": "main",
-      "priority": "std:0",
+      "priority": "std:2",
       "variants": [
         "gunsmithlib:625",
-        "gunsmithlib:625_ap"
+        "gunsmithlib:625_2",
+        "gunsmithlib:625_3"
       ]
     }
   ]

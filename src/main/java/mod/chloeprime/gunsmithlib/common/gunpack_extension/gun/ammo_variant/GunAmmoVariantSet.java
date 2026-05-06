@@ -20,19 +20,21 @@ import java.util.function.Function;
 
 public record GunAmmoVariantSet(
         List<Part> parts,
+        String priority,
         Optional<ResourceLocation> masterId,
         Set<ResourceLocation> allGunIds,
         Map<String, Part> partByName,
         Object2IntMap<Part> partToIndex
-) {
+) implements GunVariantSorting.Prioritized {
     public static final Codec<GunAmmoVariantSet> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.list(Part.CODEC).fieldOf("parts").forGetter(GunAmmoVariantSet::parts),
+            Codec.STRING.optionalFieldOf("priority", "").forGetter(GunAmmoVariantSet::priority),
             ResourceLocation.CODEC.optionalFieldOf("master").forGetter(GunAmmoVariantSet::masterId)
     ).apply(instance, GunAmmoVariantSet::new));
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public GunAmmoVariantSet(List<Part> parts, Optional<ResourceLocation> masterId) {
-        this(parts, masterId, mergeGunIds(parts), gatherPartByName(parts), index(parts));
+    public GunAmmoVariantSet(List<Part> parts, String priority, Optional<ResourceLocation> masterId) {
+        this(parts, priority, masterId, mergeGunIds(parts), gatherPartByName(parts), index(parts));
     }
 
     public static Optional<GunAmmoVariantSet> of(ItemStack gun) {
@@ -45,20 +47,23 @@ public record GunAmmoVariantSet(
 
     public record Part(
             String name,
+            String priority,
             List<Variant> variants,
             Object2IntMap<ResourceLocation> gunIdToIndex
-    ) {
+    ) implements GunVariantSorting.Prioritized {
         public static final Codec<Part> CODEC = RecordCodecBuilder.create(instance -> instance
                 .group(
                         Codec.STRING.fieldOf("name").forGetter(Part::name),
+                        Codec.STRING.optionalFieldOf("priority", "").forGetter(Part::priority),
                         GsHelper.selfOrList(Variant.CODEC).fieldOf("variants").forGetter(Part::variants))
                 .apply(instance, Part::new));
 
         public Part(
                 String name,
+                String priority,
                 List<Variant> variants
         ) {
-            this(name, variants, expandVariantIndexToGunIdIndex(index(variants)));
+            this(name, priority, variants, expandVariantIndexToGunIdIndex(index(variants)));
         }
 
         public Variant getVariantFromGunId(ResourceLocation gunId) {
