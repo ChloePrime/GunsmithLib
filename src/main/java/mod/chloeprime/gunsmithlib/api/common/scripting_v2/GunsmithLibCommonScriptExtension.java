@@ -3,14 +3,10 @@ package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
-import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.BetterAsyncExtension;
-import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.EntityStates;
-import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.RangefinderExtension;
-import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ServerShootStates;
-import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ShooterStates;
-import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.VanillaCooldownExtension;
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.*;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
 import org.jetbrains.annotations.ApiStatus;
 import org.luaj.vm2.LuaValue;
 
@@ -38,11 +34,24 @@ public class GunsmithLibCommonScriptExtension
      * @see ClientShootStates 客户端返回的
      * @see ShooterStates
      * @see EntityStates
+     * @since 6.0.0
      */
     public @Nullable ShooterStates shooter_states() {
         return v1.gunsmithlib$getShooter()
                 .map(BaseShooterStatesImpl::new)
                 .orElse(null);
+    }
+
+    /**
+     * 获取同步数据接口。
+     * 在服务端（逻辑脚本）中反馈的是可写入的，在客户端中返回的是只读的，不可写入。
+     *
+     * @return 基于枪械物品 NBT 的同步数据接口
+     * @see SyncedData 逻辑机调用时返回的，可写入的接口
+     * @since 6.0.0
+     */
+    public SyncedDataView synced_data() {
+        return new ItemSyncedDataImpl(v1.gunsmithlib$getCurrentItem(), true);
     }
 
     // 旧版 API

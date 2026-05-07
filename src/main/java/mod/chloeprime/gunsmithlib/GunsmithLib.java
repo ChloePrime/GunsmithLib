@@ -2,6 +2,10 @@ package mod.chloeprime.gunsmithlib;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
 import mod.chloeprime.gunsmithlib.api.common.recipe.GunRecipeSerializers;
@@ -40,7 +44,10 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.slf4j.Logger;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Mod(GunsmithLib.MOD_ID)
@@ -212,6 +219,29 @@ public class GunsmithLib {
         public static final Supplier<DataComponentType<Long>> CHARGE_BEGIN_TIME = DFR.register("charge_begin_time", () -> DataComponentType.<Long>builder()
                 .persistent(Codec.LONG)
                 .networkSynchronized(ByteBufCodecs.VAR_LONG)
+                .build());
+
+        // 同步数据
+
+        public static final Supplier<DataComponentType<Object2IntMap<String>>> SYNCED_INTS = DFR.register("synced_ints", () -> DataComponentType
+                .<Object2IntMap<String>>builder()
+                .persistent(Codec.unboundedMap(Codec.STRING, Codec.INT).xmap(Object2IntOpenHashMap::new, Function.identity()))
+                .networkSynchronized(ByteBufCodecs.map(Object2IntOpenHashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT))
+                .cacheEncoding()
+                .build());
+
+        public static final Supplier<DataComponentType<Object2DoubleMap<String>>> SYNCED_NUMBERS = DFR.register("synced_numbers", () -> DataComponentType
+                .<Object2DoubleMap<String>>builder()
+                .persistent(Codec.unboundedMap(Codec.STRING, Codec.DOUBLE).xmap(Object2DoubleOpenHashMap::new, Function.identity()))
+                .networkSynchronized(ByteBufCodecs.map(Object2DoubleOpenHashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.DOUBLE))
+                .cacheEncoding()
+                .build());
+
+        public static final Supplier<DataComponentType<Map<String,String>>> SYNCED_STRINGS = DFR.register("synced_strings", () -> DataComponentType
+                .<Map<String,String>>builder()
+                .persistent(Codec.unboundedMap(Codec.STRING, Codec.STRING))
+                .networkSynchronized(ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8))
+                .cacheEncoding()
                 .build());
     }
 

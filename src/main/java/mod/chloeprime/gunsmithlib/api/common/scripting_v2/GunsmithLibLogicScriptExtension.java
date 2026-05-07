@@ -4,11 +4,13 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ServerShootStates;
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.SyncedData;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ServerShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.util.LauncherContext;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
@@ -66,6 +68,11 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
     @Override
     public @Nonnull ServerShootStates shooter_states() {
         return new ServerShooterStatesImpl(api.getShooter());
+    }
+
+    @Override
+    public SyncedData synced_data() {
+        return new ItemSyncedDataImpl(api.getItemStack(), false);
     }
 
     public final Vector3d get_shooter_position() {
