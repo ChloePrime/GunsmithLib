@@ -3,11 +3,13 @@ package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ServerShootStates;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ServerShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.util.LauncherContext;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.common.util.TableSchema;
@@ -15,6 +17,8 @@ import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 import org.luaj.vm2.LuaValue;
+
+import javax.annotation.Nonnull;
 
 /**
  * 示例用法：{@code api:gunsmithlib_extension():play_overheat_sound()}
@@ -57,6 +61,11 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
         api.setShooter(shooter);
         api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
         return api;
+    }
+
+    @Override
+    public @Nonnull ServerShootStates shooter_states() {
+        return new ServerShooterStatesImpl(api.getShooter());
     }
 
     public final Vector3d get_shooter_position() {

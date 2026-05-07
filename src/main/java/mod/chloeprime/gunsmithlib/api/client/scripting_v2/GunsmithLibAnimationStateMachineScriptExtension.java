@@ -2,12 +2,18 @@ package mod.chloeprime.gunsmithlib.api.client.scripting_v2;
 
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import mod.chloeprime.gunsmithlib.api.client.GunsmithLibAnimationConstant;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibCommonScriptExtension;
 import mod.chloeprime.gunsmithlib.client.AbstractGunAnimationStateContextExtension;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.ClientShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /**
  * 示例用法：{@code api:gunsmithlib_extension():play_overheat_sound()}
@@ -90,6 +96,18 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
         return get_previous_ammo_amount() + (get_previous_has_bullet_in_barrel() ? 1 : 0);
     }
 
+    /**
+     * 获取客户端射手的各种状态的接口。
+     * 如果在玩家未进入游戏时不小心触发状态机钩子，那么此时调用该方法会返回 {@code nil}
+     *
+     * @return 客户端射手的各种状态的接口
+     */
+    @Override
+    public @Nullable ClientShootStates shooter_states() {
+        return Optional.ofNullable(Minecraft.getInstance().player)
+                .map(ClientShooterStatesImpl::new)
+                .orElse(null);
+    }
 
     // 下面是内部 API
 

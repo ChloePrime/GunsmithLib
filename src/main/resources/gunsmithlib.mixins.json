@@ -10,6 +10,7 @@
   "mixins": [
     "AlternativeArmorPierceFormulaMixin",
     "CommonGunIndexAccessor",
+    "EntityAccessor",
     "EntityKineticBulletAccessor",
     "ItemCooldownsAccessor",
     "LevelAccessor",
