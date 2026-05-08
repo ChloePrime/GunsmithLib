@@ -19,6 +19,19 @@ public class GunsmithLibCommonScriptExtension
         RangefinderExtension,
         BetterAsyncExtension {
     /**
+     * 三元表达式，给 lua 用的。
+     *
+     * @param condition 条件
+     * @param whenTrue 条件为 true 时返回的值
+     * @param whenFalse 条件为 false 时返回的值
+     * @return {@code condition ? whenTrue: whenFalse}
+     * @param <T> 返回值的类型。
+     */
+    public <T> T ternary_op(boolean condition, T whenTrue, T whenFalse) {
+        return condition ? whenTrue : whenFalse;
+    }
+
+    /**
      * 获取当前脚本对应的枪械的 id
      */
     public String get_gun_id() {
