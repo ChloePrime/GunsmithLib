@@ -172,12 +172,15 @@ dependencies {
 
         // TACZ
         api 'com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.8-r2'
-        compileOnly jarJar('curse.maven:tacz-pack-upgrader-1353465:8058512') {
+
+        // Pack Upgrader
+        compileOnly jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.0-fixed') {
             exclude group: '*', module: '*'
         }
-        localRuntime 'curse.maven:tacz-pack-upgrader-1353465:8058512'
+        localRuntime 'me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.0-fixed'
         compileOnly 'com.github.FiguraMC.luaj:luaj-core:3.0.8-figura'
         compileOnly 'com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura'
+
     }
 
     ;// Optional Dependencies
