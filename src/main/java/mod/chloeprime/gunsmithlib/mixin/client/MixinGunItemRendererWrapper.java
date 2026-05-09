@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(value = GunItemRendererWrapper.class, remap = false)
 public abstract class MixinGunItemRendererWrapper {
     @WrapOperation(
-            method = "/^lambda\\$renderFirstPerson\\$\\d+/",
+            method = "/^lambda\\$renderFirstPersonInner\\$\\d+/",
             at = @At(value = "INVOKE", remap = true, target = "Lnet/minecraft/client/renderer/RenderType;entityCutout(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"))
     private RenderType unlockTransparency(ResourceLocation id, Operation<RenderType> original, ItemStack gun) {
         var enabled = GunsmithLibGunDisplayExtension
