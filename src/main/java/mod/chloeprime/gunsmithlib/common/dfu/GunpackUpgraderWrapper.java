@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 public class GunpackUpgraderWrapper {
-    public static final String VERSION = "v1";
+    public static final String VERSION = "v3";
     public static final Path ROOT_TEMP_DIR = FMLPaths.GAMEDIR.relative().resolve("." + GunsmithLib.MOD_ID);
     public static final Path WORKING_DIR = ROOT_TEMP_DIR.resolve("temp");
     public static final Path UPGRADE_CACHE = ROOT_TEMP_DIR.resolve("upgrade_cache").resolve(VERSION);
