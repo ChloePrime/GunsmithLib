@@ -54,6 +54,7 @@ public class GunpackUpgraderWrapper {
                 try (var subdirectories = Files.list(unzipped1201.resolve("data"))) {
                     subdirectories.filter(Files::isDirectory).forEach(subdirectory -> {
                         Upgrader.INSTANCE.upgradeBlockDatas(subdirectory);
+                        Upgrader.INSTANCE.upgradeLootInjectors(subdirectory);
                         Upgrader.INSTANCE.upgradeRecipes(subdirectory);
                     });
                 }
