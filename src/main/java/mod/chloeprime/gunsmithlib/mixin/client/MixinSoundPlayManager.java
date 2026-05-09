@@ -1,19 +1,16 @@
 package mod.chloeprime.gunsmithlib.mixin.client;
 
-import cn.chloeprime.commons.ContextUtil;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.client.sound.EntityTrackingGunSoundInstance;
 import com.tacz.guns.client.sound.GunSoundInstance;
 import com.tacz.guns.client.sound.SoundPlayManager;
+import mod.chloeprime.gunsmithlib.client.audio.AudioChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -23,17 +20,13 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 @Mixin(value = SoundPlayManager.class, remap = false)
 public class MixinSoundPlayManager {
     @ModifyReturnValue(method = "hasSoundResource", at = @At("RETURN"))
     private static boolean hasVanillaSoundIsAlsoHasSoundSource(boolean original, Minecraft mc, ResourceLocation id) {
-        return original || Optional.ofNullable(ContextUtil.getRegistryAccessSafely())
-                .flatMap(reg -> reg.registry(Registries.SOUND_EVENT))
-                .flatMap(reg -> reg.getHolder(ResourceKey.create(Registries.SOUND_EVENT, id)))
-                .isPresent();
+        return original || AudioChecker.isValidSoundEvent(AudioChecker.holder(id));
     }
 
     @WrapOperation(
@@ -74,10 +67,11 @@ public class MixinSoundPlayManager {
         if (player == null || level == null) {
             return original.get();
         }
-        var se = BuiltInRegistries.SOUND_EVENT.get(name);
-        if (se == null) {
+        var holder = AudioChecker.holder(name);
+        if (!AudioChecker.isValidSoundEvent(holder)) {
             return original.get();
         }
+        var se = holder.value();
         var delegate = new SimpleSoundInstance(se, SoundSource.PLAYERS, volume, pitch, entity.level().getRandom(), entity.blockPosition());
         if (trackEntity)
             return (S) new EntityTrackingGunSoundInstance(se, SoundSource.PLAYERS, volume, pitch, entity, distance, name, mono) {
