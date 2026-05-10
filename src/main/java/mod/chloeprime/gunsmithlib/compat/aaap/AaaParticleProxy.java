@@ -11,6 +11,9 @@ import javax.annotation.Nullable;
 public class AaaParticleProxy {
     public static final boolean INSTALLED = ModList.get().isLoaded("aaa_particles");
 
+    /**
+     * 该方法定义的前方为 Effekseer 编辑器内的 Y 轴正上方。
+     */
     public static void addParticle(
             Level level,
             boolean force,
@@ -24,6 +27,31 @@ public class AaaParticleProxy {
             return;
         }
         AaaParticleProxyImpl.addParticle(
+                level,
+                force,
+                id,
+                pos,
+                normal,
+                scale,
+                aaaParticleData);
+    }
+
+    /**
+     * 该方法定义的前方为 Effekseer 编辑器内的 Z 轴正方向。
+     */
+    public static void addParticleZP(
+            Level level,
+            boolean force,
+            ResourceLocation id,
+            Vec3 pos,
+            Vec3 normal,
+            float scale,
+            @Nullable AAAParticleData aaaParticleData
+    ) {
+        if (!INSTALLED) {
+            return;
+        }
+        AaaParticleProxyImpl.addParticleZP(
                 level,
                 force,
                 id,

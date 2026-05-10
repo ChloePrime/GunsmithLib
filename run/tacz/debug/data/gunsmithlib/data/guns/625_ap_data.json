@@ -1,5 +1,14 @@
 {
   "gunsmithlib_extension": {
+    "shoot_particles": [
+      {
+        "particle_id": "gunsmithlib:debug_muzzle_effek",
+        "is_aaa_particle": true,
+        "aaa_particle_data": {
+          "scale": 0.8
+        }
+      }
+    ],
     "fire_control": {
       "angular_range": 10,
       "range_override" : 500

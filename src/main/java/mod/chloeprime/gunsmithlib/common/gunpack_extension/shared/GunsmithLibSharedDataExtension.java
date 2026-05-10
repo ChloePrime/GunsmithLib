@@ -65,11 +65,25 @@ public class GunsmithLibSharedDataExtension {
     /**
      * 命中时的粒子效果，
      * 可以添加在枪械和子弹的 data 里，添加在配件上无效。
-     *
+     * <p>
+     * 因为一些历史原因，命中粒子的法线方向是 Effekseer 编辑器内的 y 轴正上方。
      * @since 5.2.0
      */
     @GunpackProperty
     private @Nullable HitParticleData[] hit_particles;
+
+    /**
+     * 开火时的粒子效果，
+     * 可以添加在枪械和子弹的 data 里，添加在配件上无效。
+     * <p>
+     * 开火粒子只支持 AAA 粒子，且必须设置 {@code "is_aaa_particle": true}，否则将被忽略。
+     * <p>
+     * 射击粒子的前方是 Effekseer 编辑器内的 +Z 方向。
+     *
+     * @since 6.1
+     */
+    @GunpackProperty
+    private @Nullable HitParticleData[] shoot_particles;
 
     /**
      * 跳弹设置。
@@ -106,6 +120,10 @@ public class GunsmithLibSharedDataExtension {
 
     public @Nullable HitParticleData[] getHitParticles() {
         return hit_particles;
+    }
+
+    public @Nullable HitParticleData[] getShootParticles() {
+        return shoot_particles;
     }
 
     public @Nullable RicochetData getRicochetData() {
