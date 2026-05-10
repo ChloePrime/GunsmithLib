@@ -1,6 +1,8 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ServerShootStates;
@@ -12,10 +14,12 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.H
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ServerShooterStatesImpl;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.LauncherContext;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.common.util.TableSchema;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 import org.luaj.vm2.LuaValue;
@@ -63,6 +67,65 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
         api.setShooter(shooter);
         api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
         return api;
+    }
+
+    /**
+     * 卸载所有弹药并向射手返回卸下来的弹药，包括枪膛内的弹药。
+     *
+     * @since 6.1
+     */
+    public void unload_all_ammo() {
+        if (!(api.getShooter() instanceof Player shooter)) {
+            return;
+        }
+        IGun gunInterface = api.getAbstractGunItem();
+        var gunStack = api.getItemStack();
+        GsHelper.unpack(gunInterface, gunStack).ifPresentOrElse(
+                gunInfo -> gunInfo.dropAllAmmoIncludingBarrel(shooter),
+                () -> gunInterface.dropAllAmmo(shooter, gunStack));
+    }
+
+    /**
+     * 卸载所有配件并向射手返回卸下来的配件。
+     * <p>
+     * 可用于次抛武器抛弃前卸下配件。
+     *
+     * @since 6.1
+     */
+    public void unload_all_attachments() {
+        IGun gunInterface = api.getAbstractGunItem();
+        var gunStack = api.getItemStack();
+        var shooter = (api.getShooter() instanceof Player p && !p.level().isClientSide()) ? p : null;
+        for (var attachmentType : AttachmentType.values()) {
+            var attachment = gunInterface.getAttachment(gunStack, attachmentType);
+            if (attachment.isEmpty()) {
+                continue;
+            }
+            gunInterface.unloadAttachment(gunStack, attachmentType);
+            if (shooter != null) {
+                if (!shooter.getInventory().add(attachment)) {
+                    shooter.drop(attachment, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * 抛弃该武器，将武器的堆叠大小减少 1，
+     * 通常情况下会导致武器消失。
+     * <p>
+     * 建议调用前调用 {@link #unload_all_attachments} 以保留玩家安装的配件。
+     *
+     * @since 6.1
+     */
+    public void discard_weapon() {
+        if (api.getShooter() instanceof Player shooter && shooter.isCreative()) {
+            return;
+        }
+        var stack = api.getItemStack();
+        if (stack.getCount() > 0) {
+            stack.shrink(1);
+        }
     }
 
     @Override
