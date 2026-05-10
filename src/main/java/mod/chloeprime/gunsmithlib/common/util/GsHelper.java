@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
 import cn.chloeprime.commons.lang4.FloatSupplier;
+import cn.chloeprime.commons.math.LinearAlgebraTypes;
 import cn.chloeprime.commons.rpc.RPC;
 import cn.chloeprime.commons.rpc.RPCFlow;
 import cn.chloeprime.commons.rpc.RPCTarget;
@@ -39,6 +40,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.joml.Matrix3f;
+import org.joml.Vector3f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
@@ -392,4 +395,31 @@ public class GsHelper {
     public static <T> T lua2obj(LuaValue value, Class<T> clazz) {
         return CommonAssetsManager.GSON.fromJson(LuaUtil.lua2json(value), clazz);
     }
+
+    public static Matrix3f getModelMatrix(float yRot, Vec3 front, Matrix3f dst) {
+        var buffer = COMPUTE_MODEL_MATRIX_BUFFER.get();
+        var mat = buffer.matBuffer();
+        var localX = buffer.xAxis().rotateY((float) -Math.toRadians(180 + yRot), buffer.x());
+        mat.setColumn(0, localX);
+        var localZ = buffer.z().set(LinearAlgebraTypes.moj2joml(front));
+        mat.setColumn(2, localZ);
+        var localY = localX.cross(localZ, buffer.y());
+        mat.setColumn(1, localY);
+        dst.set(mat);
+        return dst;
+    }
+
+    public record ComputeModelMatrixBuffer(
+            Vector3f xAxis,
+            Vector3f x,
+            Vector3f y,
+            Vector3f z,
+            Matrix3f matBuffer
+    ) {
+        public ComputeModelMatrixBuffer() {
+            this(new Vector3f(1, 0, 0), new Vector3f(), new Vector3f(), new Vector3f(), new Matrix3f());
+        }
+    }
+
+    private static final ThreadLocal<ComputeModelMatrixBuffer> COMPUTE_MODEL_MATRIX_BUFFER = ThreadLocal.withInitial(ComputeModelMatrixBuffer::new);
 }
