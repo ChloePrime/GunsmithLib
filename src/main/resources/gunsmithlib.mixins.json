@@ -62,7 +62,8 @@
     "client.RecoilAttributeMixin",
     "client.animation.MixinGunAnimationStateContext",
     "client.animation.MixinObjectAnimationRunner",
-    "client.bugfix.tacz.TracerStartPosFixMixin"
+    "client.bugfix.tacz.TracerStartPosFixMixin",
+    "client.GunAnimationStateContextAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

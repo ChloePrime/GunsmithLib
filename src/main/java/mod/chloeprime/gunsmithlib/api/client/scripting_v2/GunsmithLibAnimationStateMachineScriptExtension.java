@@ -105,7 +105,7 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
     @Override
     public @Nullable ClientShootStates shooter_states() {
         return Optional.ofNullable(Minecraft.getInstance().player)
-                .map(ClientShooterStatesImpl::new)
+                .map(shooter -> new ClientShooterStatesImpl(shooter, this.api))
                 .orElse(null);
     }
 
