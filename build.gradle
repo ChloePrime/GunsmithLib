@@ -165,10 +165,10 @@ dependencies {
     ;// JIJ Dependencies
     {
         // KuroUtils (My personal lib)
-        compileOnly jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.4.0") {
+        compileOnly jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.5.0") {
             exclude group: '*', module: '*'
         }
-        localRuntime "cn.chloeprime.kuroutils2:kuroutils2:2101.2.4.0"
+        localRuntime "cn.chloeprime.kuroutils2:kuroutils2:2101.2.5.0"
         compileOnly 'com.github.FiguraMC.luaj:luaj-core:3.0.8-figura'
         compileOnly 'com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura'
 
