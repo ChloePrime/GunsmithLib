@@ -10,14 +10,23 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * @since 6.0.0
  */
 public record ItemSyncedDataImpl(
         ItemStack stack,
-        boolean readonly
+        boolean readonly,
+        Consumer<ItemStack> writeback
 ) implements SyncedData {
+    public ItemSyncedDataImpl(
+            ItemStack stack,
+            boolean readonly
+    ) {
+        this(stack, readonly, result -> {});
+    }
+
     @Override
     public @Nullable Integer optional_get_int(String key) {
         return Optional.ofNullable(stack.get(GunsmithLib.DataComponents.SYNCED_INTS))
@@ -49,6 +58,7 @@ public record ItemSyncedDataImpl(
                 .orElseGet(Object2IntOpenHashMap::new);
         map.put(key, value);
         stack.set(GunsmithLib.DataComponents.SYNCED_INTS, map);
+        writeback().accept(this.stack);
     }
 
     @Override
@@ -59,6 +69,7 @@ public record ItemSyncedDataImpl(
                 .orElseGet(Object2DoubleOpenHashMap::new);
         map.put(key, value);
         stack.set(GunsmithLib.DataComponents.SYNCED_NUMBERS, map);
+        writeback().accept(this.stack);
     }
 
     @Override
@@ -69,6 +80,7 @@ public record ItemSyncedDataImpl(
                 .orElseGet(HashMap::new);
         map.put(key, value);
         stack.set(GunsmithLib.DataComponents.SYNCED_STRINGS, map);
+        writeback().accept(this.stack);
     }
 
     private void checkWriteAccess() {

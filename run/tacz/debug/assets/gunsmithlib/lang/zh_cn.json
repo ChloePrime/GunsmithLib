@@ -4,5 +4,7 @@
   "gunsmithlib.gun.625.name": "625弹炮合一系统",
   "gunsmithlib.gun.625.desc": "调试爆炸物扩展用",
   "gunsmithlib.gun.m320_jumping.name": "跳弹 M320",
+  "gunsmithlib.attachment.scope_mk5hd_scripted.name": "§6含有逻辑脚本的 Mark 5 HD 瞄准镜",
+  "gunsmithlib.attachment.scope_mk5hd_scripted.desc": "配件脚本示例\n最大挡位瞄准时伤害×10",
   "tacz.ammo.rpg_rocket.desc": "喝喝又喝喝\n可口可乐了了"
 }
