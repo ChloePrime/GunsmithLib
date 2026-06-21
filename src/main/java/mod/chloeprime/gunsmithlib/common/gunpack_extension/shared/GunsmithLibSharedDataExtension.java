@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
@@ -21,15 +22,20 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.ricochet.RicochetData;
+import mod.chloeprime.gunsmithlib.common.scripting.ScriptBakery;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.luaj.vm2.LuaTable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * 枪械和配件共通的扩展功能
@@ -94,11 +100,32 @@ public class GunsmithLibSharedDataExtension {
     @GunpackProperty
     private @Nullable RicochetData ricochet;
 
+    /**
+     * 方块穿透 / 阻挡控制
+     *
+     * @since 5.8.0
+     */
     @GunpackProperty
     private @Nullable RaytraceControlData raytrace_control;
 
     @GunpackProperty
     private @Nullable DamageSourceControlData damage_source_control;
+
+    /**
+     * 配件和弹药的逻辑脚本
+     *
+     * @since 6.2.0
+     */
+    @GunpackProperty
+    private @Nullable ResourceLocation script;
+
+    /**
+     * 配件和弹药的逻辑脚本的脚本参数
+     *
+     * @since 6.2.0
+     */
+    @GunpackProperty
+    private @Nullable Map<String, Object> script_param;
 
     // 下面是具体实现
 
@@ -137,6 +164,14 @@ public class GunsmithLibSharedDataExtension {
         return damage_source_control;
     }
 
+    public Optional<LuaTable> getScript() {
+        return Optional.ofNullable(bakedScript.get().clazz());
+    }
+
+    public @Nonnull LuaTable getScriptParams() {
+        return bakedScript.get().parameters();
+    }
+
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];
     private static final AttachmentType[] ATTACH_TYPE_REGISTRY = AttachmentType.values();
     private static final PotionEffectData[] EMPTY_MOB_EFFECT_ARRAY = new PotionEffectData[0];
@@ -153,6 +188,10 @@ public class GunsmithLibSharedDataExtension {
         }
         return bakedAttributeModifiers;
     }
+
+    private final Supplier<ScriptBakery.@NotNull BakedScript> bakedScript = Suppliers.memoize(() -> ScriptBakery
+            .bake(script, script_param)
+            .orElseGet(ScriptBakery::createDefault));
 
     public static Optional<GunsmithLibSharedDataExtension> forGun(GunInfo gun) {
         return GunsmithLibGunDataExtension.of(gun).map(Function.identity());

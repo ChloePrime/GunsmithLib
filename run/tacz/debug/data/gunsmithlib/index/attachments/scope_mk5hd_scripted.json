@@ -1,0 +1,9 @@
+{
+  "hidden": false,
+  "name": "gunsmithlib.attachment.scope_mk5hd_scripted.name",
+  "tooltip": "gunsmithlib.attachment.scope_mk5hd_scripted.desc",
+  "data": "gunsmithlib:scope_mk5hd_scripted_data",
+  "display": "tacz:scope_mk5hd_display",
+  "type": "scope",
+  "sort": 100
+}
