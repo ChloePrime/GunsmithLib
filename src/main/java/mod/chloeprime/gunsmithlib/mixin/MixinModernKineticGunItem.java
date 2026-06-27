@@ -5,13 +5,16 @@ import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import com.tacz.guns.item.ModernKineticGunItem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy.EnergyWeaponData;
+import mod.chloeprime.gunsmithlib.common.scripting.ammo.AmmoScripting;
 import mod.chloeprime.gunsmithlib.common.scripting.attachment.AttachmentScripting;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ModernKineticGunItem.class, remap = false)
@@ -33,6 +36,22 @@ public abstract class MixinModernKineticGunItem extends AbstractGunItem {
                 }
             }
         });
+    }
+
+    // 弹药脚本
+
+    @ModifyVariable(
+            method = "modifyProperty", ordinal = 0, argsOnly = true,
+            at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lcom/tacz/guns/item/ModernKineticGunItem;defaultPropertyModification:Lcom/tacz/guns/item/ModernKineticGunItem$DefaultPropertyModification;"))
+    private <T> T letAmmoModifyProperty(
+            T original,
+            ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter,
+            String luaMethodName, String id, Class<T> type, T initial
+    ) {
+        return AmmoScripting.modifyProperty(
+                original,
+                dataHolder, gunItem, shooter,
+                luaMethodName, id, type);
     }
 
     // 配件脚本

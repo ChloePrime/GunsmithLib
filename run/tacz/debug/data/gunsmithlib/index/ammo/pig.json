@@ -1,0 +1,10 @@
+{
+  "gunsmithlib_extension": {
+    "script": "gunsmithlib:pig_ammo_logic"
+  },
+  "name": "gunsmithlib.ammo.pig.name",
+  "tooltip": "gunsmithlib.ammo.pig.desc",
+  "display": "gunsmithlib:pig_display",
+  "stack_size": 60,
+  "sort": 2
+}

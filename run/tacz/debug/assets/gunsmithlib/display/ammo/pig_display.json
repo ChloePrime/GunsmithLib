@@ -1,0 +1,8 @@
+{
+  "slot": "gunsmithlib:pig",
+  "shell": {
+    "model": "tacz:shell/22wmr_shell",
+    "texture": "tacz:shell/22wmr_shell"
+  },
+  "tracer_color": "#ffe09e"
+}
