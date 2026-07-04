@@ -125,17 +125,6 @@ repositories {
             includeGroup "com.eliotlash.mclib"
         }
     }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Kotlin for Forge'
-                url = 'https://thedarkcolour.github.io/KotlinForForge/'
-            }
-        }
-        filter {
-            includeGroup "thedarkcolour"
-        }
-    }
 
     maven {
         name = "Mod Maven"
@@ -176,10 +165,9 @@ dependencies {
         api 'com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.8-r2'
 
         // Pack Upgrader
-        compileOnly jarJar('curse.maven:tacz-pack-upgrader-1353465:8062328') {
-            exclude group: '*', module: '*'
-        }
-        localRuntime 'curse.maven:tacz-pack-upgrader-1353465:8062328'
+        compileOnly jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed')
+        localRuntime 'me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed'
+        localRuntime jarJar(project("modules:gunsmithlib_bundled_kotlin_stdlib"))
     }
 
     ;// Optional Dependencies
@@ -203,7 +191,7 @@ dependencies {
         // 光影加载器
         localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
         localRuntime "maven.modrinth:iris:1.8.12+1.21.1-neoforge"
-        localRuntime "maven.modrinth:acceleratedrendering:1.0.8-1.21.1-alpha"
+        localRuntime "curse.maven:accelerated-rendering-1314021:8366742"
 
         // 其他测试用 mod
         localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"

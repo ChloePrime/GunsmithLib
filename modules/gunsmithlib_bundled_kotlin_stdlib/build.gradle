@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.107'
+    id 'idea'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly jarJar("org.jetbrains.kotlin:kotlin-stdlib:2.4.0")
+    compileOnly jarJar("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.4.0")
+    compileOnly jarJar("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.4.0")
+    compileOnly jarJar("org.jetbrains.kotlin:kotlin-reflect:2.4.0")
+}

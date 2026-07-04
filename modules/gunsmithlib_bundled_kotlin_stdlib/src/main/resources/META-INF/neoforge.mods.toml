@@ -1,0 +1,10 @@
+modLoader="lowcodefml"
+loaderVersion="[0,)" #mandatory
+license="CC0-1.0"
+[[mods]]
+# Kotlin without KFF
+modId="gunsmithlib_bundled_kotlin_stdlib"
+version="1.0.0"
+displayName="Kotlin Standard Librariey (GunsmithLib)"
+authors="ChloePrime"
+description='''Kotlin standard library for GunsmithLib's bundled TaCZ Pack Upgrader'''
