@@ -1,6 +1,9 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2.content;
 
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.EntityStatesImpl;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
@@ -14,6 +17,14 @@ import java.util.random.RandomGenerator;
  */
 @SuppressWarnings("unused")
 public interface EntityStates {
+    static EntityStates of(Entity entity) {
+        if (entity instanceof LivingEntity shooter) {
+            return ShooterStates.of(shooter);
+        } else {
+            return new EntityStatesImpl(entity);
+        }
+    }
+
     /**
      * 获取实体脚底的坐标。
      *

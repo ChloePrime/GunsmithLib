@@ -10,12 +10,13 @@ import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.mixin.client.GunAnimationStateContextAccessor;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Optional;
 
 /**
+ * 客户端玩家的射手状态的实现。
+ *
  * @since 6.0.0
  */
 public class ClientShooterStatesImpl extends BaseShooterStatesImpl implements ClientShootStates {
