@@ -64,9 +64,10 @@ public final class SwitchPartOrAmmoTypeKey {
         if (glfwAction == InputConstants.REPEAT) {
             return;
         }
-        isPressing--;
+        isPressing = Math.max(0, isPressing - 1);
 
         if (now - lastPressTime < SHORT_CLICK_THRESHOLD) {
+            isPressing = 0;
             var isConnected = Optional.ofNullable(Minecraft.getInstance().getConnection())
                     .map(ClientPacketListener::getConnection)
                     .filter(Connection::isConnected)
@@ -88,6 +89,7 @@ public final class SwitchPartOrAmmoTypeKey {
 
         var now = System.currentTimeMillis();
         if (now - lastPressTime >= SHORT_CLICK_THRESHOLD) {
+            isPressing = 0;
             var mc = Minecraft.getInstance();
             var player = mc.player;
             if (player == null || mc.screen instanceof GunVariantSelectWheelScreen) {
