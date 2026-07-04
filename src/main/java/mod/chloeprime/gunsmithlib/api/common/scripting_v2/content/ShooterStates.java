@@ -1,5 +1,8 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2.content;
 
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.ClientAlterityShooterStatesImpl;
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ServerShooterStatesImpl;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector2f;
@@ -14,6 +17,11 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused")
 public interface ShooterStates extends EntityStates {
+    static ShooterStates of(LivingEntity shooter) {
+        return shooter.level().isClientSide()
+                ? new ServerShooterStatesImpl(shooter)
+                : new ClientAlterityShooterStatesImpl(shooter);
+    }
 
     // Vanilla
 

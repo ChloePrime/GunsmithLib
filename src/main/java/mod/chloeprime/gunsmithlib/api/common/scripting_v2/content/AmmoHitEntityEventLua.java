@@ -1,9 +1,7 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2.content;
 
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
-import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.EntityStatesImpl;
-import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ServerShooterStatesImpl;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,9 +72,7 @@ public record AmmoHitEntityEventLua(
      */
     public @Nullable ShooterStates get_shooter() {
         return Optional.ofNullable(get_shooter_entity())
-                .map(shooter -> shooter.level().isClientSide()
-                        ? new BaseShooterStatesImpl(shooter)
-                        : new ServerShooterStatesImpl(shooter))
+                .map(ShooterStates::of)
                 .orElse(null);
     }
 
@@ -106,15 +102,7 @@ public record AmmoHitEntityEventLua(
      */
     public @Nullable EntityStates get_victim() {
         return Optional.ofNullable(get_victim_entity())
-                .map(hitTarget -> {
-                    if (hitTarget instanceof LivingEntity victim) {
-                        return victim.level().isClientSide()
-                                ? new BaseShooterStatesImpl(victim)
-                                : new ServerShooterStatesImpl(victim);
-                    } else {
-                        return new EntityStatesImpl(hitTarget);
-                    }
-                })
+                .map(EntityStates::of)
                 .orElse(null);
     }
 
