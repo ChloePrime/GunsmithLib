@@ -4,20 +4,30 @@ import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.*;
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2Data;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.GunEnergyStorage;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.LongEnergyStorage;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.ApiStatus;
 import org.luaj.vm2.LuaValue;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.function.ToLongFunction;
 
 @SuppressWarnings("unused")
 public class GunsmithLibCommonScriptExtension
         implements
         VanillaCooldownExtension,
         RangefinderExtension,
-        BetterAsyncExtension {
+        BetterAsyncExtension,
+        BatteryExtension {
     /**
      * 三元表达式，给 lua 用的。
      *
@@ -110,9 +120,54 @@ public class GunsmithLibCommonScriptExtension
         v1.gunsmith_asyncRunCycled(callback, period, count, params);
     }
 
+    // 电池 API
+
+    @Override
+    public long get_energy_stored() {
+        return mapEnergyV2Cap(LongEnergyStorage::getEnergyStoredL, IEnergyStorage::getEnergyStored);
+    }
+
+    @Override
+    public long get_configured_battery_capacity() {
+        return gunInfo()
+                .flatMap(EnergyWeaponV2Data::of)
+                .map(EnergyWeaponV2Data::getStaticCapacity)
+                .orElse(0L);
+    }
+
+    @Override
+    public long get_configured_max_energy_input_speed() {
+        return gunInfo()
+                .flatMap(EnergyWeaponV2Data::of)
+                .map(EnergyWeaponV2Data::getStaticMaxInputSpeed)
+                .orElse(0L);
+    }
+
+    @Override
+    public long get_configured_max_energy_output_speed() {
+        return gunInfo()
+                .flatMap(EnergyWeaponV2Data::of)
+                .map(EnergyWeaponV2Data::getStaticMaxOutputSpeed)
+                .orElse(0L);
+    }
+
     // 下面是内部 API
 
     private final AbstractCommonScriptingExtension v1;
+
+    protected Optional<GunInfo> gunInfo() {
+        return GsHelper.unpack(v1.gunsmithlib$getGunItemInterface(), v1.gunsmithlib$getCurrentItem());
+    }
+
+    protected long mapEnergyV2Cap(ToLongFunction<GunEnergyStorage> code, ToLongFunction<IEnergyStorage> fallback) {
+        var cap = v1.gunsmithlib$getCurrentItem().getCapability(Capabilities.EnergyStorage.ITEM);
+        if (cap == null) {
+            return 0;
+        }
+        return cap instanceof GunEnergyStorage loong
+                ? code.applyAsLong(loong)
+                : fallback.applyAsLong(cap);
+    }
 
     @ApiStatus.Internal
     public GunsmithLibCommonScriptExtension(AbstractCommonScriptingExtension v1) {

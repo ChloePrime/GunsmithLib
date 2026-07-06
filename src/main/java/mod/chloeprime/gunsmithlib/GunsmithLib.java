@@ -243,6 +243,13 @@ public class GunsmithLib {
                 .networkSynchronized(ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8))
                 .cacheEncoding()
                 .build());
+
+        // V2 存电量
+
+        public static final Supplier<DataComponentType<Long>> ENERGY_STORED_V2 = DFR.register("energy_stored_v2", () -> DataComponentType.<Long>builder()
+                .persistent(Codec.LONG)
+                .networkSynchronized(ByteBufCodecs.VAR_LONG)
+                .build());
     }
 
     public static class DataAttachments {

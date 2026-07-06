@@ -4,7 +4,9 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
+import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ServerBatteryExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ServerShootStates;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.SyncedData;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
@@ -33,7 +35,8 @@ import javax.annotation.Nonnull;
  * @since 5.6.0
  */
 @SuppressWarnings("unused")
-public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExtension {
+public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExtension
+        implements ServerBatteryExtension {
     /**
      * 获取发射器的 id。
      * 对于子母弹的情况，获取母弹射物的发射器的 id。
@@ -215,5 +218,46 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
         super((AbstractCommonScriptingExtension) api);
         this.api = api;
         this.v1 = (AbstractGunScriptAPIExtension) api;
+    }
+
+    @Override
+    public void set_energy_stored(long value) {
+        mapEnergyV2Cap(
+                storage -> {
+                    storage.setEnergyStoredL(value);
+                    return 0;
+                },
+                handler -> {
+                    GunsmithLib.LOGGER.warn("Trying to set energy for unsupported energy handler {}", handler.getClass().getCanonicalName());
+                    return 0L;
+                });
+    }
+
+    @Override
+    public long extract_energy(long wantedAmount, boolean simulate) {
+        return mapEnergyV2Cap(
+                loong -> loong.extractEnergyL(wantedAmount, simulate),
+                handler -> handler.extractEnergy((int) wantedAmount, simulate));
+    }
+
+    @Override
+    public long receive_energy(long givenAmount, boolean simulate) {
+        return mapEnergyV2Cap(
+                loong -> loong.receiveEnergyL(givenAmount, simulate),
+                handler -> handler.receiveEnergy((int) givenAmount, simulate));
+    }
+
+    @Override
+    public long privileged_extract_energy(long wantedAmount, boolean simulate) {
+        return mapEnergyV2Cap(
+                loong -> loong.privilegedExtractEnergyL(wantedAmount, simulate),
+                handler -> handler.extractEnergy((int) wantedAmount, simulate));
+    }
+
+    @Override
+    public long privileged_receive_energy(long givenAmount, boolean simulate) {
+        return mapEnergyV2Cap(
+                loong -> loong.privilegedReceiveEnergyL(givenAmount, simulate),
+                handler -> handler.receiveEnergy((int) givenAmount, simulate));
     }
 }

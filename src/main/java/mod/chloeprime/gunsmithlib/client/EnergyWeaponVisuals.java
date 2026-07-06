@@ -32,6 +32,7 @@ public final class EnergyWeaponVisuals {
             return isEnabledFor(gun);
         }
 
+        @SuppressWarnings("deprecation")
         public static boolean isEnabledFor(ItemStack gun) {
             var displayType = TimelessAPI.getGunDisplay(gun)
                     .map(instance -> ((EnhancedGunDisplay) instance))
@@ -127,6 +128,7 @@ public final class EnergyWeaponVisuals {
             gui.pose().popPose();
         }
 
+        @SuppressWarnings("deprecation")
         public static void modifyBackupAmmoDisplay(ItemStack gun, MutableInt field) {
             if (!EnergyWeaponBehavior.isEnergyWeapon(gun)) {
                 return;
