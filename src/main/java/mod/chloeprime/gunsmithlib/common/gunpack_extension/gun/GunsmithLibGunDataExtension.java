@@ -5,6 +5,7 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2Data;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
@@ -23,6 +24,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 3.3.0
      */
+    @Deprecated(since = "6.1.0")
     @GunpackProperty
     private @Nullable EnergyWeaponData battery;
 
@@ -67,6 +69,16 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     @GunpackProperty
     private boolean hidden = false;
 
+    /**
+     * 新版电池数据，
+     * 为非 null 时该武器可以充电。
+     * 内部电能的具体用途由逻辑脚本控制。
+     *
+     * @since 6.1.0
+     */
+    @GunpackProperty
+    private @Nullable EnergyWeaponV2Data battery_v2;
+
     // 下面是代码
 
     public static Optional<GunsmithLibGunDataExtension> of(ItemStack stack) {
@@ -77,6 +89,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
         return ((EnhancedGunData) gunInfo.index().getGunData()).gunsmith$getGunsmithLibExtension();
     }
 
+    @Deprecated(since = "6.1.0")
     public @Nullable EnergyWeaponData battery() {
         return battery;
     }
@@ -109,5 +122,9 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
 
     public boolean isHidden() {
         return hidden;
+    }
+
+    public Optional<EnergyWeaponV2Data> getVersion2BatteryData() {
+        return Optional.ofNullable(battery_v2);
     }
 }

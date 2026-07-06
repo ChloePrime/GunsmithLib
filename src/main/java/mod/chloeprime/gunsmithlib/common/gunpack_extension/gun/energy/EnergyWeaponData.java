@@ -4,11 +4,14 @@ import com.google.gson.annotations.SerializedName;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2System;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
+@Deprecated(since = "6.1.0")
+@SuppressWarnings("DeprecatedIsStillUsed")
 public record EnergyWeaponData(
         @GunpackProperty
         @SerializedName("energy_per_shot")
@@ -34,6 +37,7 @@ public record EnergyWeaponData(
 
     public static Optional<Runtime> runtime(GunInfo gunInfo) {
         return GunsmithLibGunDataExtension.of(gunInfo)
+                .filter(ext -> !EnergyWeaponV2System.isEnergyWeapon(gunInfo))
                 .map(GunsmithLibGunDataExtension::battery)
                 .map(ewd -> new Runtime(ewd, gunInfo));
     }

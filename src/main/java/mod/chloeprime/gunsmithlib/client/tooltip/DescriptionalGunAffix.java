@@ -10,6 +10,7 @@ import mod.chloeprime.gunsmithlib.client.gunpack_extension.GunsmithLibGunDisplay
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.descriptial_affix.DescriptionalAffixData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.EnhancedGunData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy.EnergyWeaponData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2System;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveFragData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
@@ -318,8 +319,9 @@ public abstract class DescriptionalGunAffix {
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         public boolean shouldShow(GunInfo gunInfo) {
-            return EnergyWeaponData.runtime(gunInfo).isPresent();
+            return EnergyWeaponData.runtime(gunInfo).isPresent() || EnergyWeaponV2System.isEnergyWeapon(gunInfo);
         }
     }
 
