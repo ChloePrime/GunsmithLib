@@ -12,9 +12,11 @@ import com.tacz.guns.resource.index.CommonGunIndex;
 import mod.chloeprime.gunsmithlib.api.client.GunTooltipContext;
 import mod.chloeprime.gunsmithlib.api.client.GunTooltipEvent;
 import mod.chloeprime.gunsmithlib.api.client.RenderGunTooltipTextEvent;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.GunDisplayProperties;
 import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.client.ClientInternalEvents;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.hooks.ModifyDisplayPropertyHook;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper1211;
 import net.minecraft.client.gui.Font;
@@ -37,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BiFunction;
 
 @Mixin(value = ClientGunTooltip.class, remap = false)
-public class MixinClientGunTooltip {
+public abstract class MixinClientGunTooltip {
     @ModifyExpressionValue(
             method = "getText",
             at = @At(value = "INVOKE", target = "Lcom/tacz/guns/util/AttachmentDataUtils;getDamageWithAttachment(Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/resource/pojo/data/gun/GunData;)D"))
@@ -218,6 +220,22 @@ public class MixinClientGunTooltip {
         return original && !canceled;
     }
 
+    // 弹药数显示
+
+    @Inject(method = "renderText", remap = true, at = @At("HEAD"))
+    private void refreshTextEverytimeWhenRenderingTooltipBecauseTextMayBeChangedByScript(
+            Font font, int pX, int pY, Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource, CallbackInfo ci
+    ) {
+        getText();
+    }
+
+    @ModifyVariable(
+            method = "getText", name = "currentAmmoCount",
+            at = @At(value = "INVOKE", target = "Lcom/tacz/guns/api/item/IGun;useDummyAmmo(Lnet/minecraft/world/item/ItemStack;)Z"))
+    private int modifyDisplayedAmmoCount(int original) {
+        return ModifyDisplayPropertyHook.modifyProperty(gun, GunDisplayProperties.AMMO_AMOUNT, Integer.class, original);
+    }
+
     @Unique
     private @Nullable GunInfo gunsmithlib$gun() {
         return GsHelper.unpack(iGun, gun).orElse(null);
@@ -226,4 +244,5 @@ public class MixinClientGunTooltip {
     private @Unique int gunsmithlib$lastYOffset = 0;
     private @Unique RenderGunTooltipTextEvent gunsmithlib$lastEvent;
     @Shadow @Final private IGun iGun;
+    @Shadow protected abstract void getText();
 }

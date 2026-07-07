@@ -1,17 +1,22 @@
 package mod.chloeprime.gunsmithlib.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.overlay.GunHudOverlay;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.GunDisplayProperties;
 import mod.chloeprime.gunsmithlib.client.EnergyWeaponVisuals;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.AirburstHUD;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.hooks.ModifyDisplayPropertyHook;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
@@ -20,12 +25,10 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Mixin(value = GunHudOverlay.class, remap = false)
@@ -82,6 +85,22 @@ public class MixinGunHudOverlay {
         var cache = new MutableInt(cacheInventoryAmmoCount);
         EnergyWeaponVisuals.HUD.modifyBackupAmmoDisplay(stack, cache);
         cacheInventoryAmmoCount = cache.getValue();
+    }
+
+    // Modify Properties
+
+    @ModifyExpressionValue(
+            method = "render",
+            at = @At(value = "INVOKE", ordinal = 0, target = "Ljava/lang/Math;min(II)I"),
+            slice = @Slice(from = @At(value = "CONSTANT", args = "intValue=9999")))
+    private int modifyDisplayedAmmoCount(int original) {
+        var gun = Optional.ofNullable(Minecraft.getInstance().player)
+                .map(LivingEntity::getMainHandItem)
+                .orElse(ItemStack.EMPTY);
+        if (gun.isEmpty()) {
+            return original;
+        }
+        return ModifyDisplayPropertyHook.modifyProperty(gun, GunDisplayProperties.AMMO_AMOUNT, Integer.class, original);
     }
 
     private static final @Unique Pattern gunsmithlib$COUNTER_PATTERN = Pattern.compile("^\\d+%?$");

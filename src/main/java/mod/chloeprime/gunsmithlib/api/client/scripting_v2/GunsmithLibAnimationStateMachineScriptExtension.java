@@ -1,10 +1,13 @@
 package mod.chloeprime.gunsmithlib.api.client.scripting_v2;
 
+import com.google.common.base.Suppliers;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
+import com.tacz.guns.resource.index.CommonGunIndex;
 import mod.chloeprime.gunsmithlib.api.client.GunsmithLibAnimationConstant;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibCommonScriptExtension;
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.client.AbstractGunAnimationStateContextExtension;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.ClientShooterStatesImpl;
@@ -12,8 +15,10 @@ import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * 示例用法：{@code api:gunsmithlib_extension():play_overheat_sound()}
@@ -97,6 +102,20 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
     }
 
     /**
+     * 获取枪械 data 里配置的逻辑脚本的脚本参数。
+     * 不要修改返回的 Table！会出现线程安全问题！
+     *
+     * @return 枪械 data 里配置的逻辑脚本的脚本参数
+     * @since 6.1.0
+     */
+    public LuaTable logic_script_params() {
+        return gunInfo()
+                .map(GunInfo::index)
+                .map(CommonGunIndex::getScriptParam)
+                .orElseGet(fallbackParams);
+    }
+
+    /**
      * 获取客户端射手的各种状态的接口。
      * 如果在玩家未进入游戏时不小心触发状态机钩子，那么此时调用该方法会返回 {@code nil}
      *
@@ -113,6 +132,7 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
 
     private final GunAnimationStateContext api;
     private final AbstractGunAnimationStateContextExtension v1;
+    private final Supplier<LuaTable> fallbackParams = Suppliers.memoize(LuaTable::new);
 
     @ApiStatus.Internal
     public GunsmithLibAnimationStateMachineScriptExtension(GunAnimationStateContext ctx) {

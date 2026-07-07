@@ -47,6 +47,7 @@
     "interactkey.TacInteractKeyAutoInferenceMixin"
   ],
   "client": [
+    "client.GunAnimationStateContextAccessor",
     "client.MixinAnimationStateContext",
     "client.MixinClientGamePacketListener",
     "client.MixinClientGunTooltip",
@@ -60,12 +61,13 @@
     "client.MixinGunItemRendererWrapper",
     "client.MixinHeatBarOverlay",
     "client.MixinLuaAnimationConstant",
+    "client.MixinLuaAnimationStateMachine",
+    "client.MixinLuaStateMachineFactory",
     "client.MixinSoundPlayManager",
     "client.RecoilAttributeMixin",
     "client.animation.MixinGunAnimationStateContext",
     "client.animation.MixinObjectAnimationRunner",
-    "client.bugfix.tacz.TracerStartPosFixMixin",
-    "client.GunAnimationStateContextAccessor"
+    "client.bugfix.tacz.TracerStartPosFixMixin"
   ],
   "injectors": {
     "defaultRequire": 1
