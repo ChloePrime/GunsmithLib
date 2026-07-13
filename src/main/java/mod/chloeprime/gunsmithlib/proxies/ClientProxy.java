@@ -79,4 +79,21 @@ public class ClientProxy {
         }
         ClientProxyImpl.receiveNoParticleExplodePacket(pos, power, toBlow, knockback, blockInteraction);
     }
+
+    public static long getGameTime() {
+        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+            return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer())
+                    .map(MinecraftServer::overworld)
+                    .map(Level::getGameTime)
+                    .orElse(0L);
+        }
+        return ClientProxyImpl.getGameTime();
+    }
+
+    public static float getPartialTicks() {
+        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+            return 0;
+        }
+        return ClientProxyImpl.getPartialTicks();
+    }
 }

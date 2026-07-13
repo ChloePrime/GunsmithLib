@@ -107,4 +107,14 @@ class ClientProxyImpl {
         explosion.finalizeExplosion(false);
         player.setDeltaMovement(player.getDeltaMovement().add(knockback.x(), knockback.y(), knockback.z()));
     }
+
+    public static long getGameTime() {
+        return Optional.ofNullable(MC.level)
+                .map(Level::getGameTime)
+                .orElse(0L);
+    }
+
+    public static float getPartialTicks() {
+        return MC.getTimer().getGameTimeDeltaPartialTick(false);
+    }
 }
