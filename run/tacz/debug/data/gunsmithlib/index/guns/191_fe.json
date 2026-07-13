@@ -1,0 +1,9 @@
+{
+  "name": "gunsmithlib.gun.191_fe.name",
+  "tooltip": "gunsmithlib.gun.191_fe.desc",
+  "display": "gunsmithlib:191_fe_display",
+  "data": "gunsmithlib:191_fe_data",
+  "type": "mg",
+  "item_type": "modern_kinetic",
+  "sort": 1
+}
