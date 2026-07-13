@@ -4,6 +4,7 @@ import cn.chloeprime.commons.rpc.RPCFlow;
 import cn.chloeprime.commons.rpc.RemoteCallable;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -11,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -61,5 +63,22 @@ public class ClientProxy {
             return;
         }
         ClientProxyImpl.receiveNoParticleExplodePacket(pos, power, toBlow, knockback);
+    }
+
+    public static long getGameTime() {
+        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+            return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer())
+                    .map(MinecraftServer::overworld)
+                    .map(Level::getGameTime)
+                    .orElse(0L);
+        }
+        return ClientProxyImpl.getGameTime();
+    }
+
+    public static float getPartialTicks() {
+        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+            return 0;
+        }
+        return ClientProxyImpl.getPartialTicks();
     }
 }
