@@ -5,13 +5,17 @@ import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.*;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2Data;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.GunEnergyStorage;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.LongEnergyStorage;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.TargetSearcherExtensionResultImpl;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,6 +23,7 @@ import org.luaj.vm2.LuaValue;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.ToLongFunction;
 
 @SuppressWarnings("unused")
@@ -26,6 +31,7 @@ public class GunsmithLibCommonScriptExtension
         implements
         VanillaCooldownExtension,
         RangefinderExtension,
+        TargetSearcherExtension,
         BetterAsyncExtension,
         BatteryExtension {
     /**
@@ -77,6 +83,55 @@ public class GunsmithLibCommonScriptExtension
         return new ItemSyncedDataImpl(v1.gunsmithlib$getCurrentItem(), true);
     }
 
+    /**
+     * 根据指定的 uuid 获取实体。
+     *
+     * @param uid 字符串形式的实体 uuid
+     * @return 给定 uuid 对应的实体，如果实体未加载或不存在则返回 {@code nil}
+     * @since 6.1.0
+     */
+    public final @Nullable Entity get_entity_by_uid(String uid) {
+        return get_entity_by_uuid(UUID.fromString(uid));
+    }
+
+    /**
+     * 根据指定的 uuid 获取实体。
+     *
+     * @param uuid 实体 uuid
+     * @return 给定 uuid 对应的实体，如果实体未加载或不存在则返回 {@code nil}
+     * @since 6.1.0
+     */
+    public @Nullable Entity get_entity_by_uuid(UUID uuid) {
+        return v1.gunsmithlib$getShooter()
+                .map(Entity::level)
+                .flatMap(lvl -> ClientProxy.getEntityByUuid(lvl, uuid))
+                .orElse(null);
+    }
+
+    /**
+     * 根据指定的 uuid 获取实体状态。
+     *
+     * @param uid 字符串形式的实体 uuid
+     * @return 给定 uuid 对应的实体状态，如果实体未加载或不存在则返回 {@code nil}
+     * @since 6.1.0
+     */
+    public final @Nullable EntityStates get_entity_state_by_uid(String uid) {
+        return get_entity_state_by_uuid(UUID.fromString(uid));
+    }
+
+    /**
+     * 根据指定的 uuid 获取实体状态。
+     *
+     * @param uuid 实体 uuid
+     * @return 给定 uuid 对应的实体状态，如果实体未加载或不存在则返回 {@code nil}
+     * @since 6.1.0
+     */
+    public final @Nullable EntityStates get_entity_state_by_uuid(UUID uuid) {
+        return Optional.ofNullable(get_entity_by_uuid(uuid))
+                .map(EntityStates::of)
+                .orElse(null);
+    }
+
     // 旧版 API
 
     /**
@@ -118,6 +173,34 @@ public class GunsmithLibCommonScriptExtension
     @Override
     public void async_run_cycled(LuaValue callback, int period, int count, Object... params) {
         v1.gunsmith_asyncRunCycled(callback, period, count, params);
+    }
+
+    // 火控 API
+
+    @Override
+    public @Nullable TargetSearcherExtension.Result search() {
+        var shooter = v1.gunsmithlib$getShooter().orElse(null);
+        var gun = shooter == null ? null : gunInfo().orElse(null);
+        if (gun == null) {
+            return null;
+        }
+        var partialTicks = ClientProxy.getPartialTicks(shooter.level().isClientSide());
+        return TargetSearcher.search(shooter, gun, partialTicks)
+                .map(TargetSearcherExtensionResultImpl::new)
+                .orElse(null);
+    }
+
+    @Override
+    public @Nullable TargetSearcherExtension.Result search(double range, double angularRadius) {
+        var shooter = v1.gunsmithlib$getShooter().orElse(null);
+        var gun = shooter == null ? null : gunInfo().orElse(null);
+        if (gun == null) {
+            return null;
+        }
+        var partialTicks = ClientProxy.getPartialTicks(shooter.level().isClientSide());
+        return TargetSearcher.search(shooter, range, angularRadius, partialTicks)
+                .map(TargetSearcherExtensionResultImpl::new)
+                .orElse(null);
     }
 
     // 电池 API

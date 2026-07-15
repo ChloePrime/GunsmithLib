@@ -8,8 +8,10 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
 import java.awt.*;
+import java.util.UUID;
 
 public class GunsmithLuaLib extends VarArgFunction {
     static final int INIT               = 0;
@@ -17,12 +19,16 @@ public class GunsmithLuaLib extends VarArgFunction {
     static final int NEW_IDENTIFIER_2   = 2;
     static final int NEW_JWT_COLOR      = 3;
     static final int INT_COLOR_FROM_RGB = 4;
+    static final int UUID_FROM_STRING   = 5;
+    static final int UUID_TO_STRING     = 6;
 
     static final String[] NAMES = {
             "new_identifier",
             "new_resource_location",
             "new_color",
             "int_color_from_rgb",
+            "uuid_from_string",
+            "uuid_to_string",
     };
 
     @Override
@@ -51,6 +57,12 @@ public class GunsmithLuaLib extends VarArgFunction {
             }
             case INT_COLOR_FROM_RGB -> {
                 return ColorParser.newColor(args).getRGB();
+            }
+            case UUID_FROM_STRING -> {
+                return UUID.fromString(args.checkjstring(1));
+            }
+            case UUID_TO_STRING -> {
+                return CoerceLuaToJava.coerce(args.arg(1), UUID.class).toString();
             }
             default -> throw new LuaError("not yet supported: %s[%d]".formatted(this, opcode));
         }
