@@ -367,3 +367,40 @@ display 文件中有少量多弹种功能的可配置项。
   }
 }
 ```
+
+# 6.1 版本新增内容
+### 能量武器 V2 系统
+只提供电池，具体用途由脚本决定。
+<br/>
+这样的话，只需要耗电的武器，需要耗电并消耗子弹的武器，以及以其他方式使用能量的武器都可以在一套系统里实现了！
+<br/>
+本套系统使用的电量均为 64 位长整数，非常先进.png
+
+```json5
+{
+  "gunsmithlib_extension": {
+    "battery_v2": {
+      // 电池容量
+      "capacity": 90000,
+      // 最大充电速度，为 0 时将不能充电。
+      // 单位：FE/t。
+      "max_input_speed": 3000,
+      // 最大放电速度，为 0 时
+      // 单位：FE/t。
+      "max_output_speed": 0,
+      // 如果为 true，那么电池容量可以被 modify property 修改。
+      // 注：对电池相关属性 modify property 时 api 中的 shooter 可能为假玩家。
+      // 不建议开启，可能会占用非常多的服务器资源。
+      "dynamic_capacity": false,
+      // 如果为 true，那么充电速度可以被 modify property 修改。
+      // 注：对电池相关属性 modify property 时 api 中的 shooter 可能为假玩家。
+      // 不建议开启，可能会占用非常多的服务器资源。
+      "dynamic_max_input_speed": false,
+      // 如果为 true，那么放电速度可以被 modify property 修改。
+      // 注：对电池相关属性 modify property 时 api 中的 shooter 可能为假玩家。
+      // 不建议开启，可能会占用非常多的服务器资源。
+      "dynamic_max_output_speed": false,
+    }
+  }
+}
+```
