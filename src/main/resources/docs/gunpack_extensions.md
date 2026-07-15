@@ -213,7 +213,29 @@
       // 近炸引信探测距离，单位为格*
       "proximity_fuse_distance": 1.5,
       // 防止这把武器的爆炸炸坏掉落物
-      "prevent_destroying_loot_items": true
+      "prevent_destroying_loot_items": true,
+      // 子母弹系统
+      // 5.9.0 新增
+      "fragments": {
+        // 子弹片使用的枪械 id
+        // 子母弹本质是在爆炸位置使用指定的枪械发射新的子弹，
+        // 这个 id 就是发射新子弹时使用的枪械 id。
+        // 填入的 id 必须是一个可以独立发射的枪械，拥有完整的 index，data，display，
+        // 需要填入 index 的 id，不能填入 data 文件的 id。
+        "config_id": "tacz:ak47",
+        // 弹片数量
+        "count": 64,
+        // 弹片最小速度，单位 米/tick
+        "min_frag_velocity": 1,
+        // 弹片最大速度，单位 米/tick
+        "max_frag_velocity": 1,
+        // （可选）弹片的分布模式，默认为 "random"
+        // 可选值：
+        // - "random":  完全随机分布
+        // - "uniform": 均匀分布，随机相位
+        // 5.11.0 新增
+        "distribution": "uniform"
+      }
     }
   }
 }
