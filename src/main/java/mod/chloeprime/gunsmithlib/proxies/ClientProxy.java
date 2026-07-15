@@ -81,7 +81,11 @@ public class ClientProxy {
     }
 
     public static long getGameTime() {
-        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+        return getGameTime(EffectiveSide.get().isClient());
+    }
+
+    public static long getGameTime(boolean isClientSide) {
+        if (DEDICATED_SERVER || !isClientSide) {
             return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer())
                     .map(MinecraftServer::overworld)
                     .map(Level::getGameTime)
@@ -91,7 +95,11 @@ public class ClientProxy {
     }
 
     public static float getPartialTicks() {
-        if (DEDICATED_SERVER || EffectiveSide.get().isServer()) {
+        return getPartialTicks(EffectiveSide.get().isClient());
+    }
+
+    public static float getPartialTicks(boolean isClientSide) {
+        if (DEDICATED_SERVER || !isClientSide) {
             return 0;
         }
         return ClientProxyImpl.getPartialTicks();
