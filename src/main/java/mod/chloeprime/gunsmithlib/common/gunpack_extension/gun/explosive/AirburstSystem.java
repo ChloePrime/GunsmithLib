@@ -34,6 +34,8 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.OptionalDouble;
 
+import static mod.chloeprime.gunsmithlib.api.common.GunsmithLibGunProperties.*;
+
 /**
  * 空 爆 榴 弹
  * 捞 薯 神 器
@@ -172,7 +174,8 @@ public class AirburstSystem {
             // 进行测距并存入结果
             var result = Rangefinder.clip(user, user.getEyePosition(), user.getLookAngle(), 0, maxDistance);
             if (result.asHitResult().getType() != HitResult.Type.MISS) {
-                setAirburstRangefinderStoredDistance(gun.gunStack(), result.getLength());
+                double distance = GsHelper.modifyProperty(gun, user, MEASURED_AIRBURST_DISTANCE, Double.class, result.getLength());
+                setAirburstRangefinderStoredDistance(gun.gunStack(), distance);
                 rangefinderFeedback(user);
             } else {
                 user.displayClientMessage(MSG_TOO_FAR, true);
@@ -210,7 +213,9 @@ public class AirburstSystem {
             return;
         }
 
-        var finalDistance = selectedDistance.getAsDouble();
+        var shooter = event.getShooter();
+        double finalDistance = GsHelper.modifyProperty(gun, shooter, PROGRAMMED_AIRBURST_DISTANCE, Double.class, selectedDistance.getAsDouble());
+
         var distribution = getAirburstDistanceDistribution(gun);
         if (distribution > 0) {
             finalDistance = finalDistance * GsHelper.infDist(event.getShooter().getRandom()::nextGaussian, 1, distribution);

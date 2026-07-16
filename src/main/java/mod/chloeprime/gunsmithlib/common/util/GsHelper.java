@@ -403,5 +403,13 @@ public class GsHelper {
         }
     }
 
+    /**
+     * @since 6.2
+     */
+    public static <T> T modifyProperty(GunInfo gun, LivingEntity shooter, String id, Class<T> type, T original) {
+        var operator = IGunOperator.fromLivingEntity(shooter);
+        return gun.gunItem().modifyProperty(operator.getDataHolder(), gun.gunStack(), shooter, id, type, original);
+    }
+
     private static final ThreadLocal<ComputeModelMatrixBuffer> COMPUTE_MODEL_MATRIX_BUFFER = ThreadLocal.withInitial(ComputeModelMatrixBuffer::new);
 }

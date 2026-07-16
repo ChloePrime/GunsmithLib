@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
+import mod.chloeprime.gunsmithlib.api.common.GunsmithLibGunProperties;
 import mod.chloeprime.gunsmithlib.common.internal.AmmoHitAnythingEventPoster;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
@@ -37,10 +38,14 @@ public class ProximityFuseSystem {
     public static void onBulletCreate(InternalBulletCreateEvent eventWrapper) {
         var event = eventWrapper.getImpl();
         var data = GunExplosiveData.fromGun(event.getGunInfo()).orElse(null);
-        if (data == null || data.getProximityFuseDistance() <= 0) {
+        var dataDistance = data == null ? 0 : data.getProximityFuseDistance();
+        double distance = GsHelper.modifyProperty(
+                event.getGunInfo(), event.getShooter(),
+                GunsmithLibGunProperties.PROXIMITY_FUSE_DISTANCE, Double.class, dataDistance);
+        if (distance <= 0) {
             return;
         }
-        event.getBullet().getPersistentData().putDouble(PDK_PROX_DISTANCE, data.getProximityFuseDistance());
+        event.getBullet().getPersistentData().putDouble(PDK_PROX_DISTANCE, distance);
     }
 
     @SubscribeEvent
