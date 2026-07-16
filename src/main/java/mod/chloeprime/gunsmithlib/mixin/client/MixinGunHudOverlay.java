@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.api.item.IGun;
@@ -8,6 +9,7 @@ import com.tacz.guns.client.gui.overlay.GunHudOverlay;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.GunDisplayProperties;
 import mod.chloeprime.gunsmithlib.client.EnergyWeaponVisuals;
+import mod.chloeprime.gunsmithlib.client.gui.AmmoTypeHud;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.AirburstHUD;
 import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.hooks.ModifyDisplayPropertyHook;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
@@ -101,6 +103,24 @@ public class MixinGunHudOverlay {
             return original;
         }
         return ModifyDisplayPropertyHook.modifyProperty(gun, GunDisplayProperties.AMMO_AMOUNT, Integer.class, original);
+    }
+
+    // 弹种显示
+
+    @WrapMethod(method = "render")
+    private void offsetForAmmoTypeDisplay(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height, Operation<Void> original) {
+        var pose = graphics.pose();
+        pose.pushPose();
+        {
+            pose.translate(-AmmoTypeHud.totalWidth(), 0, 0);
+            original.call(gui, graphics, partialTick, width, height);
+        }
+        pose.popPose();
+    }
+
+    @Inject(method = "render", at = @At("TAIL"))
+    private void renderAmmoType(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height, CallbackInfo ci) {
+        AmmoTypeHud.render(graphics, width, height);
     }
 
     private static final @Unique Pattern gunsmithlib$COUNTER_PATTERN = Pattern.compile("^\\d+%?$");
