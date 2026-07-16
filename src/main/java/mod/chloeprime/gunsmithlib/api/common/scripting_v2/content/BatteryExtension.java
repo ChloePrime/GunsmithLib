@@ -5,7 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * 新版电池数据 API。
  *
- * @since 6.1.0
+ * @since 6.2
  */
 public interface BatteryExtension {
     /**

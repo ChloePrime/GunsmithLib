@@ -26,7 +26,7 @@ import org.luaj.vm2.LuaTable;
  * @param attachment_info        配件数据
  * @param script_params          配件 data 中指定的脚本参数
  * @param privateData            配件的不面向脚本公开的数据
- * @since 6.2.0
+ * @since 6.2
  */
 @SuppressWarnings("unused")
 public record AttachmentScriptingAPI(

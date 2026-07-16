@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-@Deprecated(since = "6.1.0")
+@Deprecated(since = "6.2.0")
 @SuppressWarnings("DeprecatedIsStillUsed")
 public record EnergyWeaponData(
         @GunpackProperty

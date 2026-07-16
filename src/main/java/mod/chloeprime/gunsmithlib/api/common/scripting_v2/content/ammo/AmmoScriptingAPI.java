@@ -17,7 +17,7 @@ import org.luaj.vm2.LuaTable;
  * @param gun           弹药所安装的枪械的 API
  * @param script_params 弹药 index 中指定的脚本参数
  * @param privateData   弹药的不面向脚本公开的数据
- * @since 6.2.0
+ * @since 6.2
  */
 @SuppressWarnings("unused")
 public record AmmoScriptingAPI(

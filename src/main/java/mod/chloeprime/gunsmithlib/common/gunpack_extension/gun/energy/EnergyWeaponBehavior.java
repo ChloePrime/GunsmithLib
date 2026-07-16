@@ -29,7 +29,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@Deprecated(since = "6.1.0")
+@Deprecated(since = "6.2.0")
 @SuppressWarnings("DeprecatedIsStillUsed")
 @EventBusSubscriber
 public class EnergyWeaponBehavior {
