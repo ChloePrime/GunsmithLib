@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @since 6.1.0
+ * @since 6.2
  */
 public class EnergyWeaponV2Data {
     @GunpackProperty

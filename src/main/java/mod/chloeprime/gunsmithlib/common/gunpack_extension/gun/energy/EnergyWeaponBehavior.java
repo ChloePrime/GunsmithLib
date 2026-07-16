@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Deprecated(since = "6.1.0")
+@Deprecated(since = "6.2.0")
 @SuppressWarnings("DeprecatedIsStillUsed")
 @Mod.EventBusSubscriber
 public class EnergyWeaponBehavior {

@@ -106,7 +106,7 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
      * 不要修改返回的 Table！会出现线程安全问题！
      *
      * @return 枪械 data 里配置的逻辑脚本的脚本参数
-     * @since 6.1.0
+     * @since 6.2
      */
     public LuaTable logic_script_params() {
         return gunInfo()

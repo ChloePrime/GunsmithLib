@@ -24,7 +24,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      *
      * @since 3.3.0
      */
-    @Deprecated(since = "6.1.0")
+    @Deprecated(since = "6.2.0")
     @GunpackProperty
     private @Nullable EnergyWeaponData battery;
 
@@ -74,7 +74,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
      * 为非 null 时该武器可以充电。
      * 内部电能的具体用途由逻辑脚本控制。
      *
-     * @since 6.1.0
+     * @since 6.2
      */
     @GunpackProperty
     private @Nullable EnergyWeaponV2Data battery_v2;
@@ -89,7 +89,7 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
         return ((EnhancedGunData) gunInfo.index().getGunData()).gunsmith$getGunsmithLibExtension();
     }
 
-    @Deprecated(since = "6.1.0")
+    @Deprecated(since = "6.2.0")
     public @Nullable EnergyWeaponData battery() {
         return battery;
     }

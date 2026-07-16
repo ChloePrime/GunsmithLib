@@ -88,7 +88,7 @@ public class GunsmithLibCommonScriptExtension
      *
      * @param uid 字符串形式的实体 uuid
      * @return 给定 uuid 对应的实体，如果实体未加载或不存在则返回 {@code nil}
-     * @since 6.1.0
+     * @since 6.2
      */
     public final @Nullable Entity get_entity_by_uid(String uid) {
         return get_entity_by_uuid(UUID.fromString(uid));
@@ -99,7 +99,7 @@ public class GunsmithLibCommonScriptExtension
      *
      * @param uuid 实体 uuid
      * @return 给定 uuid 对应的实体，如果实体未加载或不存在则返回 {@code nil}
-     * @since 6.1.0
+     * @since 6.2
      */
     public @Nullable Entity get_entity_by_uuid(UUID uuid) {
         return v1.gunsmithlib$getShooter()
@@ -113,7 +113,7 @@ public class GunsmithLibCommonScriptExtension
      *
      * @param uid 字符串形式的实体 uuid
      * @return 给定 uuid 对应的实体状态，如果实体未加载或不存在则返回 {@code nil}
-     * @since 6.1.0
+     * @since 6.2
      */
     public final @Nullable EntityStates get_entity_state_by_uid(String uid) {
         return get_entity_state_by_uuid(UUID.fromString(uid));
@@ -124,7 +124,7 @@ public class GunsmithLibCommonScriptExtension
      *
      * @param uuid 实体 uuid
      * @return 给定 uuid 对应的实体状态，如果实体未加载或不存在则返回 {@code nil}
-     * @since 6.1.0
+     * @since 6.2
      */
     public final @Nullable EntityStates get_entity_state_by_uuid(UUID uuid) {
         return Optional.ofNullable(get_entity_by_uuid(uuid))

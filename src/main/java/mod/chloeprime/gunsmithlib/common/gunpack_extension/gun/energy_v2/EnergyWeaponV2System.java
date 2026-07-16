@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * @since 6.1.0
+ * @since 6.2
  */
 public final class EnergyWeaponV2System {
     public static boolean isEnergyWeapon(ItemStack candidate) {

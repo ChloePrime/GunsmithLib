@@ -8,6 +8,9 @@ import org.joml.Vector3d;
 
 import static cn.chloeprime.commons.math.LinearAlgebraTypes.moj2joml;
 
+/**
+ * @since 6.2
+ */
 public record TargetSearcherExtensionResultImpl(
         EntityStates target,
         Entity target_entity,

@@ -114,7 +114,7 @@ public class GunsmithLibSharedDataExtension {
     /**
      * 配件和弹药的逻辑脚本
      *
-     * @since 6.2.0
+     * @since 6.2
      */
     @GunpackProperty
     private @Nullable ResourceLocation script;
@@ -122,7 +122,7 @@ public class GunsmithLibSharedDataExtension {
     /**
      * 配件和弹药的逻辑脚本的脚本参数
      *
-     * @since 6.2.0
+     * @since 6.2
      */
     @GunpackProperty
     private @Nullable Map<String, Object> script_param;

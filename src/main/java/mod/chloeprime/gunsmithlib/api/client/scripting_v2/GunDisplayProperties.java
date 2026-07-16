@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * 可被状态脚本 modify_display_property 修改的属性列表。
  *
- * @since 6.1.0
+ * @since 6.2
  */
 public final class GunDisplayProperties {
     /**

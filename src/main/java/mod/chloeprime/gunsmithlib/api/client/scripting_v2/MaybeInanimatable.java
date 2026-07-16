@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * 有这个注解的 property 在 modify display property 时，
  * 传入的 context 可能会无法执行动画相关的方法。
  *
- * @since 6.1.0
+ * @since 6.2
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)

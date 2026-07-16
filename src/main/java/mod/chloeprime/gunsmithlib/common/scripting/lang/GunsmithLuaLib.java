@@ -13,6 +13,11 @@ import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import java.awt.*;
 import java.util.UUID;
 
+/**
+ * {@code gunsmithlib} Lua 标准库扩展
+ *
+ * @since 6.2
+ */
 public class GunsmithLuaLib extends VarArgFunction {
     static final int INIT               = 0;
     static final int NEW_IDENTIFIER_1   = 1;
