@@ -1,4 +1,4 @@
--- 需要 GunsmithLib 版本 >= 6.1.0
+-- 需要 GunsmithLib 版本 >= 6.2.0
 
 -- 因为演示武器是拿 QBZ 191 改的，
 -- 所以这里的 parent 引用 QBZ-191 的逻辑机。
