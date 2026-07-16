@@ -14,9 +14,11 @@ import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.api.common.GunsmithLibGunProperties;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.LauncherContext;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -79,6 +81,7 @@ public class FragSystem {
         if (launcherInfo == null) {
             return;
         }
+        int dataCount = GsHelper.modifyProperty(gun, shooter, GunsmithLibGunProperties.FRAG_COUNT, Integer.class, data.getCount());
         var launcherId = launcherInfo.gunId();
         var launcherGunData = (GunData)  launcherInfo.index().getGunData();
         var launcherBulletData = (BulletData) launcherInfo.index().getBulletData();
@@ -108,7 +111,7 @@ public class FragSystem {
                     var isBlockHit = hit.getType() == HitResult.Type.BLOCK && hit instanceof BlockHitResult;
                     // 模拟另一半弹片直接卡进方块的情形。
                     // 可以在命中方块时节省一般性能，同时保证空爆和命中方块拥有一样的弹片密度期望。
-                    int count = data.getCount() / (isBlockHit ? 2 : 1);
+                    int count = dataCount / (isBlockHit ? 2 : 1);
                     frags = new int[count];
                     for (int i = 0; i < count; i++) {
                         var direction = randomDirection(rng, hit);
@@ -123,7 +126,7 @@ public class FragSystem {
                     if (hit.getType() == HitResult.Type.BLOCK && hit instanceof BlockHitResult blockHit) {
                         var normal = LinearAlgebraTypes.cast(blockHit.getDirection().getNormal());
                         var rot = fwd2rot(normal, ROTATION_BUFFER);
-                        var count = FragDistribution.computeUniformModeCount(data.getCount() / 2, true);
+                        var count = FragDistribution.computeUniformModeCount(dataCount / 2, true);
                         var step = count <= 1 ? Math.PI : Math.PI / (count - 1);
                         double saltP = (rng.nextDouble() - rng.nextDouble()) / 2;
                         double saltY = (rng.nextDouble() - rng.nextDouble()) / 2;
@@ -142,7 +145,7 @@ public class FragSystem {
                             }
                         }
                     } else {
-                        int countP = FragDistribution.computeUniformModeCount(data.getCount(), false);
+                        int countP = FragDistribution.computeUniformModeCount(dataCount, false);
                         int countY = countP * 2;
                         double stepP = Math.PI / countP;
                         double stepY = 2 * Math.PI / countY;
