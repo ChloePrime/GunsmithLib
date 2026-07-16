@@ -79,8 +79,11 @@ public final class AmmoScripting {
 
     @SubscribeEvent
     public static void onAmmoKilledEntity(EntityKillByGunEvent event) {
-        var sources = Pair.of(event.getDamageSource(GunDamageSourcePart.NON_ARMOR_PIERCING), event.getDamageSource(GunDamageSourcePart.ARMOR_PIERCING));
+        if (event.getLogicalSide().isClient()) {
+            return;
+        }
 
+        var sources = Pair.of(event.getDamageSource(GunDamageSourcePart.NON_ARMOR_PIERCING), event.getDamageSource(GunDamageSourcePart.ARMOR_PIERCING));
         @SuppressWarnings("UnstableApiUsage")
         var wrapped = new EntityHurtByGunEvent.Post(
                 event.getBullet(), event.getKilledEntity(), event.getAttacker(),
@@ -97,6 +100,9 @@ public final class AmmoScripting {
     }
 
     private static void onAmmoHitEntity(EntityHurtByGunEvent event, String luaMethodName) {
+        if (event.getLogicalSide().isClient()) {
+            return;
+        }
         var gun = Optional.ofNullable(event.getAttacker())
                 .map(LivingEntity::getMainHandItem)
                 .flatMap(Gunsmith::getGunInfo)
