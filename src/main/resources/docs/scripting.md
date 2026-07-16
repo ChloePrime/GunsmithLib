@@ -22,12 +22,12 @@
 | `gunsmith_getEstimatedRange(number)` | `get_estimated_range()`                    | 获取当前武器在指定穿透数量下预估的射程           | 假设武器绝对精准，即不考虑扩散。且起始点为玩家摄像机中心而不是枪口                                                    | 4.4.0  |
 | `gunsmith_getGunId()`                | `get_gun_id()`                             | 获取当前武器的枪械 id                  |                                                                                      | 4.12.0 |
 | ~~`gunsmith_getChargingTime()`~~     | ~~`get_charge_time()`~~                    | 已弃用                           |                                                                                      | 4.13.0 |
-| 不支持                                  | `get_entity_by_uid(string)`                | 根据指定的 uuid 获取实体               | 使用字符串形式的 uuid                                                                        | 6.1.0  |
-| 不支持                                  | `get_entity_by_uuid(java.util.UUID)`       | 根据指定的 uuid 获取实体               | 使用 uuid 对象                                                                           | 6.1.0  |
-| 不支持                                  | `get_entity_state_by_uid(string)`          | 根据指定的 uuid 获取实体状态             | 使用字符串形式的 uuid                                                                        | 6.1.0  |
-| 不支持                                  | `get_entity_state_by_uuid(java.util.UUID)` | 根据指定的 uuid 获取实体状态             | 使用 uuid 对象                                                                           | 6.1.0  |
-| 不支持                                  | `search()`                                 | 使用枪械自带的火控系统搜索目标               | 返回值详情见 [target_search_results.md](api_classes/target_search_results.md)              | 6.1.0  |
-| 不支持                                  | `search(number, number)`                   | 参数 1 为最大搜索距离，参数 2 为最大搜索角度（半径） | 角度单位为弧度。<br/>返回值详情见 [target_search_results.md](api_classes/target_search_results.md) | 6.1.0  |
+| 不支持                                  | `get_entity_by_uid(string)`                | 根据指定的 uuid 获取实体               | 使用字符串形式的 uuid                                                                        | 6.2.0  |
+| 不支持                                  | `get_entity_by_uuid(java.util.UUID)`       | 根据指定的 uuid 获取实体               | 使用 uuid 对象                                                                           | 6.2.0  |
+| 不支持                                  | `get_entity_state_by_uid(string)`          | 根据指定的 uuid 获取实体状态             | 使用字符串形式的 uuid                                                                        | 6.2.0  |
+| 不支持                                  | `get_entity_state_by_uuid(java.util.UUID)` | 根据指定的 uuid 获取实体状态             | 使用 uuid 对象                                                                           | 6.2.0  |
+| 不支持                                  | `search()`                                 | 使用枪械自带的火控系统搜索目标               | 返回值详情见 [target_search_results.md](api_classes/target_search_results.md)              | 6.2.0  |
+| 不支持                                  | `search(number, number)`                   | 参数 1 为最大搜索距离，参数 2 为最大搜索角度（半径） | 角度单位为弧度。<br/>返回值详情见 [target_search_results.md](api_classes/target_search_results.md) | 6.2.0  |
 
 #### 异步 API
 
@@ -65,14 +65,14 @@ end
 | 80  | `wawa 3`   |
 | 100 | `wawa 4`   |
 
-#### 能量武器 API V2（双机共享）
+#### 能量武器 API V2（双机共享部分）
 
 | V2 函数名                                     | 说明                       | 详细说明                  | 添加版本  |
 |--------------------------------------------|--------------------------|-----------------------|-------|
-| `get_energy_stored()` 或 `energy_stored()`  | 获取武器内存储的电量               |                       | 6.1.0 |
-| `get_configured_battery_capacity()`        | 获取 data 文件中设置的**电池容量上限** |                       | 6.1.0 |
-| `get_configured_max_energy_input_speed()`  | 获取 data 文件中设置的**输入速度上限** | 不受 modify property 影响 | 6.1.0 |
-| `get_configured_max_energy_output_speed()` | 获取 data 文件中设置的**输出速度上限** | 不受 modify property 影响 | 6.1.0 |
+| `get_energy_stored()` 或 `energy_stored()`  | 获取武器内存储的电量               |                       | 6.2.0 |
+| `get_configured_battery_capacity()`        | 获取 data 文件中设置的**电池容量上限** |                       | 6.2.0 |
+| `get_configured_max_energy_input_speed()`  | 获取 data 文件中设置的**输入速度上限** | 不受 modify property 影响 | 6.2.0 |
+| `get_configured_max_energy_output_speed()` | 获取 data 文件中设置的**输出速度上限** | 不受 modify property 影响 | 6.2.0 |
 
 ## 逻辑机（服务端）扩展 API
 
@@ -96,15 +96,15 @@ end
 
 | V2 函数名                                       | 说明                 | 详细说明                                                        | 添加版本  |
 |----------------------------------------------|--------------------|-------------------------------------------------------------|-------|
-| `set_energy_stored(number)`                  | 设置电池内存储的电量         |                                                             | 6.1.0 |
-| `privileged_extract_energy(number)`          | 从电池中抽取电量，返回实际抽取的电量 | 忽视输出速度上限，适合用于枪械机制导致的耗能                                      | 6.1.0 |
-| `privileged_extract_energy(number, boolean)` | 从电池中抽取电量，返回实际抽取的电量 | 忽视输出速度上限，适合用于枪械机制导致的耗能。<br/>第二个参数传入 true 则只返回能抽取的电量，但是不消耗电量 | 6.1.0 |
-| `privileged_receive_energy(number)`          | 向电池中存入电量，返回实际存入的电量 | 忽视输入速度上限，适合用于枪械机制产生的能量。                                     | 6.1.0 |
-| `privileged_receive_energy(number, boolean)` | 向电池中存入电量，返回实际存入的电量 | 忽视输入速度上限，适合用于枪械机制产生的能量。<br/>第二个参数传入 true 则只返回能抽取的电量，但是不消耗电量 | 6.1.0 |
-| `extract_energy(number)`                     | 从电池中抽取电量，返回实际抽取的电量 |                                                             | 6.1.0 |
-| `extract_energy(number, boolean)`            | 从电池中抽取电量，返回实际抽取的电量 | 第二个参数传入 true 则只返回能抽取的电量，但是不消耗电量                             | 6.1.0 |
-| `receive_energy(number, boolean)`            | 向电池中存入电量，返回实际存入的电量 |                                                             | 6.1.0 |
-| `receive_energy(number, boolean)`            | 向电池中存入电量，返回实际存入的电量 | 第二个参数传入 true 则只返回能存入的电量，但是不存入电量                             | 6.1.0 |
+| `set_energy_stored(number)`                  | 设置电池内存储的电量         |                                                             | 6.2.0 |
+| `privileged_extract_energy(number)`          | 从电池中抽取电量，返回实际抽取的电量 | 忽视输出速度上限，适合用于枪械机制导致的耗能                                      | 6.2.0 |
+| `privileged_extract_energy(number, boolean)` | 从电池中抽取电量，返回实际抽取的电量 | 忽视输出速度上限，适合用于枪械机制导致的耗能。<br/>第二个参数传入 true 则只返回能抽取的电量，但是不消耗电量 | 6.2.0 |
+| `privileged_receive_energy(number)`          | 向电池中存入电量，返回实际存入的电量 | 忽视输入速度上限，适合用于枪械机制产生的能量。                                     | 6.2.0 |
+| `privileged_receive_energy(number, boolean)` | 向电池中存入电量，返回实际存入的电量 | 忽视输入速度上限，适合用于枪械机制产生的能量。<br/>第二个参数传入 true 则只返回能抽取的电量，但是不消耗电量 | 6.2.0 |
+| `extract_energy(number)`                     | 从电池中抽取电量，返回实际抽取的电量 |                                                             | 6.2.0 |
+| `extract_energy(number, boolean)`            | 从电池中抽取电量，返回实际抽取的电量 | 第二个参数传入 true 则只返回能抽取的电量，但是不消耗电量                             | 6.2.0 |
+| `receive_energy(number, boolean)`            | 向电池中存入电量，返回实际存入的电量 |                                                             | 6.2.0 |
+| `receive_energy(number, boolean)`            | 向电池中存入电量，返回实际存入的电量 | 第二个参数传入 true 则只返回能存入的电量，但是不存入电量                             | 6.2.0 |
 
 ## 逻辑机（服务端）新增入口点
 
@@ -136,7 +136,7 @@ end
 | 不支持     | `get_previous_ammo_amount()`          | 获取弹种切换前枪械弹匣内的子弹数量         |      | 5.8.0 |
 | 不支持     | `get_previous_has_bullet_in_barrel()` | 获取弹种切换前枪膛内是否有子弹           |      | 5.8.0 |
 | 不支持     | `get_previous_total_ammo_amount()`    | 获取弹种切换前枪械内累计子弹数量（弹匣 + 枪膛） |      | 5.8.0 |
-| 不支持     | `logic_script_params()`               | 获取枪械 data 里配置的逻辑脚本的脚本参数   |      | 6.1.0 |
+| 不支持     | `logic_script_params()`               | 获取枪械 data 里配置的逻辑脚本的脚本参数   |      | 6.2.0 |
 
 ## 软依赖 GunsmithLib 时安全调用扩展 API 的示例
 

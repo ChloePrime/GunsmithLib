@@ -10,11 +10,11 @@
 
 ### 属性列表
 
-| id                                  | 类型                                                                                                              | 说明             | 默认值      |
-|-------------------------------------|-----------------------------------------------------------------------------------------------------------------|----------------|----------|
-| `gunsmithlib_displayed_ammo_amount` | `number` (int)                                                                                                  | 武器 GUI 中显示的弹药量 | 武器内的弹药量  | 
-| `gunsmithlib_durability_bar_length` | `number` (float)                                                                                                | 耐久条的长度，范围 0-1  | -1       | 
-| `gunsmithlib_durability_bar_color`  | [java.awt.Color](https://github.com/openjdk/jdk/blob/master/src/java.desktop/share/classes/java/awt/Color.java) | 耐久条的颜色         | 原版耐久条的颜色 |
+| id                                  | 类型                                                                                                              | 说明             | 默认值      | 添加版本  |
+|-------------------------------------|-----------------------------------------------------------------------------------------------------------------|----------------|----------|-------|
+| `gunsmithlib_displayed_ammo_amount` | `number` (int)                                                                                                  | 武器 GUI 中显示的弹药量 | 武器内的弹药量  | 6.2.0 |
+| `gunsmithlib_durability_bar_length` | `number` (float)                                                                                                | 耐久条的长度，范围 0-1  | -1       | 6.2.0 |
+| `gunsmithlib_durability_bar_color`  | [java.awt.Color](https://github.com/openjdk/jdk/blob/master/src/java.desktop/share/classes/java/awt/Color.java) | 耐久条的颜色         | 原版耐久条的颜色 | 6.2.0 |
 
 ### 注意事项
 
