@@ -33,6 +33,7 @@ import static java.lang.Math.*;
 public class ProximityFuseSystem {
     public static final int MAX_CAST_RESOLUTION = 64;
     public static final String PDK_PROX_DISTANCE = GunsmithLib.loc("proximity_fuse_distance").toString();
+    public static final String PDK_AFFECTED_SAFETY_DISTANCE = GunsmithLib.loc("affected_by_safety_distance").toString();
 
     @SubscribeEvent
     public static void onBulletCreate(InternalBulletCreateEvent eventWrapper) {
@@ -45,7 +46,9 @@ public class ProximityFuseSystem {
         if (distance <= 0) {
             return;
         }
+        var safety = data != null && data.hasSafetyDistanceFlag(SafetyDistanceFlags.PREVENTS_PROXIMITY_FUSE);
         event.getBullet().getPersistentData().putDouble(PDK_PROX_DISTANCE, distance);
+        event.getBullet().getPersistentData().putBoolean(PDK_AFFECTED_SAFETY_DISTANCE, safety);
     }
 
     @SubscribeEvent
@@ -57,21 +60,33 @@ public class ProximityFuseSystem {
         if (!bullet.isAlive() || !(bullet instanceof EntityKineticBulletAccessor accessor)) {
             return;
         }
-
-        var posBefore = event.getStartPos();
-        var posAfter = event.getEndPos();
-
         var distance = bullet.getPersistentData().getDouble(PDK_PROX_DISTANCE);
         if (distance <= 0) {
             return;
         }
+
+        var posBefore = event.getStartPos();
+        var posAfter = event.getEndPos();
+        var distanceSqr = posBefore.distanceToSqr(posAfter);
+        // 检查安全距离
+        var safetyBudget = SafetyDistanceSystem.getSafetyDistanceOf(bullet) - accessor.gunsmithlib$getMovedDistance();
+        var safetyBudgetSqr = Math.copySign(safetyBudget * safetyBudget, safetyBudget);
+        // 位移终点依旧在安全距离内，这一次位移不可能触发近炸
+        if (safetyBudgetSqr > distanceSqr) {
+            return;
+        }
+
         @Nullable Entity shooter = bullet.getOwner();
         var bulletBB = bullet.getBoundingBox();
         var entityTest = (Predicate<Entity>) et -> testEntity(et, shooter);
 
         int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) * 3 / distance));
         for (int i = 0; i < slices; i++) {
-            var rayCastStart = posBefore.lerp(posAfter, (double) (i + 1) / slices);
+            var delta = (double) (i + 1) / slices;
+            if (distanceSqr * delta * delta < safetyBudgetSqr) {
+                continue;
+            }
+            var rayCastStart = posBefore.lerp(posAfter, delta);
             var aabb = AABB.ofSize(rayCastStart, bulletBB.getXsize(), bulletBB.getYsize(), bulletBB.getZsize()).inflate(distance + 4);
             var hit = sphericalTrace(bullet, rayCastStart, distance, aabb, entityTest).orElse(null);
             if (hit != null) {

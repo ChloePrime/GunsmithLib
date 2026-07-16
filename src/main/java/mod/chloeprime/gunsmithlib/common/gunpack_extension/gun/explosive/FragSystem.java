@@ -70,6 +70,10 @@ public class FragSystem {
         if (level.isClientSide() || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        // 爆炸弹在安全距离外爆炸时，不生成弹片
+        if (SafetyDistanceSystem.isVanillaExplosionInSafeDistance(ammo, event.getHitResult().getLocation())) {
+            return;
+        }
         var gun = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(event.getAmmo().getGunId())).orElse(null);
         var data = gun == null ? null : GunExplosiveFragData.of(gun).orElse(null);
         if (data == null) {

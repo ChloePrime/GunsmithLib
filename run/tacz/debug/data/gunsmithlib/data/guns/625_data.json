@@ -23,6 +23,12 @@
       "airburst_rangefinder_max_distance": 100,
       "proximity_fuse_distance": 1.5,
       "prevent_destroying_loot_items": true,
+      "safety_distance": 16,
+      "safety_distance_flags": [
+        "prevents_airburst_rangefindinng",
+        "prevents_proximity_fuse",
+        "prevents_explosion"
+      ],
       "fragments": {
         "config_id": "gunsmithlib:625_frag",
         "count": 128,

@@ -46,5 +46,6 @@
   "gunsmithlib.affix.heat": "高温",
   "gunsmithlib.affix.shield": "盾牌",
 
+  "gunsmithlib.message.airburst_rangefinder.too_close": "太近了，不得低于安全距离（%.1fm）",
   "gunsmithlib.message.airburst_rangefinder.too_far": "太远了"
 }

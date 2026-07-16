@@ -16,5 +16,18 @@ public interface EnhancedKineticBullet extends TraceableEntity {
     float gunsmithlib$getPotionCloudMinSizeRate();
     void gunsmithlib$setPotionCloudMinSizeRate(float value);
 
+    /**
+     * @return 弹药直至上一刻已经移动的距离
+     * @since 6.2
+     */
+    double gunsmithlib$getMovedDistance();
+
+    /**
+     * 瞬移子弹时刷新子弹已飞过的距离
+     *
+     * @since 6.2
+     */
+    void gunsmith$onMovedToPos(Vec3 newPos);
+
     Vec3 gunsmithlib$getHitPos();
 }

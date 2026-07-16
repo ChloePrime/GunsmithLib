@@ -18,6 +18,7 @@ import com.tacz.guns.resource.CommonAssetsManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
+import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -290,6 +291,9 @@ public class GsHelper {
     @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT, callLocally = true)
     private static void syncBulletExplodePos0(Projectile bullet, Vec3 pos) {
         if (bullet != null) {
+            if (bullet instanceof EnhancedKineticBullet accessor) {
+                accessor.gunsmith$onMovedToPos(pos);
+            }
             bullet.setPos(pos);
             bullet.setDeltaMovement(Vec3.ZERO);
         }

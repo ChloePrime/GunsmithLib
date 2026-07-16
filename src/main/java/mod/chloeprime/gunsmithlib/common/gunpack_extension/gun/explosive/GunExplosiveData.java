@@ -1,5 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
+import cn.chloeprime.commons.lang4.StringName;
+import com.google.common.base.Suppliers;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
@@ -10,8 +12,9 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.OptionalDouble;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class GunExplosiveData {
     /**
@@ -55,8 +58,65 @@ public class GunExplosiveData {
     @GunpackProperty
     private boolean prevent_destroying_loot_items;
 
+    /**
+     * 破片系统配置
+     *
+     * @since 5.9
+     */
     @GunpackProperty
     private @Nullable GunExplosiveFragData fragments;
+
+    /**
+     * 安全距离，默认只影响近炸引信。
+     * <p>
+     * 参阅 {@link #safety_distance_flags} 以查看更多可影响的功能。
+     *
+     * @since 6.2
+     */
+    @GunpackProperty
+    private double safety_distance;
+
+    /**
+     * 安全距离的作用对象。
+     * 默认只影响近炸引信（阻止近炸引信在安全距离内工作）。
+     * <p>
+     * 可选值：
+     * <table>
+     *   <tr>
+     *     <th>id</th>
+     *     <th>用途</th>
+     *   </tr>
+     *   <tr>
+     *     <td>{@code prevents_airburst_rangefindinng}</td>
+     *     <td>阻止低于安全距离的空爆测距仪结果</td>
+     *   </tr>
+     *   <tr>
+     *     <td>{@code prevents_proximity_fuse}</td>
+     *     <td>子弹飞行距离低于安全距离时阻止近炸引信工作</td>
+     *   </tr>
+     *   <tr>
+     *     <td>{@code prevents_explosion}</td>
+     *     <td>子弹飞行距离低于安全距离时阻止子弹爆炸和产生破片</td>
+     *   </tr>
+     * </table>
+     *
+     * @since 6.2
+     */
+    @GunpackProperty
+    private StringName[] safety_distance_flags = null;
+
+    // 下面是代码 :)
+
+    private static final StringName[] DEFAULT_SAFETY_DISTANCE_FLAGS = {
+            SafetyDistanceFlags.PREVENTS_PROXIMITY_FUSE.name()
+    };
+
+    private final Supplier<Set<SafetyDistanceFlag>> safetyDistanceFlags = Suppliers.memoize(() -> {
+        var arr = Objects.requireNonNullElse(safety_distance_flags, DEFAULT_SAFETY_DISTANCE_FLAGS);
+        return Arrays.stream(arr)
+                .map(SafetyDistanceFlag::new)
+                .collect(Collectors.toUnmodifiableSet());
+    });
 
     public @Nonnull DoubleList getAirburstDistances() {
         return Optional.ofNullable(airburst_distances)
@@ -86,6 +146,18 @@ public class GunExplosiveData {
 
     public @Nullable GunExplosiveFragData getFragData() {
         return fragments;
+    }
+
+    public double getSafetyDistance() {
+        return safety_distance;
+    }
+
+    public @Nonnull Set<SafetyDistanceFlag> getSafetyDistanceFlags() {
+        return safetyDistanceFlags.get();
+    }
+
+    public boolean hasSafetyDistanceFlag(SafetyDistanceFlag flag) {
+        return getSafetyDistanceFlags().contains(flag);
     }
 
     public static Optional<GunExplosiveData> fromGun(ItemStack stack) {
