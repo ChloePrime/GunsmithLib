@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle;
 import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.SafetyDistanceSystem;
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
@@ -35,7 +36,6 @@ public class HitParticleSystem {
     }
 
     public static void spawnAt(Level level, Vector3d pos, HitParticleData data) {
-        var isFar = data.isExplosiveParticleAlternate();
         var isAaa = data.isAaaParticle();
         if (isAaa == Boolean.FALSE && AaaParticleProxy.INSTALLED) {
             return;
@@ -47,7 +47,7 @@ public class HitParticleSystem {
             }
             var normal = new Vec3(data.getDX(), data.getDY(), data.getDZ()).normalize();
             var mojPos = LinearAlgebraTypes.joml2moj(pos);
-            AaaParticleProxy.addParticle(level, isFar, id, mojPos, normal, 1, data.getAaaParticleData());
+            AaaParticleProxy.addParticle(level, true, id, mojPos, normal, 1, data.getAaaParticleData());
             return;
         }
         if (!(level instanceof ServerLevel sl)) {
@@ -59,6 +59,7 @@ public class HitParticleSystem {
         }
         // 释放粒子！
         for (var player : sl.players()) {
+            boolean isFar = data.isExplosiveParticleAlternate();
             sl.sendParticles(player, particle, isFar, pos.x(), pos.y(), pos.z(), data.getCount(), data.getDX(), data.getDY(), data.getDZ(), data.getSpeed());
         }
     }
@@ -89,6 +90,10 @@ public class HitParticleSystem {
                 continue;
             }
             var isFar = data.isExplosiveParticleAlternate();
+            // 安全距离内爆炸时不播放爆炸粒子
+            if (isFar && SafetyDistanceSystem.isVanillaExplosionInSafeDistance(ammo, hit.getLocation())) {
+                return;
+            }
             var isAaa = data.isAaaParticle();
             if (isAaa == Boolean.TRUE) {
                 var id = data.getParticleId();
@@ -96,7 +101,7 @@ public class HitParticleSystem {
                     continue;
                 }
                 var scale = (isExplodeEvent && isFar) ? getExplodeScale(ammo, gunInfo) : 1;
-                AaaParticleProxy.addParticle(level, isFar, id, hitPosAaa, normal, scale, data.getAaaParticleData());
+                AaaParticleProxy.addParticle(level, true, id, hitPosAaa, normal, scale, data.getAaaParticleData());
                 continue;
             }
             // 解码粒子 id 和配置

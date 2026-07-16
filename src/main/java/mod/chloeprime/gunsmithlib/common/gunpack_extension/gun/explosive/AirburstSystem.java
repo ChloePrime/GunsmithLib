@@ -46,9 +46,17 @@ import static mod.chloeprime.gunsmithlib.api.common.GunsmithLibGunProperties.*;
 @EventBusSubscriber
 public class AirburstSystem {
     public static final String PDK_AIRBURST_DISTANCE = GunsmithLib.loc("airburst_distance").toString();
+
     public static final Component MSG_TOO_FAR = Component
             .translatable("%s.message.airburst_rangefinder.too_far".formatted(GunsmithLib.MOD_ID))
             .withStyle(ChatFormatting.RED);
+    private static final String MSG_TOO_CLOSE_KEY = "%s.message.airburst_rangefinder.too_close".formatted(GunsmithLib.MOD_ID);
+
+    public static Component msgTooClose(double distance) {
+        return Component
+                .translatable(MSG_TOO_CLOSE_KEY, distance)
+                .withStyle(ChatFormatting.RED);
+    }
 
     public static int getSelectedDistanceIndex(ItemStack stack) {
         return Objects.requireNonNullElse(stack.get(GunsmithLib.DataComponents.SELECTED_AIRBURST_DISTANCE_INDEX), 0);
@@ -167,8 +175,13 @@ public class AirburstSystem {
             var result = Rangefinder.clip(user, user.getEyePosition(), user.getLookAngle(), 0, maxDistance);
             if (result.asHitResult().getType() != HitResult.Type.MISS) {
                 double distance = GsHelper.modifyProperty(gun, user, MEASURED_AIRBURST_DISTANCE, Double.class, result.getLength());
-                setAirburstRangefinderStoredDistance(gun.gunStack(), distance);
-                rangefinderFeedback(user);
+                double safeCheck = SafetyDistanceSystem.checkSafetyDistance(gun, distance, SafetyDistanceFlags.PREVENTS_AIRBURST_RANGEFINDING, user);
+                if (safeCheck <= 0) {
+                    setAirburstRangefinderStoredDistance(gun.gunStack(), distance);
+                    rangefinderFeedback(user);
+                } else {
+                    user.displayClientMessage(msgTooClose(safeCheck), true);
+                }
             } else {
                 user.displayClientMessage(MSG_TOO_FAR, true);
             }

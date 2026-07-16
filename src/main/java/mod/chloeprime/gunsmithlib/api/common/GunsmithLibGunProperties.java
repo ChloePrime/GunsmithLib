@@ -45,6 +45,14 @@ public final class GunsmithLibGunProperties {
     public static final String FRAG_COUNT = "%s_frag_count".formatted(GunsmithLib.MOD_ID);
 
     /**
+     * 爆炸物的安全距离
+     * <p>
+     * {@code gunsmithlib_safety_distance}
+     */
+    @ValueModifiableAtRuntime(Double.class)
+    public static final String SAFETY_DISTANCE = "%s_safety_distance".formatted(GunsmithLib.MOD_ID);
+
+    /**
      * 电池容量。需要在 data 中手动开启才能被脚本修改。
      * <p>
      * {@code gunsmithlib_energy_capacity}

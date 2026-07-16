@@ -6,6 +6,7 @@ import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.TacHitResult;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.api.common.AmmoSelfExplodeEvent;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.SafetyDistanceSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.HomingProjectileBehavior;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlSystem;
@@ -24,11 +25,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -42,10 +45,32 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
     private @Unique int gunsmithlib$aecDuration = 0;
     private @Unique float gunsmithlib$aecMinSize = 0;
     private @Unique @Nullable Vec3 gunsmithlib$hitPos;
+    private @Unique Vec3 gunsmithlib$lastTickPos = Vec3.ZERO;
+    private @Unique double gunsmithlib$movedDistance;
 
     @Inject(method = "onBulletTick", remap = false, at = @At("HEAD"))
     private void beforeTrace(CallbackInfo ci) {
         BulletReadyToTraceEvent.onBulletTick(this, pierce);
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void beforeTick(CallbackInfo ci) {
+        gunsmithlib$lastTickPos = position();
+    }
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void afterTick(CallbackInfo ci) {
+        gunsmith$onMovedToPos(gunsmithlib$lastTickPos);
+    }
+
+    @Override
+    public double gunsmithlib$getMovedDistance() {
+        return gunsmithlib$movedDistance;
+    }
+
+    @Override
+    public void gunsmith$onMovedToPos(Vec3 other) {
+        gunsmithlib$movedDistance += position().distanceTo(other);
     }
 
     @Shadow(remap = false) private int pierce;
@@ -173,6 +198,7 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
     }
 
     // 方块穿透控制
+
     @WrapOperation(
             method = "onBulletTick", remap = false,
             at = @At(value = "INVOKE", remap = false, target = "Lcom/tacz/guns/util/block/BlockRayTrace;rayTraceBlocks(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;"))
@@ -181,7 +207,34 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
         return original.call(level, context);
     }
 
+    // 安全距离
+
+    private @Unique boolean gunsmith$isExplodeBackup;
+
+    @Inject(method = {"onHitBlock", "onHitEntity"}, remap = false, at = @At("HEAD"))
+    private void backupIsExplode(@Coerce HitResult result, Vec3 startVec, Vec3 endVec, CallbackInfo ci) {
+        gunsmith$isExplodeBackup = explosion;
+    }
+
+    @Inject(
+            method = {"onHitBlock", "onHitEntity"}, remap = false,
+            at = @At(value = "FIELD", remap = false, opcode = Opcodes.GETFIELD, target = "Lcom/tacz/guns/entity/EntityKineticBullet;explosion:Z"))
+    private void doNotExplodeIfNotInSafeDistance(@Coerce HitResult result, Vec3 startVec, Vec3 endVec, CallbackInfo ci) {
+        if (!explosion) {
+            return;
+        }
+        if (SafetyDistanceSystem.isVanillaExplosionInSafeDistance(this, result.getLocation())) {
+            explosion = false;
+        }
+    }
+
+    @Inject(method = {"onHitBlock", "onHitEntity"}, remap = false, at = @At("RETURN"))
+    private void restoreIsExplode(@Coerce HitResult result, Vec3 startVec, Vec3 endVec, CallbackInfo ci) {
+        explosion = gunsmith$isExplodeBackup;
+    }
+
     @Shadow(remap = false) public abstract ResourceLocation getGunId();
+    @Shadow(remap = false) private boolean explosion;
 
     public MixinBullet(EntityType<? extends Projectile> type, Level level) {
         super(type, level);
