@@ -16,6 +16,14 @@ public class GunsmithClientConfig {
                     Added in version 5.9.3""")
             .define("improve_tracer_start_position_when_aiming", true);
 
+    /**
+     * @since 6.2.0
+     */
+    public static final ModConfigSpec.BooleanValue HINT_ARCANA_INSTALLATION = BUILDER
+            .comment("""
+                    If true, hint users to install TaCZ Arcana for weapons that use its ammo type system.""")
+            .define("hint_arcana_installation", true);
+
     public enum AmmoTypeHudMode {
         DISABLE,
         ENABLE,

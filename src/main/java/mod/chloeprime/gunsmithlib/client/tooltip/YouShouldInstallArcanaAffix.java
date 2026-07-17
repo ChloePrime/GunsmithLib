@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.client.tooltip;
 
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.client.GunsmithClientConfig;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.arcana_check.ArcanaCheckSystem;
 import net.minecraft.network.chat.Component;
 
@@ -11,7 +12,7 @@ public class YouShouldInstallArcanaAffix extends DescriptionalGunAffix.Descripti
 
     @Override
     public boolean shouldShow(GunInfo gunInfo) {
-        return ArcanaCheckSystem.shouldHintArcanaInstallation(gunInfo);
+        return GunsmithClientConfig.HINT_ARCANA_INSTALLATION.get() && ArcanaCheckSystem.shouldHintArcanaInstallation(gunInfo);
     }
 
     @Override
