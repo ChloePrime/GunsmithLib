@@ -48,7 +48,7 @@ public class ClientShooterStatesImpl extends BaseShooterStatesImpl implements Cl
         // 对于 sight 和 scope 混合的组合瞄具，
         // 判断方式为：如果选中了倍率最低的一档，则判定为使用 sight，否则判定为使用 scope
         return Gunsmith
-                .getAttachmentInfo(gunInterface.getAttachment(gunItem, AttachmentType.SCOPE))
+                .getAttachmentInfo(gunInterface.getAttachment(shooter.registryAccess(), gunItem, AttachmentType.SCOPE))
                 .flatMap(info -> getScopeTypeFromItem(info, index))
                 .orElse(SCOPE_TYPE_IRON_ZOOM);
     }

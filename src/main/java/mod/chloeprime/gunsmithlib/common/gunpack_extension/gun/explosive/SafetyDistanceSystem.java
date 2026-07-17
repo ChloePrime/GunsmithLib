@@ -9,16 +9,15 @@ import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.ApiStatus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import javax.annotation.Nullable;
 
 /**
  * @since 6.2
  */
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public final class SafetyDistanceSystem {
     public static final String PDK_SAFETY_DISTANCE = GunsmithLib.loc("safety_distance").toString();
     public static final String PDK_SAFE_EXPLODE = GunsmithLib.loc("safe_explode").toString();
@@ -87,9 +86,8 @@ public final class SafetyDistanceSystem {
         return bullet.position().distanceToSqr(hitPos) < safetyBudgetSqr;
     }
 
-    @ApiStatus.Internal
     @SubscribeEvent
-    public static void onBulletCreate(BulletCreateEvent event) {
+    private static void onBulletCreate(BulletCreateEvent event) {
         var pd = event.getBullet().getPersistentData();
         var distance = getSafetyDistance(event.getGunInfo(), event.getShooter());
         if (distance > 0) {

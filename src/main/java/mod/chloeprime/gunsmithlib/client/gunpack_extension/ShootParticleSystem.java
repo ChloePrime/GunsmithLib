@@ -9,9 +9,9 @@ import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public final class ShootParticleSystem {
     @SubscribeEvent
     public static void onClientGunFire(GunFireEvent event) {
@@ -50,7 +50,7 @@ public final class ShootParticleSystem {
             return;
         }
         var user = Objects.requireNonNullElse(shooter, player);
-        var partial = mc.getPartialTick();
+        var partial = mc.getTimer().getGameTimeDeltaPartialTick(false);
         var front = user.getViewVector(partial);
         Vector3f localOffset;
         if (player == shooter && mc.options.getCameraType() == CameraType.FIRST_PERSON) {

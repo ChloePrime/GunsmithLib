@@ -35,7 +35,7 @@ public record AnimScriptReady(
                 .ofNullable(asm.getContext())
                 .filter(ctx -> ((GunAnimationStateContextAccessor) ctx).getCurrentGunItem() == stack)
                 .orElseGet(() -> Util.make(new ClientGunScriptingAPI(), ctx -> {
-                    ctx.setPartialTicks(Minecraft.getInstance().getPartialTick());
+                    ctx.setPartialTicks(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
                     ctx.setCurrentGunItem(stack);
                 }));
         return Optional.of(new AnimScriptReady(stack, script, context));

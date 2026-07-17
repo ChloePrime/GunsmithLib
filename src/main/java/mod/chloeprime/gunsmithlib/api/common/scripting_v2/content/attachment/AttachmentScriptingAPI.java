@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.attachment;
 
+import cn.chloeprime.commons.ContextUtil;
 import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.nbt.GunItemDataAccessor;
@@ -11,12 +12,16 @@ import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ShooterStates;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.SyncedData;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
 import org.luaj.vm2.LuaTable;
+
+import java.util.Optional;
 
 /**
  * 配件脚本的 API。
@@ -263,10 +268,12 @@ public record AttachmentScriptingAPI(
     }
 
     private void updateAttachment(ItemStack newAttachment) {
-        var gunNbt = gun.getItemStack().getOrCreateTag();
-        var nbtKey = GunItemDataAccessor.GUN_ATTACHMENT_BASE + attachment_type_object().name();
-        var serializedAttachment = new CompoundTag();
-        newAttachment.save(serializedAttachment);
-        gunNbt.put(nbtKey, serializedAttachment);
+        gun.getItemStack().update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, data -> data.update(tag -> {
+            var provider = Optional.ofNullable(gun.getShooter())
+                    .map(Entity::registryAccess)
+                    .orElseGet(ContextUtil::getRegistryAccess);
+            var key = GunItemDataAccessor.GUN_ATTACHMENT_BASE + attachment_type_object().name();
+            tag.put(key, newAttachment.saveOptional(provider));
+        }));
     }
 }

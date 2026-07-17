@@ -56,7 +56,7 @@ public final class AttachmentScripting {
         var luaMethodName = "gunsmithlib_attachment_" + gunLuaMethodName;
         var value = new MutableObject<>(original);
         for (var attachmentType : AttachmentScripting.SCRIPT_ORDER) {
-            var attachmentInfo = Optional.of(gunInterface.getAttachment(gunItem, attachmentType))
+            var attachmentInfo = Optional.of(gunInterface.getAttachment(shooter.registryAccess(), gunItem, attachmentType))
                     .filter(attach -> !attach.isEmpty())
                     .flatMap(AttachmentInfo::of)
                     .orElse(null);

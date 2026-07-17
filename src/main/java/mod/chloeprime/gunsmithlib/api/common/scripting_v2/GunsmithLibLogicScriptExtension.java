@@ -100,11 +100,11 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
         var gunStack = api.getItemStack();
         var shooter = (api.getShooter() instanceof Player p && !p.level().isClientSide()) ? p : null;
         for (var attachmentType : AttachmentType.values()) {
-            var attachment = gunInterface.getAttachment(gunStack, attachmentType);
+            var attachment = gunInterface.getAttachment(registryAccess(), gunStack, attachmentType);
             if (attachment.isEmpty()) {
                 continue;
             }
-            gunInterface.unloadAttachment(gunStack, attachmentType);
+            gunInterface.unloadAttachment(registryAccess(), gunStack, attachmentType);
             if (shooter != null) {
                 if (!shooter.getInventory().add(attachment)) {
                     shooter.drop(attachment, true);

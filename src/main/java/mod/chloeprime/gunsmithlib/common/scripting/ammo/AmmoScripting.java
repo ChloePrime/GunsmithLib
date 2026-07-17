@@ -15,8 +15,8 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSha
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.luaj.vm2.LuaValue;
@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @ApiStatus.Internal
-@Mod.EventBusSubscriber
+@EventBusSubscriber
 public final class AmmoScripting {
     public static final Marker MARKER = MarkerFactory.getMarker("GunsmithLib Ammo Scripting");
 

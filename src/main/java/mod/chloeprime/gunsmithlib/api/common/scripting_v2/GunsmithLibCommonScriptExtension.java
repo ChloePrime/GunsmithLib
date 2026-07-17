@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 
+import cn.chloeprime.commons.ContextUtil;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
@@ -15,6 +16,7 @@ import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDat
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.TargetSearcherExtensionResultImpl;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -240,6 +242,12 @@ public class GunsmithLibCommonScriptExtension
 
     protected Optional<GunInfo> gunInfo() {
         return GsHelper.unpack(v1.gunsmithlib$getGunItemInterface(), v1.gunsmithlib$getCurrentItem());
+    }
+
+    protected RegistryAccess registryAccess() {
+        return v1.gunsmithlib$getShooter()
+                .map(Entity::registryAccess)
+                .orElseGet(ContextUtil::getRegistryAccess);
     }
 
     protected long mapEnergyV2Cap(ToLongFunction<GunEnergyStorage> code, ToLongFunction<IEnergyStorage> fallback) {
