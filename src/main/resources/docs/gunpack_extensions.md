@@ -235,7 +235,21 @@
         // - "uniform": 均匀分布，随机相位
         // 5.11.0 新增
         "distribution": "uniform"
-      }
+      },
+      //（可选）安全距离，默认值为 0
+      // 6.2 版本新增
+      "safety_distance": 6,
+      //（可选）安全距离的影响范围，默认只影响近炸引信。
+      // 下面这个示例中列出了当前所有可选的值。
+      // 6.2 版本新增
+      "safety_distance_flags": [
+        // 阻止低于安全距离的空爆测距仪结果
+        "prevents_airburst_rangefindinng",
+        // 子弹飞行距离低于安全距离时阻止近炸引信工作
+        "prevents_proximity_fuse",
+        // 子弹飞行距离低于安全距离时阻止子弹爆炸和产生破片
+        "prevents_explosion"
+      ]
     }
   }
 }
