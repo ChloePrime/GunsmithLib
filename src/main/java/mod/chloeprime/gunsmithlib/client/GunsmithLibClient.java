@@ -9,6 +9,7 @@ import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.tooltip.DescriptionalGunAffix;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplayInstance;
@@ -61,6 +62,18 @@ public class GunsmithLibClient {
     public static void registerEntityRenderersExcludingLaser(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(GunsmithLib.EntityTypes.RANGEFINDER_MARKER.get(), NoopRenderer::new);
         event.registerEntityRenderer(GunsmithLib.EntityTypes.AREA_EFFECT_CLOUD_3D.get(), NoopRenderer::new);
+    }
+
+    public static Optional<GunInfo> currentGunInfo() {
+        return Optional.ofNullable(Minecraft.getInstance().player)
+                .map(LivingEntity::getMainHandItem)
+                .flatMap(Gunsmith::getGunInfo);
+    }
+
+    public static Optional<GunDisplayInstance> currentGunDisplay() {
+        return Optional.ofNullable(Minecraft.getInstance().player)
+                .map(LivingEntity::getMainHandItem)
+                .flatMap(TimelessAPI::getGunDisplay);
     }
 
     public static void playComputerButtonSound() {
