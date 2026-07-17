@@ -208,7 +208,9 @@ public class GunsmithLibClient {
         lastRedirectionData = redirections;
         // 清空之前的 override 数据防止残留
         for (var entry : TimelessAPI.getAllClientGunIndex()) {
-            ((EnhancedGunDisplayInstance) entry.getValue().getDefaultDisplay()).gunsmith$acceptOverride(null);
+            if (entry.getValue().getDefaultDisplay() instanceof EnhancedGunDisplayInstance display) {
+                display.gunsmith$acceptOverride(null);
+            }
         }
         // 装载新的 redirect 数据
         redirections.forEach(GunsmithLibClient::applyDisplayRedirection);
@@ -226,6 +228,7 @@ public class GunsmithLibClient {
                 .flatMap(id -> TimelessAPI.getClientGunIndex(id).stream())
                 .map(ClientGunIndex::getDefaultDisplay)
                 .filter(display -> display != master)
+                .filter(Objects::nonNull)
                 .forEach(display -> ((EnhancedGunDisplayInstance) display).gunsmith$acceptOverride(master));
     }
 
