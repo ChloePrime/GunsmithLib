@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.api.common.recipe;
 
-import cn.chloeprime.commons.ContextUtil;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mod.chloeprime.gunsmithlib.api.common.TaCZContentType;
@@ -35,7 +34,7 @@ public class SmithTableTransformTaCZContentIdRecipe extends SmithingTransformRec
             TaCZContentType taczContentType,
             ResourceLocation resultId
     ) {
-        super(template, base, addition, taczContentType.createWithId(resultId, ContextUtil.getRegistryAccess()));
+        super(template, base, addition, taczContentType.createWithId(resultId, null));
         this.taczContentType = taczContentType;
         this.resultId = resultId;
     }
