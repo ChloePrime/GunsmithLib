@@ -18,10 +18,13 @@ import com.tacz.guns.resource.CommonAssetsManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.GunAmmoVariantSet;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -34,6 +37,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
@@ -75,6 +79,33 @@ public class GsHelper {
     public static double infLerp(double delta, double start, double end) {
         var normalizedDelta = Math.atan(delta) / Math.PI + 0.5;
         return Mth.lerp(normalizedDelta, start, end);
+    }
+
+    /**
+     * 获取子弹 id
+     * 对没有指定 gunsmith 弹种组的武器来说，优先返回 Arcana 的弹种，其次返回 data 中填写的弹种
+     *
+     * @since 6.2
+     * @param gunInfo 枪械对象
+     * @return 枪械的子弹 id
+     */
+    public static ResourceLocation getAmmoId(GunInfo gunInfo) {
+        var dataAmmoId = gunInfo.index().getGunData().getAmmoId();
+        // 存在 Gunsmith 弹种组时，不使用 Arcana 的弹种
+        if (GunAmmoVariantSet.of(gunInfo).isPresent()) {
+            return dataAmmoId;
+        }
+        // 优先读取 Arcana 的 Extras/ExtraAmmo
+        @SuppressWarnings("deprecation")
+        var arcanaAmmoId = Optional.ofNullable(gunInfo.gunStack().get(DataComponents.CUSTOM_DATA))
+                .map(CustomData::getUnsafe)
+                .filter(tag -> tag.contains("Extras", Tag.TAG_COMPOUND))
+                .map(tag -> tag.getCompound("Extras"))
+                .filter(extras -> extras.contains("ExtraAmmo", Tag.TAG_STRING))
+                .map(tag -> tag.getString("ExtraAmmo"))
+                .map(ResourceLocation::tryParse);
+        // 最后使用 data 文件中的子弹 id。
+        return arcanaAmmoId.orElse(dataAmmoId);
     }
 
     /**
