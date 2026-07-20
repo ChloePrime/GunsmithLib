@@ -34,9 +34,22 @@ public class AmmoVariantSystem {
         var selected = gun.get(GunsmithLib.DataComponents.SELECTED_PART);
         if (selected != null) {
             return GunAmmoVariantSet.of(gun).map(set -> set.partByName().get(selected));
-        } else {
-            return Gunsmith.getGunInfo(gun).flatMap(AmmoVariantSystem::getDefaultPart);
         }
+        var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
+        if (gunInfo == null) {
+            return Optional.empty();
+        }
+        var gunId = gunInfo.gunId();
+        return GunAmmoVariantSet.of(gun)
+                .stream()
+                .map(GunAmmoVariantSet::parts)
+                .flatMap(Collection::stream)
+                .filter(part -> part.variants().stream()
+                        .map(GunAmmoVariantSet.Variant::getGunIds)
+                        .flatMap(Collection::stream)
+                        .anyMatch(gunId::equals))
+                .findFirst()
+                .or(() -> getDefaultPart(gunInfo));
     }
 
     public static Optional<GunAmmoVariantSet.Part> getDefaultPart(GunInfo gun) {
@@ -44,6 +57,10 @@ public class AmmoVariantSystem {
                 .filter(set -> !set.parts().isEmpty())
                 .findFirst()
                 .map(set -> set.parts().getFirst());
+    }
+
+    public static void setCurrentPart(ItemStack gun, GunAmmoVariantSet.Part part) {
+        gun.set(GunsmithLib.DataComponents.SELECTED_PART, part.name());
     }
 
     @RemoteCallable(flow = RPCFlow.CLIENT_TO_SERVER)
@@ -73,11 +90,14 @@ public class AmmoVariantSystem {
             return;
         }
         var nextPart = nextPart(variantSet, currentPart);
+        @Nullable
         var nextPartData = storeAndUpdateAmmoVariantData(gunBefore, currentPart).byPartStorage().get(nextPart.name());
-        var fireMode = Optional.of(nextPartData.fireMode())
+        var fireMode = Optional.ofNullable(nextPartData)
+                .map(AmmoVariantStorage.OfSinglePart::fireMode)
                 .filter(mode -> mode != FireMode.UNKNOWN)
                 .orElseGet(() -> getDefaultFireMode(nextPart));
-        var nextVariant = nextPart.variants().get(nextPartData.selectedVariant() % nextPart.variants().size());
+        int nextVariantIndex = nextPartData == null ? 0 : nextPartData.selectedVariant() % nextPart.variants().size();
+        var nextVariant = nextPart.variants().get(nextVariantIndex);
         var nextGunId = nextVariant.getGunIdOrFallback(fireMode).orElse(null);
         if (nextGunId == null) {
             if (user != null) {
@@ -88,6 +108,7 @@ public class AmmoVariantSystem {
 
         if (setGunId(gunBefore, nextGunId, user)) {
             Gunsmith.getGunInfo(gunBefore.gunStack()).ifPresent(gunAfter -> restoreGunStateFromStorage(gunAfter, nextPartData));
+            setCurrentPart(gunBefore.gunStack(), nextPart);
             if (user instanceof ServerPlayer ssp) {
                 RPC.call(RPCTarget.to(ssp), AmmoVariantSystem::triggerAnimation, false, nextGunId, gunBefore.gunId(), prevAmmo, prevBarrel);
             }
@@ -125,8 +146,8 @@ public class AmmoVariantSystem {
         return newStorage;
     }
 
-    private static void restoreGunStateFromStorage(GunInfo gun, AmmoVariantStorage.OfSinglePart partData) {
-        gun.setTotalAmmo(partData.storedAmmo());
+    private static void restoreGunStateFromStorage(GunInfo gun, @Nullable AmmoVariantStorage.OfSinglePart partData) {
+        gun.setTotalAmmo(partData == null ? 0 : partData.storedAmmo());
     }
 
     // 切换枪械弹种 / 模式

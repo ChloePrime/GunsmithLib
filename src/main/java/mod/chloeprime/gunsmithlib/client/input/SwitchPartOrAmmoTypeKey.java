@@ -96,6 +96,9 @@ public final class SwitchPartOrAmmoTypeKey {
                 return;
             }
             var ids = AmmoVariantSystem.getAvailableVariants(player.getMainHandItem());
+            if (ids.size() <= 1) {
+                return;
+            }
             mc.setScreen(new GunVariantSelectWheelScreen(ids));
         }
     }
