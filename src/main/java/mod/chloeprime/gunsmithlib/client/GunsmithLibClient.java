@@ -16,6 +16,7 @@ import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplayIns
 import mod.chloeprime.gunsmithlib.client.papi.AirburstDistancePapi;
 import mod.chloeprime.gunsmithlib.client.papi.RangefinderPapi;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
+import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -46,6 +47,10 @@ public class GunsmithLibClient {
     public static void onClientConstruct(BiConsumer<ModConfig.Type, IConfigSpec<?>> registerConfigFunc) {
         registerConfigFunc.accept(ModConfig.Type.CLIENT, GunsmithClientConfig.SPEC);
         DescriptionalGunAffix.init();
+        if (ModInstallationStatus.TACZ_PRESENCE_INSTALLED) {
+            GunsmithLib.LOGGER.warn("GunsmithLib found a partially incompatible mod: {}", ModInstallationStatus.TACZ_PRESENCE_ID);
+            GunsmithLib.LOGGER.warn("Incompatible functionalities will be disabled when these incompatible mods are installed.");
+        }
     }
 
     @SubscribeEvent

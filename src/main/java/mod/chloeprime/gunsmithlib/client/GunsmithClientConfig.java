@@ -53,6 +53,7 @@ public class GunsmithClientConfig {
                     - ENABLE:  Show the ammo type's slot texture
                     - STYLED:  Show the ammo type's slot texture with a shader that makes it more suitable with other parts of the gun HUD
                     
+                    Warning: Incompatible with TaCZ Presence
                     Added in version 6.2.0""")
             .defineEnum("hud_ammo_type_icon_option", AmmoTypeHudMode.STYLED);
 

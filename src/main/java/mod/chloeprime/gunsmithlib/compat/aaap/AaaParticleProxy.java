@@ -1,15 +1,15 @@
 package mod.chloeprime.gunsmithlib.compat.aaap;
 
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.AAAParticleData;
+import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 
 public class AaaParticleProxy {
-    public static final boolean INSTALLED = ModList.get().isLoaded("aaa_particles");
+    public static final boolean INSTALLED = ModInstallationStatus.AAA_PARTICLES_INSTALLED;
 
     /**
      * 该方法定义的前方为 Effekseer 编辑器内的 Y 轴正上方。
