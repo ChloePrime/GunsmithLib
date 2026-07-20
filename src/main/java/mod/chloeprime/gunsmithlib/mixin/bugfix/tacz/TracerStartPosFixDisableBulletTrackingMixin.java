@@ -4,7 +4,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.Config;
+import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Final;
@@ -25,7 +27,13 @@ public class TracerStartPosFixDisableBulletTrackingMixin {
     private <T> void doNotTeleportBullets(Consumer<T> broadcast, T packet, Operation<Void> original) {
         if (Config.IMPROVE_TRACER_ROTATION_STABILITY.get()) {
             if (!trackDelta && entity instanceof EntityKineticBullet) {
-                if (packet instanceof ClientboundMoveEntityPacket) {
+                // 修复榴弹弹道粒子比实际轨迹下坠得更厉害
+                // 装了 Arcana 以后这个 bug 就没有了，为避免更大的兼容性问题所以在装了 Arcana 以后不开启
+                if (!ModInstallationStatus.ARCANA_INSTALLED && packet instanceof ClientboundMoveEntityPacket) {
+                    return;
+                }
+                // 修复曳光弹倾斜
+                if (packet instanceof ClientboundTeleportEntityPacket) {
                     return;
                 }
             }
