@@ -10,6 +10,7 @@ import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.GunsmithClientConfig;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -34,10 +35,18 @@ public final class AmmoTypeHud {
     private static ShaderInstance SHADER;
 
     public static boolean isIconEnabled() {
+        // 弹种图标与 TaCZ Presence 不兼容
+        if (ModInstallationStatus.TACZ_PRESENCE_INSTALLED) {
+            return false;
+        }
         return GunsmithClientConfig.HUD_AMMO_TYPE_ICON_OPTION.get() != GunsmithClientConfig.AmmoTypeHudMode.DISABLE;
     }
 
     public static boolean isIconShaded() {
+        // 弹种图标与 TaCZ Presence 不兼容
+        if (ModInstallationStatus.TACZ_PRESENCE_INSTALLED) {
+            return false;
+        }
         return GunsmithClientConfig.HUD_AMMO_TYPE_ICON_OPTION.get() == GunsmithClientConfig.AmmoTypeHudMode.STYLED;
     }
 

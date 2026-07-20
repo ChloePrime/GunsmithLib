@@ -76,21 +76,21 @@ end
 
 ## 逻辑机（服务端）扩展 API
 
-| 函数名（v1）                                            | 函数名（v2，参数同 v1，故在此省略）                   | 说明                                          | 详细说明                                         | 添加版本  |
-|----------------------------------------------------|----------------------------------------|---------------------------------------------|----------------------------------------------|-------|
-| 不支持                                                | `get_shooter_position()`               | 获取射手脚底的坐标                                   |                                              | 5.6.0 |
-| 不支持                                                | `get_muzzle_position()`                | 获取射手枪口的坐标                                   | 估算的坐标，不准确                                    | 5.6.0 |
-| 不支持                                                | `get_front_vector()`                   | 获取射手的视线方向                                   | 返回值必定是单位向量                                   | 4.4.0 |
-| `gunsmith_playOverheatSound()`                     | `play_overheat_sound()`                | 播放充电武器过热时内置的过热特效                            |                                              | 3.3.0 |
-| `gunsmith_triggerAnimationStateTransition(string)` | `trigger_animation_state_transition()` | 触发客户端状态转移（transition）                       |                                              | 5.4.0 |
-| `gunsmith_addEffect(table)`                        | `add_potion_effect()`                  | 为射手添加药水效果                                   | table 的结构类似 data 中药水效果部分                     | 5.6.0 |
-| `gunsmith_addEffectTo(LivingEntity, table)`        | `add_potion_effect_to()`               | 为指定实体添加药水效果                                 | table 的结构类似 data 中药水效果部分                     | 5.6.0 |
-| `gunsmith_spawnParticle(Vector3d, table[])`        | `spawn_particle()`                     | 在指定位置播放粒子效果                                 | table 的结构类似 data 中命中粒子部分                     | 5.6.0 |
-| 不支持                                                | `get_root_gun_id()`                    | 获取发射器的 id                                   | 对于**子母弹**的情况，获取母弹射物的发射器的 id                  | 5.9.0 |
-| 不支持                                                | `get_root_gun_api()`                   | 在指定位置播放粒子效果                                 | 对于**子母弹**的情况，获取母弹射物的发射器的 api 对象              | 5.9.0 |
-| 不支持                                                | `unload_all_ammo()`                    | 卸载所有弹药并向射手返回卸下来的弹药                          | 包括枪膛内的弹药                                     | 6.1.0 |
-| 不支持                                                | `unload_all_attachments()`             | 卸载所有配件并向射手返回卸下来的配件                          | 可用于次抛武器抛弃前卸下配件                               | 6.1.0 |
-| 不支持                                                | `discard_weapon()`                     | 抛弃该武器，将武器的堆叠大小减少 1，通常情况下会导致武器消失并触发 put away | 建议调用前调用 `#unload_all_attachments` 以保留玩家安装的配件 | 6.1.0 |
+| 函数名（v1）                                             | 函数名（v2，参数同 v1，故在此省略）                   | 说明                                          | 详细说明                                         | 添加版本  |
+|-----------------------------------------------------|----------------------------------------|---------------------------------------------|----------------------------------------------|-------|
+| 不支持                                                 | `get_shooter_position()`               | 获取射手脚底的坐标                                   |                                              | 5.6.0 |
+| 不支持                                                 | `get_muzzle_position()`                | 获取射手枪口的坐标                                   | 估算的坐标，不准确                                    | 5.6.0 |
+| 不支持                                                 | `get_front_vector()`                   | 获取射手的视线方向                                   | 返回值必定是单位向量                                   | 4.4.0 |
+| `gunsmith_playOverheatSound()`                      | `play_overheat_sound()`                | 播放充电武器过热时内置的过热特效                            |                                              | 3.3.0 |
+| `gunsmith_triggerAnimationStateTransition(string)`n | `trigger_animation_state_transition()` | 触发客户端状态转移（transition）                       |                                              | 5.4.0 |
+| `gunsmith_addEffect(table)`                         | `add_potion_effect()`                  | 为射手添加药水效果                                   | table 的结构类似 data 中药水效果部分                     | 5.6.0 |
+| `gunsmith_addEffectTo(LivingEntity, table)`         | `add_potion_effect_to()`               | 为指定实体添加药水效果                                 | table 的结构类似 data 中药水效果部分                     | 5.6.0 |
+| `gunsmith_spawnParticle(Vector3d, table[])`         | `spawn_particle()`                     | 在指定位置播放粒子效果                                 | table 的结构类似 data 中命中粒子部分                     | 5.6.0 |
+| 不支持                                                 | `get_root_gun_id()`                    | 获取发射器的 id                                   | 对于**子母弹**的情况，获取母弹射物的发射器的 id                  | 5.9.0 |
+| 不支持                                                 | `get_root_gun_api()`                   | 在指定位置播放粒子效果                                 | 对于**子母弹**的情况，获取母弹射物的发射器的 api 对象              | 5.9.0 |
+| 不支持                                                 | `unload_all_ammo()`                    | 卸载所有弹药并向射手返回卸下来的弹药                          | 包括枪膛内的弹药                                     | 6.1.0 |
+| 不支持                                                 | `unload_all_attachments()`             | 卸载所有配件并向射手返回卸下来的配件                          | 可用于次抛武器抛弃前卸下配件                               | 6.1.0 |
+| 不支持                                                 | `discard_weapon()`                     | 抛弃该武器，将武器的堆叠大小减少 1，通常情况下会导致武器消失并触发 put away | 建议调用前调用 `#unload_all_attachments` 以保留玩家安装的配件 | 6.1.0 |
 
 #### 能量武器 API V2（逻辑机（服务端））
 
