@@ -1,0 +1,13 @@
+{
+  "gunsmithlib_extension": {
+    "hit_particles": [
+      // 隐藏爆炸粒子
+      {
+        "particle_id": "minecraft:crit",
+        "explosive_particle_alternate": true,
+        "speed": 0,
+        "count": -1
+      }
+    ]
+  }
+}
