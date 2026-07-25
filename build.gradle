@@ -245,6 +245,7 @@ dependencies {
 
     runtimeOnly fg.deobf("mekanism:Mekanism:1.20.1-10.4.9.61")
     runtimeOnly fg.deobf("maven.modrinth:plonk:V1OyyHVE")
+    runtimeOnly fg.deobf("curse.maven:gunsmithlib-standard-ammo-library-1524136:8094867")
     runtimeOnly fg.deobf("curse.maven:explosive-enhancement-reforged-1036246:5960819")
     runtimeOnly fg.deobf("maven.modrinth:spark:1.10.53-forge")
 
@@ -258,6 +259,7 @@ dependencies {
     // to get the latest version's jade_id
     runtimeOnly fg.deobf("curse.maven:jade-324717:6271651")
     runtimeOnly fg.deobf("curse.maven:attributefix-280510:4911084")
+    runtimeOnly fg.deobf("curse.maven:packet-fixer-689467:7872374")
     runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:20.2.13")
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.7.1.3")
 
