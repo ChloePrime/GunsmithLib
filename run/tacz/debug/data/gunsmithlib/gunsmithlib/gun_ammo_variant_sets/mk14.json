@@ -1,7 +1,9 @@
 {
+  "priority": "gunsmithlib:debug",
   "parts": [
     {
       "name": "main",
+      "priority": "gunsmithlib:debug",
       "variants": [
         "tacz:mk14",
         {
