@@ -276,4 +276,179 @@ public interface EntityStates {
     default double remaining_fire_time_seconds() {
         return remaining_fire_ticks() / 20.0;
     }
+
+    /**
+     * 获取实体脚底位置的实时光照。
+     * 注：实体站在非完整方块上时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体脚底的实时光照
+     * @since 6.3
+     */
+    int light_level_at_body();
+
+    /**
+     * 获取实体头部位置的实时光照。
+     * 注：实体头部位于非完整方块中时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体眼部的实时光照
+     * @since 6.3
+     */
+    int light_level_at_head();
+
+    /**
+     * 获取实体头部和脚底位置的实时光照的最大值。
+     * 相比前面几个方法来说，能更好地避免玩家头部 / 脚底位于非完整方块中时获取到的光照为 0 的问题。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体受到的实时光照
+     * @since 6.3
+     */
+    default int light_level() {
+        return Math.max(light_level_at_body(), light_level_at_head());
+    }
+
+    /**
+     * 获取实体脚底位置的方块光照。
+     * 注：实体站在非完整方块上时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体脚底的方块光照
+     * @since 6.3
+     */
+    int block_light_level_at_body();
+
+    /**
+     * 获取实体头部位置的方块光照。
+     * 注：实体头部位于非完整方块中时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体眼部的方块光照
+     * @since 6.3
+     */
+    int block_light_level_at_head();
+
+    /**
+     * 获取实体头部和脚底位置的方块光照的最大值。
+     * 相比前面几个方法来说，能更好地避免玩家头部 / 脚底位于非完整方块中时获取到的光照为 0 的问题。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体受到的方块光照
+     * @since 6.3
+     */
+    default int block_light_level() {
+        return Math.max(block_light_level_at_body(), block_light_level_at_head());
+    }
+
+    /**
+     * 获取实体脚底位置的天空光照。
+     * 注：实体站在非完整天空上时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体脚底的天空光照
+     * @since 6.3
+     */
+    int sky_light_level_at_body();
+
+    /**
+     * 获取实体头部位置的天空光照。
+     * 注：实体头部位于非完整天空中时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体眼部的天空光照
+     * @since 6.3
+     */
+    int sky_light_level_at_head();
+
+    /**
+     * 获取实体头部和脚底位置的天空光照的最大值。
+     * 相比前面几个方法来说，能更好地避免玩家头部 / 脚底位于非完整方块中时获取到的光照为 0 的问题。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体受到的天空光照
+     * @since 6.3
+     */
+    default int sky_light_level() {
+        return Math.max(sky_light_level_at_body(), sky_light_level_at_head());
+    }
+
+    /**
+     * 获取实体脚底位置的实时天空光照。
+     * 注：实体站在非完整天空上时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体脚底的实时天空光照
+     * @since 6.3
+     */
+    int realtime_sky_light_level_at_body();
+
+    /**
+     * 获取实体头部位置的实时天空光照。
+     * 注：实体头部位于非完整天空中时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体眼部的实时天空光照
+     * @since 6.3
+     */
+    int realtime_sky_light_level_at_head();
+
+    /**
+     * 获取实体头部和脚底位置的实时天空光照的最大值。
+     * 相比前面几个方法来说，能更好地避免玩家头部 / 脚底位于非完整方块中时获取到的光照为 0 的问题。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体受到的实时天空光照
+     * @since 6.3
+     */
+    default int realtime_sky_light_level() {
+        return Math.max(realtime_sky_light_level_at_body(), realtime_sky_light_level_at_head());
+    }
+
+    /**
+     * 获取实体脚底位置的理论光照。
+     * 注：实体站在非完整天空上时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体脚底的理论光照
+     * @since 6.3
+     */
+    int theoretical_light_level_at_body();
+
+    /**
+     * 获取实体头部位置的理论光照。
+     * 注：实体头部位于非完整天空中时，获取的光照可能为 0。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体眼部的理论光照
+     * @since 6.3
+     */
+    int theoretical_light_level_at_head();
+
+    /**
+     * 获取实体头部和脚底位置的理论光照的最大值。
+     * 相比前面几个方法来说，能更好地避免玩家头部 / 脚底位于非完整方块中时获取到的光照为 0 的问题。
+     * <p>
+     * 和 ModernKineticScriptAPI 扩展的方法不同，本方法在遇到错误时返回 0 而不是 -1。
+     *
+     * @return 实体受到的理论光照
+     * @since 6.3
+     */
+    default int theoretical_light_level() {
+        return Math.max(theoretical_light_level_at_body(), theoretical_light_level_at_head());
+    }
 }

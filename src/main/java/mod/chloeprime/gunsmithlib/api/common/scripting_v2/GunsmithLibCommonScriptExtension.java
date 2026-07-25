@@ -6,6 +6,8 @@ import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.*;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseLightGetterExtensionImpl;
+import mod.chloeprime.gunsmithlib.common.util.LightHelper;
 import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2Data;
@@ -13,9 +15,11 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.GunEner
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.LongEnergyStorage;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
+import mod.chloeprime.gunsmithlib.common.util.LightType;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.TargetSearcherExtensionResultImpl;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -23,6 +27,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.ApiStatus;
 import org.luaj.vm2.LuaValue;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,15 +40,16 @@ public class GunsmithLibCommonScriptExtension
         RangefinderExtension,
         TargetSearcherExtension,
         BetterAsyncExtension,
-        BatteryExtension {
+        BatteryExtension,
+        BaseLightGetterExtensionImpl {
     /**
      * 三元表达式，给 lua 用的。
      *
      * @param condition 条件
-     * @param whenTrue 条件为 true 时返回的值
+     * @param whenTrue  条件为 true 时返回的值
      * @param whenFalse 条件为 false 时返回的值
+     * @param <T>       返回值的类型。
      * @return {@code condition ? whenTrue: whenFalse}
-     * @param <T> 返回值的类型。
      */
     public <T> T ternary_op(boolean condition, T whenTrue, T whenFalse) {
         return condition ? whenTrue : whenFalse;
@@ -258,6 +264,18 @@ public class GunsmithLibCommonScriptExtension
         return cap instanceof GunEnergyStorage loong
                 ? code.applyAsLong(loong)
                 : fallback.applyAsLong(cap);
+    }
+
+    /**
+     * 光照获取 API 的内部实现。
+     */
+    @Override
+    public int gunsmithlib$internal$uniGetLight(BlockPos pos, @Nonnull LightType layer) {
+        final int fallback = -1;
+        return v1.gunsmithlib$getShooter()
+                .map(Entity::level)
+                .map(level -> LightHelper.getLightAt(level, pos, layer).orElse(fallback))
+                .orElse(fallback);
     }
 
     @ApiStatus.Internal

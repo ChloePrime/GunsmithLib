@@ -100,7 +100,7 @@ public class ClientProxy {
 
     public static float getPartialTicks(boolean isClientSide) {
         if (DEDICATED_SERVER || !isClientSide) {
-            return 0;
+            return 1;
         }
         return ClientProxyImpl.getPartialTicks();
     }
