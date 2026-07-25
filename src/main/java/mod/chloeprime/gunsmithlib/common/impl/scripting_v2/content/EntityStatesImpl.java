@@ -3,15 +3,21 @@ package mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content;
 import cn.chloeprime.commons.math.LinearAlgebraTypes;
 import com.tacz.guns.util.HitboxHelper;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.EntityStates;
+import mod.chloeprime.gunsmithlib.common.util.LightHelper;
+import mod.chloeprime.gunsmithlib.common.util.LightType;
 import mod.chloeprime.gunsmithlib.common.util.MojangRandomGenerator;
 import mod.chloeprime.gunsmithlib.mixin.EntityAccessor;
+import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.random.RandomGenerator;
 
@@ -183,5 +189,66 @@ public class EntityStatesImpl implements EntityStates {
     @Override
     public Pose get_entity_pose_object() {
         return entity.getPose();
+    }
+
+    @Override
+    public int light_level_at_body() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getPosition(partialTicks()), LightType.REALTIME);
+    }
+
+    @Override
+    public int light_level_at_head() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getLightProbePosition(partialTicks()), LightType.REALTIME);
+    }
+
+    @Override
+    public int block_light_level_at_body() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getPosition(partialTicks()), LightType.BLOCK);
+    }
+
+    @Override
+    public int block_light_level_at_head() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getLightProbePosition(partialTicks()), LightType.BLOCK);
+    }
+
+    @Override
+    public int sky_light_level_at_body() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getPosition(partialTicks()), LightType.SKY);
+    }
+
+    @Override
+    public int sky_light_level_at_head() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getLightProbePosition(partialTicks()), LightType.SKY);
+    }
+
+    @Override
+    public int realtime_sky_light_level_at_body() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getPosition(partialTicks()), LightType.REALTIME_SKY);
+    }
+
+    @Override
+    public int realtime_sky_light_level_at_head() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getLightProbePosition(partialTicks()), LightType.REALTIME_SKY);
+    }
+
+    @Override
+    public int theoretical_light_level_at_body() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getPosition(partialTicks()), LightType.THEORETICAL);
+    }
+
+    @Override
+    public int theoretical_light_level_at_head() {
+        return gunsmithlib$internal$uniGetLightLevel(entity.getLightProbePosition(partialTicks()), LightType.THEORETICAL);
+    }
+
+    private float partialTicks() {
+        return ClientProxy.getPartialTicks(entity.level().isClientSide());
+    }
+
+    private int gunsmithlib$internal$uniGetLightLevel(Vec3 pos, @Nonnull LightType type) {
+        // 实体位置的光照一般不会处于未加载区块，
+        // 所以如果未加载返回 fail safe 的 0 而不是 fail fast -1。
+        final int fallback = 0;
+        return LightHelper.getLightAt(entity.level(), BlockPos.containing(pos), type).orElse(fallback);
     }
 }
