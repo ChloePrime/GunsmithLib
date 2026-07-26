@@ -4,6 +4,7 @@ import cn.chloeprime.commons.rpc.RPC;
 import cn.chloeprime.commons.rpc.RPCTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.client.gui.GunVariantSelectWheelScreen;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.GunAmmoVariantSet;
@@ -67,14 +68,21 @@ public final class SwitchPartOrAmmoTypeKey {
         isPressing = Math.max(0, isPressing - 1);
 
         if (now - lastPressTime < SHORT_CLICK_THRESHOLD) {
-            isPressing = 0;
-            var isConnected = Optional.ofNullable(Minecraft.getInstance().getConnection())
-                    .map(ClientPacketListener::getConnection)
-                    .filter(Connection::isConnected)
-                    .isPresent();
-            if (isConnected) {
-                RPC.call(RPCTarget.toServer(), AmmoVariantSystem::switchToNextPart);
-            }
+            onShortPress();
+        }
+    }
+
+    private static void onShortPress() {
+        isPressing = 0;
+        if (GunsmithLibClient.isReloading()) {
+            return;
+        }
+        var isConnected = Optional.ofNullable(Minecraft.getInstance().getConnection())
+                .map(ClientPacketListener::getConnection)
+                .filter(Connection::isConnected)
+                .isPresent();
+        if (isConnected) {
+            RPC.call(RPCTarget.toServer(), AmmoVariantSystem::switchToNextPart);
         }
     }
 
@@ -89,20 +97,27 @@ public final class SwitchPartOrAmmoTypeKey {
 
         var now = System.currentTimeMillis();
         if (now - lastPressTime >= SHORT_CLICK_THRESHOLD) {
-            isPressing = 0;
-            var mc = Minecraft.getInstance();
-            var player = mc.player;
-            if (player == null || mc.screen instanceof GunVariantSelectWheelScreen) {
-                return;
-            }
-            if (GunAmmoVariantSet.of(player.getMainHandItem()).isEmpty()) {
-                return;
-            }
-            var ids = AmmoVariantSystem.getAvailableVariants(player.getMainHandItem());
-            if (ids.size() <= 1) {
-                return;
-            }
-            mc.setScreen(new GunVariantSelectWheelScreen(ids));
+            onLongPress();
         }
+    }
+
+    private static void onLongPress() {
+        if (GunsmithLibClient.isReloading()) {
+            return;
+        }
+        isPressing = 0;
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
+        if (player == null || mc.screen instanceof GunVariantSelectWheelScreen) {
+            return;
+        }
+        if (GunAmmoVariantSet.of(player.getMainHandItem()).isEmpty()) {
+            return;
+        }
+        var ids = AmmoVariantSystem.getAvailableVariants(player.getMainHandItem());
+        if (ids.size() <= 1) {
+            return;
+        }
+        mc.setScreen(new GunVariantSelectWheelScreen(ids));
     }
 }
