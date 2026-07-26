@@ -4,6 +4,7 @@ import cn.chloeprime.commons.rpc.*;
 import com.google.common.collect.ImmutableMap;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
 import com.tacz.guns.api.item.gun.FireMode;
@@ -28,6 +29,8 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.ChangeGunIdOption.*;
 
 public class AmmoVariantSystem {
     public static Optional<GunAmmoVariantSet.Part> getCurrentPart(ItemStack gun) {
@@ -106,7 +109,7 @@ public class AmmoVariantSystem {
             return;
         }
 
-        if (setGunId(gunBefore, nextGunId, user)) {
+        if (setGunId(gunBefore, nextGunId, user, INTERRUPTS_RELOADING)) {
             Gunsmith.getGunInfo(gunBefore.gunStack()).ifPresent(gunAfter -> restoreGunStateFromStorage(gunAfter, nextPartData));
             setCurrentPart(gunBefore.gunStack(), nextPart);
             if (user instanceof ServerPlayer ssp) {
@@ -210,7 +213,7 @@ public class AmmoVariantSystem {
         var isSameAmmo = Objects.equals(ammoBefore, ammoAfter);
         var options = isSameAmmo
                 ? new ChangeGunIdOption[0]
-                : new ChangeGunIdOption[]{ChangeGunIdOption.UNLOAD_BULLETS};
+                : new ChangeGunIdOption[]{INTERRUPTS_RELOADING, UNLOAD_BULLETS};
 
         if (setGunId(gunBefore, newGunId, user, options)) {
             if (user instanceof ServerPlayer ssp) {
@@ -264,8 +267,15 @@ public class AmmoVariantSystem {
         }
 
         for (var option : options) {
+            if (option == INTERRUPTS_RELOADING) {
+                if (user instanceof ServerPlayer ssp) {
+                    RPC.call(RPCTarget.to(ssp), AmmoVariantSystem::rpcCancelReload);
+                } else if (user != null) {
+                    IGunOperator.fromLivingEntity(user).cancelReload();
+                }
+            }
             // 卸载弹匣内子弹
-            if (option == ChangeGunIdOption.UNLOAD_BULLETS) {
+            if (option == UNLOAD_BULLETS) {
                 if (user instanceof Player player) {
                     gunBefore.dropAllAmmoIncludingBarrel(player);
                 }
@@ -289,6 +299,14 @@ public class AmmoVariantSystem {
         }
 
         return true;
+    }
+
+    /**
+     * @since 6.3
+     */
+    @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)
+    private static void rpcCancelReload() {
+        GunsmithLibClient.cancelReload();
     }
 
     @RemoteCallable(flow = RPCFlow.SERVER_TO_CLIENT)

@@ -3,6 +3,9 @@ package mod.chloeprime.gunsmithlib.client;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
+import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.entity.ReloadState;
+import com.tacz.guns.client.gameplay.LocalPlayerReload;
 import com.tacz.guns.client.model.papi.PapiManager;
 import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
@@ -18,6 +21,7 @@ import mod.chloeprime.gunsmithlib.client.papi.RangefinderPapi;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -35,8 +39,11 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class GunsmithLibClient {
@@ -235,6 +242,52 @@ public class GunsmithLibClient {
                 .filter(display -> display != master)
                 .filter(Objects::nonNull)
                 .forEach(display -> ((EnhancedGunDisplayInstance) display).gunsmith$acceptOverride(master));
+    }
+
+    /**
+     * @since 6.3
+     */
+    public static boolean isReloading() {
+        return Optional.ofNullable(Minecraft.getInstance().player)
+                .map(IGunOperator::fromLivingEntity)
+                .map(IGunOperator::getSynReloadState)
+                .map(ReloadState::getStateType)
+                .filter(ReloadState.StateType::isReloading)
+                .isPresent();
+    }
+
+    /**
+     * @since 6.3
+     */
+    public static void cancelReload() {
+        Optional.ofNullable(Minecraft.getInstance().player)
+                .map(GunsmithLibClient::getPlayerReloader)
+                .ifPresent(LocalPlayerReload::cancelReload);
+    }
+
+    /**
+     * @since 6.3
+     */
+    private static final VarHandle LOCAL_PLAYER_RELOAD_FIELD = ((Supplier<VarHandle>) () -> {
+        try {
+            var lookup = MethodHandles.privateLookupIn(LocalPlayer.class, MethodHandles.lookup());
+            // noinspection JavaLangInvokeHandleSignature
+            return lookup.findVarHandle(LocalPlayer.class, "tac$reload", LocalPlayerReload.class);
+        } catch (Exception ex) {
+            throw sneak(ex);
+        }
+    }).get();
+
+    /**
+     * @since 6.3
+     */
+    public static LocalPlayerReload getPlayerReloader(LocalPlayer player) {
+        return (LocalPlayerReload) LOCAL_PLAYER_RELOAD_FIELD.get(player);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> RuntimeException sneak(Throwable exception) throws T {
+        throw (T) exception;
     }
 
     private GunsmithLibClient() {
