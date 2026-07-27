@@ -74,6 +74,45 @@ end
 | `get_configured_max_energy_input_speed()`  | 获取 data 文件中设置的**输入速度上限** | 不受 modify property 影响 | 6.2.0 |
 | `get_configured_max_energy_output_speed()` | 获取 data 文件中设置的**输出速度上限** | 不受 modify property 影响 | 6.2.0 |
 
+#### 光照获取 API（双机共享）
+
+- 返回值类型均为 `number` (int)。
+
+术语表：
+
+| 术语       | 含义                                    |
+|----------|---------------------------------------|
+| `实时光照`   | 某个位置实际的光照，**受**昼夜循环影响。被原版用于判断某个位置能否刷怪 |
+| `方块光照`   | 该位置由光源方块产生的光照                         |
+| `天空光照`   | 该位置受天空照明影响的程度，**不受**昼夜循环影响            |
+| `实时天空光照` | 该位置受天空照明产生的亮度，**受**昼夜循环影响             |
+| `理论光照`   | 该位置在 F3 界面中显示的亮度，**不受**昼夜循环影响         |
+
+方法列表：
+
+| V2 函数名                                                                                                              | 说明                       | 详细说明                        | 添加版本  |
+|---------------------------------------------------------------------------------------------------------------------|--------------------------|-----------------------------|-------|
+| `get_level_light_i`([org.joml.Vector3i](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3i.html))        | 获取某个**整数**位置的**实时**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_level_light_i`(number(int), number(int), number(int))                                                          | 获取某个**整数**位置的**实时**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_level_light_d`([org.joml.Vector3d](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3d.html))        | 获取某个**浮点数**位置的**实时**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_level_light_d`(number(double), number(double), number(double))                                                 | 获取某个**浮点数**位置的**实时**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_block_light_i`([org.joml.Vector3i](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3i.html))        | 获取某个**整数**位置的**方块**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_block_light_i`(number(int), number(int), number(int))                                                          | 获取某个**整数**位置的**方块**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_block_light_d`([org.joml.Vector3d](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3d.html))        | 获取某个**浮点数**位置的**方块**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_block_light_d`(number(double), number(double), number(double))                                                 | 获取某个**浮点数**位置的**方块**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_sky_light_i`([org.joml.Vector3i](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3i.html))          | 获取某个**整数**位置的**天空**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_sky_light_i`(number(int), number(int), number(int))                                                            | 获取某个**整数**位置的**天空**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_sky_light_d`([org.joml.Vector3d](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3d.html))          | 获取某个**浮点数**位置的**天空**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_sky_light_d`(number(double), number(double), number(double))                                                   | 获取某个**浮点数**位置的**天空**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_realtime_sky_light_i`([org.joml.Vector3i](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3i.html)) | 获取某个**整数**位置的**实时天空**光照  | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_realtime_sky_light_i`(number(int), number(int), number(int))                                                   | 获取某个**整数**位置的**实时天空**光照  | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_realtime_sky_light_d`([org.joml.Vector3d](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3d.html)) | 获取某个**浮点数**位置的**实时天空**光照 | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_realtime_sky_light_d`(number(double), number(double), number(double))                                          | 获取某个**浮点数**位置的**实时天空**光照 | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_theoretical_light_i`([org.joml.Vector3i](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3i.html))  | 获取某个**整数**位置的**理论**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_theoretical_light_i`(number(int), number(int), number(int))                                                    | 获取某个**整数**位置的**理论**光照    | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_theoretical_light_d`([org.joml.Vector3d](https://javadoc.io/doc/org.joml/joml/latest/org/joml/Vector3d.html))  | 获取某个**浮点数**位置的**理论**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+| `get_theoretical_light_d`(number(double), number(double), number(double))                                           | 获取某个**浮点数**位置的**理论**光照   | 值域为 `0-15`，如果该位置未加载则返回 `-1` | 6.3.0 |
+
 ## 逻辑机（服务端）扩展 API
 
 | 函数名（v1）                                             | 函数名（v2，参数同 v1，故在此省略）                   | 说明                                          | 详细说明                                         | 添加版本  |
