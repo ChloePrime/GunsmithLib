@@ -2,6 +2,7 @@ package mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content;
 
 import cn.chloeprime.commons.math.LinearAlgebraTypes;
 import com.tacz.guns.util.HitboxHelper;
+import mod.chloeprime.gunsmithlib.api.util.AABB;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.EntityStates;
 import mod.chloeprime.gunsmithlib.common.util.LightHelper;
 import mod.chloeprime.gunsmithlib.common.util.LightType;
@@ -55,6 +56,11 @@ public class EntityStatesImpl implements EntityStates {
     @Override
     public Vector2f rotation_degrees() {
         return new Vector2f(entity.getXRot(), entity.getYRot());
+    }
+
+    @Override
+    public AABB bounding_box() {
+        return new AABB(entity.getBoundingBox());
     }
 
     @Override
