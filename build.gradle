@@ -30,6 +30,21 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
     withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release = 17
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = "UTF-8"
+    options.tags = [
+            "apiNote:a:API Note:",
+            "implSpec:a:Implementation Requirements:",
+            "implNote:a:Implementation Note:"
+    ]
 }
 
 minecraft {
@@ -308,10 +323,6 @@ jarJar.enable()
 tasks.named('jarJar') {
     archiveClassifier = ''
     finalizedBy 'reobfJarJar'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
 tasks.withType(GenerateModuleMetadata) {
