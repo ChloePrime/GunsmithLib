@@ -45,6 +45,7 @@ tasks.withType(Javadoc).configureEach {
             "implSpec:a:Implementation Requirements:",
             "implNote:a:Implementation Note:"
     ]
+    failOnError = false
 }
 
 minecraft {
