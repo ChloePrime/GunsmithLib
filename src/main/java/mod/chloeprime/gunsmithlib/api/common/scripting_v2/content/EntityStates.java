@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2.content;
 
+import mod.chloeprime.gunsmithlib.api.util.AABB;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.EntityStatesImpl;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -61,6 +62,35 @@ public interface EntityStates {
      * @return 实体的旋转。x() 为绕 x 轴的旋转（pitch），y() 为绕 y 轴的旋转（yaw）。
      */
     Vector2f rotation_degrees();
+
+    /**
+     * 获取实体的碰撞盒大小。
+     *
+     * @return 实体的碰撞盒大小。
+     * @since 6.3
+     */
+    default Vector3d size() {
+        return bounding_box().size();
+    }
+
+    /**
+     * 获取实体的参考大小。
+     *
+     * @return 实体的参考大小（三个轴上大小的平均值）
+     * @since 6.3
+     */
+    default double referential_size() {
+        return bounding_box().referential_size();
+    }
+
+    /**
+     * 获取实体的碰撞盒。
+     * 返回的对象并不是原版的 AABB，所以可以用可读的名称访问其方法哦~
+     *
+     * @return 实体的碰撞盒。
+     * @since 6.3
+     */
+    AABB bounding_box();
 
     /**
      * 获取实体的速度，单位为格每刻。
