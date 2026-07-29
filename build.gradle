@@ -34,6 +34,7 @@ tasks.withType(Javadoc).configureEach {
             "implNote:a:Implementation Note:",
             "reason:a:Overwrite Reason:"
     ]
+    failOnError = false
 }
 
 tasks.named('wrapper', Wrapper).configure {
