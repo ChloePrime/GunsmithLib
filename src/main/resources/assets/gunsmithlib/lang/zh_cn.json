@@ -47,5 +47,6 @@
   "gunsmithlib.affix.shield": "盾牌",
 
   "gunsmithlib.message.airburst_rangefinder.too_close": "太近了，不得低于安全距离（%.1fm）",
-  "gunsmithlib.message.airburst_rangefinder.too_far": "太远了"
+  "gunsmithlib.message.airburst_rangefinder.too_far": "太远了",
+  "gunsmithlib.message.press_sheft_to_expand_tooltip": "按住§6左Shift§r查看详情"
 }

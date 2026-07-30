@@ -47,5 +47,6 @@
   "gunsmithlib.affix.shield": "Shield",
 
   "gunsmithlib.message.airburst_rangefinder.too_close": "Too close, should be further than %.1fm",
-  "gunsmithlib.message.airburst_rangefinder.too_far": "Too far"
+  "gunsmithlib.message.airburst_rangefinder.too_far": "Too far",
+  "gunsmithlib.message.press_sheft_to_expand_tooltip": "Hold §6L-Shift§r to view details"
 }
