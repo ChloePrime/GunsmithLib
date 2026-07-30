@@ -27,3 +27,10 @@ description='''${mod_description}'''
    versionRange="[1.1.7,)"
    ordering="NONE"
    side="BOTH"
+
+[[dependencies.${mod_id}]]
+   modId="aaa_particles"
+   mandatory=false
+   versionRange="[2.1,)"
+   ordering="NONE"
+   side="BOTH"

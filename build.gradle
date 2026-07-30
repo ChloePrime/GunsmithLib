@@ -235,7 +235,7 @@ dependencies {
     // implementation fg.deobf("curse.maven:tacz-presence-1435817:7882246")
 
     // AAA Particles
-    implementation fg.deobf('mod.chloeprime:aaa-particles-forge:1.20.1-1.4.12')
+    implementation fg.deobf('cn.chloeprime:aaa_particles-forge-1.20.1:2.2.3')
     implementation fg.deobf('maven.modrinth:architectury-api:9.2.14+forge')
 
     // 镜喵背包
