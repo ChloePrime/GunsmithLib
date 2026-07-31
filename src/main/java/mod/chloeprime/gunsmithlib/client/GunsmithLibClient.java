@@ -6,7 +6,6 @@ import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.client.gameplay.LocalPlayerReload;
-import com.tacz.guns.client.model.papi.PapiManager;
 import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
@@ -14,10 +13,9 @@ import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.client.papi.GunsmithLibPapas;
 import mod.chloeprime.gunsmithlib.client.tooltip.DescriptionalGunAffix;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplayInstance;
-import mod.chloeprime.gunsmithlib.client.papi.AirburstDistancePapi;
-import mod.chloeprime.gunsmithlib.client.papi.RangefinderPapi;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.client.Minecraft;
@@ -66,8 +64,7 @@ public class GunsmithLibClient {
     }
 
     public static void initClient() {
-        PapiManager.addPapi(RangefinderPapi.NAME, RangefinderPapi.INSTANCE);
-        PapiManager.addPapi(AirburstDistancePapi.NAME, AirburstDistancePapi.INSTANCE);
+        GunsmithLibPapas.registerPapas();
     }
 
     @SubscribeEvent

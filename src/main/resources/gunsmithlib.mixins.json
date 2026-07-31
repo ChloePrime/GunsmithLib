@@ -50,6 +50,7 @@
   ],
   "client": [
     "client.GunAnimationStateContextAccessor",
+    "client.GunHudOverlayAccessor",
     "client.MixinAmmoParticleSpawner",
     "client.MixinAnimationStateContext",
     "client.MixinClientGamePacketListener",
