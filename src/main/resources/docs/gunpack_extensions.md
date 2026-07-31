@@ -418,3 +418,36 @@ display 文件中有少量多弹种功能的可配置项。
   }
 }
 ```
+
+# 6.4 版本新增内容
+### 弹道轨迹
+
+弹道轨迹粒子。
+<br>
+仅支持 AAA 粒子，不支持原版粒子。
+<br>
+前方向为 Effekseer 编辑器的中的 +Z 方向。
+
+```json5
+{
+  "gunsmithlib_extension": {
+    "bullet_trails": [
+      {
+        // 必填且必须为 true
+        "is_aaa_particle": true,
+        // 示例特效 id，安装 AAA Particles：World 模组即可体验。
+        // 如需自制特效 / 把特效放到自己的包里的话，按照 AAAPW 的路径格式把特效放进枪包的资源包文件夹里即可。
+        "particle_id": "aaa_particles_world:missile_boost",
+        // AAA 粒子的配置
+        "aaa_particle_data": {
+          // 调整缩放倍率
+          "scale": 0.5
+        }
+      }
+    ]
+    // 如果你希望让 AAA 子弹轨迹和原版子弹轨迹一起出现的话，请开启下面这一行
+    // 记得加逗号 :)
+    // "hide_vanilla_bullet_trails": false
+  }
+}
+```
