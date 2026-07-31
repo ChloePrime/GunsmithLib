@@ -15,30 +15,22 @@ import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
+/**
+ * AAA 开火粒子系统
+ *
+ * @since 6.4
+ */
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public final class ShootParticleSystem {
     @SubscribeEvent
     public static void onClientGunFire(GunFireEvent event) {
-        // 只支持 AAA 粒子
-        if (!AaaParticleProxy.INSTALLED) {
-            return;
-        }
         if (event.getLogicalSide().isServer()) {
             return;
         }
         // Read shoot particle data
-        var data = HIT_PARTICLE_DATA_BUFFER;
-        data.clear();
-        GunsmithLibSharedDataExtension
-                .forGunOrAmmo(event.getGunItemStack(), GunsmithLibSharedDataExtension::getShootParticles)
-                .stream().flatMap(Arrays::stream)
-                .filter(pd -> pd.isAaaParticle() == Boolean.TRUE)
-                .forEach(data::add);
+        var data = ClientEffekHelper.get(event.getGunItemStack(), GunsmithLibSharedDataExtension::getShootParticles);
         if (data.isEmpty()) {
             return;
         }
@@ -77,7 +69,6 @@ public final class ShootParticleSystem {
     private static final Matrix3f MAT_BUFFER = new Matrix3f();
 
     private static final Vector3f THIRD_PERSON_OFFSET = new Vector3f(0.06F, -0.08F, 0.8F);
-    private static final List<HitParticleData> HIT_PARTICLE_DATA_BUFFER = new ArrayList<>();
 
     private ShootParticleSystem() {
     }

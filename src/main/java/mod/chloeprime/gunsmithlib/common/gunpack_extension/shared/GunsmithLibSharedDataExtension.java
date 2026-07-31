@@ -92,6 +92,27 @@ public class GunsmithLibSharedDataExtension {
     private @Nullable HitParticleData[] shoot_particles;
 
     /**
+     * 子弹轨迹，
+     * 可以添加在枪械和子弹的 data 里，添加在配件上无效。
+     * <p>
+     * 弹道轨迹只支持 AAA 粒子，且必须设置 {@code "is_aaa_particle": true}，否则将被忽略。
+     * <p>
+     * 射击粒子的前方是 Effekseer 编辑器内的 +Z 方向。
+     *
+     * @since 6.4
+     */
+    @GunpackProperty
+    private @Nullable HitParticleData[] bullet_trails;
+
+    /**
+     * 如果配置了子弹轨迹且此选项为 true，那么将隐藏 tacz 本体那一套基于原版粒子的子弹轨迹。
+     *
+     * @since 6.4
+     */
+    @GunpackProperty
+    private boolean hide_vanilla_bullet_trails = true;
+
+    /**
      * 跳弹设置。
      * 玩补包榴弹玩的
      *
@@ -151,6 +172,20 @@ public class GunsmithLibSharedDataExtension {
 
     public @Nullable HitParticleData[] getShootParticles() {
         return shoot_particles;
+    }
+
+    /**
+     * @since 6.4
+     */
+    public @Nullable HitParticleData[] getBulletTrails() {
+        return bullet_trails;
+    }
+
+    /**
+     * @since 6.4
+     */
+    public boolean hideVanillaBulletTrails() {
+        return hide_vanilla_bullet_trails;
     }
 
     public @Nullable RicochetData getRicochetData() {

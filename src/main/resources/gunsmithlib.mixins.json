@@ -48,6 +48,7 @@
   ],
   "client": [
     "client.GunAnimationStateContextAccessor",
+    "client.MixinAmmoParticleSpawner",
     "client.MixinAnimationStateContext",
     "client.MixinClientGamePacketListener",
     "client.MixinClientGunTooltip",
