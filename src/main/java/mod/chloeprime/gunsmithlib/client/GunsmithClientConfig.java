@@ -57,6 +57,16 @@ public class GunsmithClientConfig {
                     Added in version 6.2.0""")
             .defineEnum("hud_ammo_type_icon_option", AmmoTypeHudMode.STYLED);
 
+    /**
+     * @since 6.4.0
+     */
+    public static final ForgeConfigSpec.DoubleValue PAPI_RANGEFINDING_DISTANCE = BUILDER
+            .comment("""
+                    Max rangefinding distance for aiming target related papi
+                    
+                    Added in version 6.4.0""")
+            .defineInRange("papi_rangefinding_distance", 128.0, 0, 1024);
+
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 }
