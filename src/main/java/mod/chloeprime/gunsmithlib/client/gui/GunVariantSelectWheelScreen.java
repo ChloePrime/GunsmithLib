@@ -8,14 +8,17 @@ import com.mojang.datafixers.util.Either;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
+import com.tacz.guns.client.resource.index.ClientGunIndex;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplay;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.GunsmithLibGunDisplayExtension;
 import mod.chloeprime.gunsmithlib.client.input.SwitchPartOrAmmoTypeKey;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantSystem;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,11 +31,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 感谢黄毛白鼠（hamsterbaron）提供的轮盘菜单代码 ~
  */
 public class GunVariantSelectWheelScreen extends Screen {
+    public static final ResourceLocation FALLBACK_TEXTURE = GunsmithLib.loc("textures/gui/unknown_entry.png");
+
     private final List<Component> names;
     private final List<Either<ItemStack, ResourceLocation>> icons;
     private final List<ResourceLocation> gunIds;
@@ -56,15 +62,20 @@ public class GunVariantSelectWheelScreen extends Screen {
     private void initNamesAndIcons() {
         for (var gunId : gunIds) {
             var index = TimelessAPI.getClientGunIndex(gunId).orElse(null);
-            if (index == null) {
+            var gunData = Optional.ofNullable(index).map(ClientGunIndex::getGunData).orElse(null);
+            if (index == null || gunData == null) {
+                names.add(Component.literal(gunId.toString()).withStyle(ChatFormatting.DARK_RED));
+                icons.add(Either.right(FALLBACK_TEXTURE));
                 continue;
             }
-            var display = ((EnhancedGunDisplay) index.getDefaultDisplay()).gunsmith$getGunsmithLibExtension();
+            var display = Optional.ofNullable(index.getDefaultDisplay())
+                    .map(EnhancedGunDisplay.class::cast)
+                    .flatMap(EnhancedGunDisplay::gunsmith$getGunsmithLibExtension);
             var name = display.map(GunsmithLibGunDisplayExtension::getVariantName).orElse(null);
             if (name != null) {
                 names.add(Component.translatable(name));
             } else {
-                var ammo = AmmoItemBuilder.create().setId(index.getGunData().getAmmoId()).build();
+                var ammo = AmmoItemBuilder.create().setId(gunData.getAmmoId()).build();
                 names.add(ammo.getHoverName());
             }
 
@@ -73,7 +84,7 @@ public class GunVariantSelectWheelScreen extends Screen {
                 icons.add(Either.right(icon));
             } else {
                 var bullet = AmmoItemBuilder.create()
-                        .setId(index.getGunData().getAmmoId())
+                        .setId(gunData.getAmmoId())
                         .setCount(1)
                         .build();
                 icons.add(Either.left(bullet));
