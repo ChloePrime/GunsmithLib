@@ -5,11 +5,14 @@ import mod.chloeprime.aaaparticles.api.common.ParticleEmitterInfo;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.AAAParticleData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 class AaaParticleProxyImpl {
     /**
@@ -49,6 +52,29 @@ class AaaParticleProxyImpl {
         addParticle0(level, force, id, pos, rot.x, rot.y, scale, aaaParticleData);
     }
 
+    public static void bindParticleZP(
+            Entity entity,
+            ResourceLocation id,
+            Vec3 pos,
+            float scale,
+            @Nullable AAAParticleData aaaParticleData
+    ) {
+        Objects.requireNonNull(entity);
+        Objects.requireNonNull(id);
+
+        var pei = ParticleEmitterInfo.create(entity.level(), id)
+                .bindOnEntity(entity)
+                .entitySpaceRelativePosition(pos)
+                .useEntityVelocityAsRotation();
+        if (aaaParticleData != null) {
+            pei.scale(aaaParticleData.getScale() * scale);
+            processAaaParticleData(aaaParticleData, pei);
+        } else {
+            pei.scale(scale);
+        }
+        AAALevel.addParticle(entity.level(), true, pei);
+    }
+
     private static Vec2 rotationFromForward(Vec3 forward) {
         Vec2 rot = forward2rot(forward);
         return new Vec2(wrapRadians(-Mth.PI / 2 - rot.x), wrapRadians(rot.y + Mth.PI));
@@ -79,19 +105,25 @@ class AaaParticleProxyImpl {
                 .rotation(rx, ry, 0);
         if (aaaParticleData != null) {
             pei.scale(aaaParticleData.getScale() * scale);
-
-            var parameters = aaaParticleData.getParameters();
-            for (int i = 0; i < parameters.size(); i++) {
-                pei.parameter(i, parameters.getFloat(i));
-            }
-            var triggers = aaaParticleData.getTriggers();
-            for (int i = 0; i < triggers.size(); i++) {
-                pei.trigger(triggers.getInt(i));
-            }
+            processAaaParticleData(aaaParticleData, pei);
         } else {
             pei.scale(scale);
         }
         AAALevel.addParticle(level, force, pei);
+    }
+
+    private static void processAaaParticleData(@Nonnull AAAParticleData data, @Nonnull ParticleEmitterInfo pei) {
+        Objects.requireNonNull(data);
+        Objects.requireNonNull(pei);
+
+        var parameters = data.getParameters();
+        for (int i = 0; i < parameters.size(); i++) {
+            pei.parameter(i, parameters.getFloat(i));
+        }
+        var triggers = data.getTriggers();
+        for (int i = 0; i < triggers.size(); i++) {
+            pei.trigger(triggers.getInt(i));
+        }
     }
 
     private static float wrapRadians(float radians) {

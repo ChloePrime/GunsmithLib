@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.compat.aaap;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.AAAParticleData;
 import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -57,6 +58,24 @@ public class AaaParticleProxy {
                 id,
                 pos,
                 normal,
+                scale,
+                aaaParticleData);
+    }
+
+    public static void bindParticleZP(
+            Entity entity,
+            ResourceLocation id,
+            Vec3 pos,
+            float scale,
+            @Nullable AAAParticleData aaaParticleData
+    ) {
+        if (!INSTALLED) {
+            return;
+        }
+        AaaParticleProxyImpl.bindParticleZP(
+                entity,
+                id,
+                pos,
                 scale,
                 aaaParticleData);
     }
