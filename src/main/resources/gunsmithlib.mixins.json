@@ -37,6 +37,7 @@
     "MixinModernKineticGunItem",
     "MixinModernKineticGunScriptAPI",
     "MixinPlayer",
+    "MixinProjectileExplosion",
     "MixinReloadProcedure",
     "MixinScriptManager",
     "SmithingTransformRecipeAccessor",

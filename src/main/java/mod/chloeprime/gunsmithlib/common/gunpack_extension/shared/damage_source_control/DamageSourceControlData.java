@@ -42,6 +42,14 @@ public class DamageSourceControlData {
     private @Nullable String master_type_ap;
 
     /**
+     * 修改爆炸的基础伤害类型。
+     *
+     * @since 6.4
+     */
+    @GunpackProperty
+    private @Nullable String master_type_explosion;
+
+    /**
      * 让伤害来源判定 is 某个 tag 为 true。
      * <p>
      * 必须是以 # 开头的伤害类型标签，不能是某个具体的伤害类型。
@@ -71,6 +79,13 @@ public class DamageSourceControlData {
         return Optional.ofNullable(masterTypeAp.get());
     }
 
+    /**
+     * @since 6.4
+     */
+    public Optional<Holder<DamageType>> getExplosionMasterType() {
+        return Optional.ofNullable(masterTypeEx.get());
+    }
+
     public final List<TagKeyOr<DamageType>> getIsList() {
         return is.get();
     }
@@ -83,6 +98,7 @@ public class DamageSourceControlData {
 
     private transient final Supplier<Holder<DamageType>> masterType = Suppliers.memoize(() -> getDamageType(master_type));
     private transient final Supplier<Holder<DamageType>> masterTypeAp = Suppliers.memoize(() -> getDamageType(master_type_ap));
+    private transient final Supplier<Holder<DamageType>> masterTypeEx = Suppliers.memoize(() -> getDamageType(master_type_explosion));
     private transient final Supplier<List<TagKeyOr<DamageType>>> is = TagKeyOr.compile(Registries.DAMAGE_TYPE, () -> inject_is);
     private transient final Supplier<List<TagKeyOr<DamageType>>> isNot = TagKeyOr.compile(Registries.DAMAGE_TYPE, () -> inject_is_not);
 
