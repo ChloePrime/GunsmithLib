@@ -174,9 +174,9 @@ dependencies {
     ;// Optional Dependencies
     {
         // AAA Particles
-        compileOnly 'mod.chloeprime:aaa-particles-neoforge:1.21-1.4.13'
+        compileOnly 'cn.chloeprime:aaa_particles-neoforge-1.21.1:2.2.3'
         compileOnly 'maven.modrinth:architectury-api:13.0.8+neoforge'
-        localRuntime 'mod.chloeprime:aaa-particles-neoforge:1.21-1.4.13'
+        localRuntime 'cn.chloeprime:aaa_particles-neoforge-1.21.1:2.2.3'
         localRuntime 'maven.modrinth:architectury-api:13.0.8+neoforge'
     }
 
