@@ -2,8 +2,7 @@ package mod.chloeprime.gunsmithlib;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-public class Config
-{
+public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.DoubleValue CROSSFIRE_BUFF_POWER = BUILDER
@@ -36,6 +35,7 @@ public class Config
                     
                     Added in version 4.4.2""")
             .define("alt_ap_formula", true);
+
     /**
      * @since 4.4.3
      */
@@ -56,6 +56,16 @@ public class Config
                     
                     Added in version 5.9.3""")
             .define("improve_tracer_rotation_stability", true);
+
+    /**
+     * @since 6.4.0
+     */
+    public static final ModConfigSpec.BooleanValue REMOVE_EXPLOSION_IFRAME = BUILDER
+            .comment("""
+                    If true, projectile explosion will bypass targets' i-frame.
+                    
+                    Added in version 6.4.0""")
+            .define("remove_explosion_iframe", true);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 }

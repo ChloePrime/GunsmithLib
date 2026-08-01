@@ -14,9 +14,11 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.resource.CommonAssetsManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.GunAmmoVariantSet;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
@@ -27,9 +29,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
@@ -63,6 +63,7 @@ import java.util.function.Supplier;
 import static mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat.MAX_DISPLAYED_AMMO_SCANNED;
 
 public class GsHelper {
+    @SuppressWarnings("unused")
     public static float infDist(FloatSupplier nextGaussianFunc, float mean, float dev) {
         return infLerp(nextGaussianFunc.getAsFloat(), mean - dev, mean + dev);
     }
@@ -334,6 +335,7 @@ public class GsHelper {
     /**
      * @return 无限弹药时返回 {@link OptionalInt#empty()}
      */
+    @SuppressWarnings("unused")
     public static OptionalInt scanAmmo(Player user, GunInfo gun) {
         var inv = scanInventoryAmmo(user, gun);
         if (inv.isEmpty()) {
@@ -465,4 +467,47 @@ public class GsHelper {
     }
 
     private static final ThreadLocal<ComputeModelMatrixBuffer> COMPUTE_MODEL_MATRIX_BUFFER = ThreadLocal.withInitial(ComputeModelMatrixBuffer::new);
+
+    /**
+     * 尝试获取某个子弹实体的发射器物品。
+     * 如果主手物品的枪械 id 和子弹的枪械 id 一致，则使用主手物品，
+     * 否则根据子弹的枪械 id 创建一把新枪。
+     *
+     * @since 6.4.0
+     */
+    public static Optional<GunInfo> gunInfoFromBullet(Entity bullet) {
+        var owner = findFirstLivingOwner(bullet).orElse(null);
+        if (owner == null) {
+            return bullet instanceof EntityKineticBullet ekb
+                    ? Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(ekb.getGunId(), bullet.registryAccess()))
+                    : Optional.empty();
+        }
+        if (!(bullet instanceof EntityKineticBullet ekb)) {
+            return Gunsmith.getGunInfo(owner.getMainHandItem());
+        }
+        return Gunsmith.getGunInfo(owner.getMainHandItem())
+                .filter(gi -> Objects.equals(gi.gunId(), ekb.getGunId()))
+                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(ekb.getGunId(), bullet.registryAccess())));
+    }
+
+    private static Optional<LivingEntity> findFirstLivingOwner(Entity entity) {
+        for (int i = 0; i < 64; i++) {
+            if (entity instanceof LivingEntity living) {
+                return Optional.of(living);
+            }
+            Entity owner;
+            if (entity instanceof OwnableEntity ownable) {
+                owner = ownable.getOwner();
+            } else if (entity instanceof TraceableEntity traceable) {
+                owner = traceable.getOwner();
+            } else {
+                return Optional.empty();
+            }
+            if (owner == entity) {
+                return Optional.empty();
+            }
+            entity = owner;
+        }
+        return Optional.empty();
+    }
 }
