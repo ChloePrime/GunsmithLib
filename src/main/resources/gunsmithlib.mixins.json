@@ -28,7 +28,6 @@
     "MixinExplodeUtil",
     "MixinGunData",
     "MixinItem",
-    "MixinItemEntity",
     "MixinItemStack",
     "MixinLivingEntity",
     "MixinLivingEntityFireSelect",
@@ -45,9 +44,9 @@
     "bugfix.tacz.TracerStartPosFixDisableBulletTrackingMixin",
     "dfu.MixinGunPackLoader",
     "dfu.MixinGunpackUpgrader",
-    "EntityKineticBulletAccessor",
     "interactkey.StairBlockAccessor",
-    "interactkey.TacInteractKeyAutoInferenceMixin"
+    "interactkey.TacInteractKeyAutoInferenceMixin",
+    "mc1211.ExplosionAccessor1211"
   ],
   "client": [
     "client.GunAnimationStateContextAccessor",
