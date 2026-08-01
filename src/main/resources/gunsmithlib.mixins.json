@@ -28,7 +28,6 @@
     "MixinExplodeUtil",
     "MixinGunData",
     "MixinItem",
-    "MixinItemEntity",
     "MixinItemStack",
     "MixinLivingEntity",
     "MixinLivingEntityFireSelect",
