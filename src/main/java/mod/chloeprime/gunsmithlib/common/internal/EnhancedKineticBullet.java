@@ -23,6 +23,15 @@ public interface EnhancedKineticBullet extends TraceableEntity {
     double gunsmithlib$getMovedDistance();
 
     /**
+     * 设置弹药直至上一刻已经移动的距离。
+     * 此方法通常用于备份还原。
+     *
+     * @param value 弹药直至上一刻已经移动的距离
+     * @since 6.4.1
+     */
+    void gunsmithlib$setMovedDistance(double value);
+
+    /**
      * 瞬移子弹时刷新子弹已飞过的距离
      *
      * @since 6.2

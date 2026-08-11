@@ -10,6 +10,7 @@ import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -27,6 +28,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Matrix3d;
+import org.joml.Matrix3f;
+import org.joml.Vector3d;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -94,7 +98,7 @@ public class ProximityFuseSystem {
         var front = posAfter.subtract(posBefore).normalize();
         var frontChunkLoadProbeOffset = front.scale(scanRange + 4);
 
-        int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) / scanRange) * 2);
+        int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) / Math.min(0.25, scanRange / 2)));
         for (int i = 0; i < slices; i++) {
             var delta = (double) (i + 1) / slices;
             // 安全距离内不检测
@@ -117,13 +121,20 @@ public class ProximityFuseSystem {
             } finally {
                 anyHitCullBuffer.clear();
             }
-            // 执行球形追踪
-            var hit = sphericalTrace(bullet, rayCastStart, scanRange, aabb, entityTest).orElse(null);
-            if (hit != null) {
+            // 执行圆形追踪
+            var traceResult = circleTrace(bullet, rayCastStart, front, scanRange, aabb, entityTest).orElse(null);
+            if (traceResult != null) {
                 AmmoHitEntityEvent hitEntityEvent;
                 boolean canceled;
+                // 先同步位置，以让事件计算时子弹处于正确的位置中。
+                var bulletPosBackup = bullet.position();
+                var movedDistanceBackup = accessor.gunsmithlib$getMovedDistance();
+                accessor.gunsmith$onMovedToPos(rayCastStart);
+                bullet.setPos(rayCastStart);
                 // 发布 AmmoHitEntityEvent 事件以触发命中粒子效果
                 if (bullet instanceof EntityKineticBullet ekb) {
+                    var rayCastMid = posBefore.lerp(posAfter, delta + 0.5 / slices);
+                    var hit = new EntityHitResult(traceResult.getEntity(), rayCastMid);
                     hitEntityEvent = new AmmoHitEntityEvent(level, hit, hit.getEntity(), ekb, false);
                     canceled = AmmoHitAnythingEventPoster.entityPre(hitEntityEvent).isCanceled();
                 } else {
@@ -131,6 +142,8 @@ public class ProximityFuseSystem {
                     canceled = false;
                 }
                 if (canceled) {
+                    bullet.setPos(bulletPosBackup);
+                    accessor.gunsmithlib$setMovedDistance(movedDistanceBackup);
                     return;
                 }
                 // 爆炸！
@@ -147,6 +160,9 @@ public class ProximityFuseSystem {
     }
 
     private static final ThreadLocal<List<Entity>> ROUGH_CULL_BUFFER = ThreadLocal.withInitial(ArrayList::new);
+    private static final ThreadLocal<Matrix3f> MODEL_MATRIX_F_BUFFER = ThreadLocal.withInitial(Matrix3f::new);
+    private static final ThreadLocal<Matrix3d> MODEL_MATRIX_D_BUFFER = ThreadLocal.withInitial(Matrix3d::new);
+    private static final ThreadLocal<Vector3d> LOCAL_POS_BUFFER = ThreadLocal.withInitial(Vector3d::new);
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isStrongLoaded(Level level, Vec3 pos) {
@@ -158,22 +174,23 @@ public class ProximityFuseSystem {
         }
     }
 
-    private static Optional<EntityHitResult> sphericalTrace(Projectile bullet, Vec3 center, double distance, AABB aabb, Predicate<Entity> entityTest) {
+    private static Optional<EntityHitResult> circleTrace(Projectile bullet, Vec3 center, Vec3 front, double distance, AABB aabb, Predicate<Entity> entityTest) {
+        bullet.lookAt(EntityAnchorArgument.Anchor.FEET, bullet.position().add(bullet.getDeltaMovement()));
         int resolution = Mth.clamp((int) ceil(8 * distance), 1, MAX_CAST_RESOLUTION);
-        for (int rx = 0; rx < resolution; rx++) {
-            var theta = 2 * PI * rx / resolution;
-            var sinTheta = Math.sin(theta);
-            var cosTheta = Math.cos(theta);
-            for (int ry = 0; ry < resolution; ry++) {
-                var phi = 2 * PI * ry / resolution;
-                var x = distance * sinTheta * cos(phi);
-                var y = distance * sinTheta * sin(phi);
-                var z = distance * cosTheta;
-                var end = center.add(new Vec3(x, y, z).scale(distance));
-                var hit = ProjectileUtil.getEntityHitResult(bullet, center, end, aabb, entityTest, 0);
-                if (hit != null && hit.getType() != HitResult.Type.MISS) {
-                    return Optional.of(hit);
-                }
+        var modelMatrixF = GsHelper.getModelMatrix(bullet.getYRot(), front, MODEL_MATRIX_F_BUFFER.get());
+        var modelMatrixD = MODEL_MATRIX_D_BUFFER.get().set(modelMatrixF);
+        var pos = LOCAL_POS_BUFFER.get();
+        for (int i = 0; i < resolution; i++) {
+            var angle = 2 * PI * i / resolution;
+            pos.x = cos(angle);
+            pos.y = sin(angle);
+            pos.z = 0;
+            pos.mul(modelMatrixD);
+            pos.mul(distance);
+            var end = center.add(pos.x(), pos.y(), pos.z());
+            var hit = ProjectileUtil.getEntityHitResult(bullet, center, end, aabb, entityTest, 0);
+            if (hit != null && hit.getType() != HitResult.Type.MISS) {
+                return Optional.of(hit);
             }
         }
         return Optional.empty();
