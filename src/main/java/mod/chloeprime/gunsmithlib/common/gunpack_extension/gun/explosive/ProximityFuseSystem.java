@@ -9,6 +9,8 @@ import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -60,41 +63,53 @@ public class ProximityFuseSystem {
         if (!bullet.isAlive() || !(bullet instanceof EntityKineticBulletAccessor accessor)) {
             return;
         }
-        var distance = bullet.getPersistentData().getDouble(PDK_PROX_DISTANCE);
-        if (distance <= 0) {
+        var scanRange = bullet.getPersistentData().getDouble(PDK_PROX_DISTANCE);
+        if (scanRange <= 0) {
             return;
         }
 
         var posBefore = event.getStartPos();
         var posAfter = event.getEndPos();
-        var distanceSqr = posBefore.distanceToSqr(posAfter);
+        var level = bullet.level();
+        if (!isStrongLoaded(level, posBefore)) {
+            return;
+        }
+
+        var deltaPosSqr = posBefore.distanceToSqr(posAfter);
         // 检查安全距离
         var safetyBudget = SafetyDistanceSystem.getSafetyDistanceOf(bullet) - accessor.gunsmithlib$getMovedDistance();
         var safetyBudgetSqr = Math.copySign(safetyBudget * safetyBudget, safetyBudget);
         // 位移终点依旧在安全距离内，这一次位移不可能触发近炸
-        if (safetyBudgetSqr > distanceSqr) {
+        if (safetyBudgetSqr > deltaPosSqr) {
             return;
         }
 
         @Nullable Entity shooter = bullet.getOwner();
         var bulletBB = bullet.getBoundingBox();
         var entityTest = (Predicate<Entity>) et -> testEntity(et, shooter);
+        var front = posAfter.subtract(posBefore).normalize();
+        var frontChunkLoadProbeOffset = front.scale(scanRange + 4);
 
-        int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) * 3 / distance));
+        int slices = max(1, (int) ceil(posBefore.distanceTo(posAfter) / scanRange) * 2);
         for (int i = 0; i < slices; i++) {
             var delta = (double) (i + 1) / slices;
-            if (distanceSqr * delta * delta < safetyBudgetSqr) {
+            // 安全距离内不检测
+            if (deltaPosSqr * delta * delta < safetyBudgetSqr) {
                 continue;
             }
             var rayCastStart = posBefore.lerp(posAfter, delta);
-            var aabb = AABB.ofSize(rayCastStart, bulletBB.getXsize(), bulletBB.getYsize(), bulletBB.getZsize()).inflate(distance + 4);
-            var hit = sphericalTrace(bullet, rayCastStart, distance, aabb, entityTest).orElse(null);
+            // 末端超出加载距离时停止检测
+            if (!isStrongLoaded(level, rayCastStart.add(frontChunkLoadProbeOffset))) {
+                return;
+            }
+            var aabb = AABB.ofSize(rayCastStart, bulletBB.getXsize(), bulletBB.getYsize(), bulletBB.getZsize()).inflate(scanRange + 4);
+            var hit = sphericalTrace(bullet, rayCastStart, scanRange, aabb, entityTest).orElse(null);
             if (hit != null) {
                 AmmoHitEntityEvent hitEntityEvent;
                 boolean canceled;
                 // 发布 AmmoHitEntityEvent 事件以触发命中粒子效果
                 if (bullet instanceof EntityKineticBullet ekb) {
-                    hitEntityEvent = new AmmoHitEntityEvent(bullet.level(), hit, hit.getEntity(), ekb, false);
+                    hitEntityEvent = new AmmoHitEntityEvent(level, hit, hit.getEntity(), ekb, false);
                     canceled = AmmoHitAnythingEventPoster.entityPre(hitEntityEvent).isCanceled();
                 } else {
                     hitEntityEvent = null;
@@ -113,6 +128,16 @@ public class ProximityFuseSystem {
                 }
                 return;
             }
+        }
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean isStrongLoaded(Level level, Vec3 pos) {
+        var intPos = BlockPos.containing(pos);
+        if (level instanceof ServerLevel srvLevel) {
+            return srvLevel.isPositionEntityTicking(intPos);
+        } else {
+            throw new IllegalArgumentException(level.getClass().getSimpleName());
         }
     }
 
