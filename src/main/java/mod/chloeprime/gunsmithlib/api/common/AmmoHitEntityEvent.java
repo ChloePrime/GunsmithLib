@@ -40,6 +40,10 @@ public class AmmoHitEntityEvent extends Event implements ICancellableEvent {
         return level;
     }
 
+    /**
+     * 注意：由于近炸引信的存在，此 {@link net.minecraft.world.phys.HitResult} 的命中位置
+     * 有可能并不与目标实体接触。
+     */
     public EntityHitResult getHitResult() {
         return hitResult;
     }
