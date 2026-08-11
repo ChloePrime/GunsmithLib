@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive;
 
+import com.google.common.base.Predicates;
 import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -27,6 +29,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -103,6 +107,17 @@ public class ProximityFuseSystem {
                 return;
             }
             var aabb = AABB.ofSize(rayCastStart, bulletBB.getXsize(), bulletBB.getYsize(), bulletBB.getZsize()).inflate(scanRange + 4);
+            // 使用 AABB 进行粗略探测，如果所选范围内没有实体则跳过球形追踪
+            var anyHitCullBuffer = ROUGH_CULL_BUFFER.get();
+            try {
+                level.getEntities(EntityTypeTest.forClass(LivingEntity.class), aabb, Predicates.alwaysTrue(), anyHitCullBuffer);
+                if (anyHitCullBuffer.isEmpty()) {
+                    continue;
+                }
+            } finally {
+                anyHitCullBuffer.clear();
+            }
+            // 执行球形追踪
             var hit = sphericalTrace(bullet, rayCastStart, scanRange, aabb, entityTest).orElse(null);
             if (hit != null) {
                 AmmoHitEntityEvent hitEntityEvent;
@@ -130,6 +145,8 @@ public class ProximityFuseSystem {
             }
         }
     }
+
+    private static final ThreadLocal<List<Entity>> ROUGH_CULL_BUFFER = ThreadLocal.withInitial(ArrayList::new);
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isStrongLoaded(Level level, Vec3 pos) {
