@@ -1,12 +1,13 @@
 package mod.chloeprime.gunsmithlib.client.papi;
 
+import com.tacz.guns.resource.pojo.data.gun.GunHeatData;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.papi.framework.Papi;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 过热条百分比
@@ -26,13 +27,18 @@ public enum HeatPercentPapi implements Papi {
     public String apply(ItemStack stack) {
         return Gunsmith.getGunInfo(stack)
                 .filter(gi -> gi.gunItem().hasHeatData(gi.gunStack()))
-                .map(HeatPercentPapi::getHeatPercentageText)
+                .flatMap(HeatPercentPapi::getHeatPercentageText)
                 .orElse(FALLBACK_TEXT);
     }
 
-    private static String getHeatPercentageText(GunInfo gi) {
+    private static Optional<String> getHeatPercentageText(GunInfo gi) {
         float cur = gi.gunItem().getHeatAmount(gi.gunStack());
-        float max = Objects.requireNonNull(gi.index().getGunData().getHeatData()).getHeatMax();
-        return String.valueOf((int) Math.floor(cur / max + 1e-7f));
+        float max = Optional.ofNullable(gi.index().getGunData().getHeatData())
+                .map(GunHeatData::getHeatMax)
+                .orElse(Float.NaN);
+        if (Float.isNaN(max)) {
+            return Optional.empty();
+        }
+        return Optional.of(String.valueOf((int) Math.floor(cur / max + 1e-7f)));
     }
 }
