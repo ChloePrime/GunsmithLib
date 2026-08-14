@@ -86,7 +86,14 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     }
 
     public static Optional<GunsmithLibGunDataExtension> of(GunInfo gunInfo) {
-        return ((EnhancedGunData) gunInfo.index().getGunData()).gunsmith$getGunsmithLibExtension();
+        return of(gunInfo.index().getGunData());
+    }
+
+    /**
+     * @since 6.5
+     */
+    public static Optional<GunsmithLibGunDataExtension> of(GunData gunData) {
+        return ((EnhancedGunData) gunData).gunsmith$getGunsmithLibExtension();
     }
 
     @Deprecated(since = "6.2.0")

@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.ammo;
 
+import com.tacz.guns.resource.index.CommonAmmoIndex;
 import mod.chloeprime.gunsmithlib.api.util.AmmoInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
@@ -21,6 +22,13 @@ public class GunsmithLibAmmoDataExtension extends GunsmithLibSharedDataExtension
     }
 
     public static Optional<GunsmithLibAmmoDataExtension> of(AmmoInfo ammoInfo) {
-        return ((EnhancedAmmoData) ammoInfo.index().getPojo()).gunsmith$getGunsmithLibExtension();
+        return of(ammoInfo.index());
+    }
+
+    /**
+     * @since 6.5
+     */
+    public static Optional<GunsmithLibAmmoDataExtension> of(CommonAmmoIndex index) {
+        return ((EnhancedAmmoData) index.getPojo()).gunsmith$getGunsmithLibExtension();
     }
 }
