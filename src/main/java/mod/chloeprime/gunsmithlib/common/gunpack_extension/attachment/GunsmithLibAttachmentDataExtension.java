@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment;
 
+import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
@@ -33,6 +34,13 @@ public class GunsmithLibAttachmentDataExtension extends GunsmithLibSharedDataExt
     }
 
     public static Optional<GunsmithLibAttachmentDataExtension> of(AttachmentInfo attachInfo) {
-        return ((EnhancedAttachmentData) attachInfo.index().getData()).gunsmith$getGunsmithLibExtension();
+        return of(attachInfo.index().getData());
+    }
+
+    /**
+     * @since 6.5
+     */
+    public static Optional<GunsmithLibAttachmentDataExtension> of(AttachmentData attachmentData) {
+        return ((EnhancedAttachmentData) attachmentData).gunsmith$getGunsmithLibExtension();
     }
 }
