@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2;
 
-import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
@@ -16,6 +15,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.H
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ServerShooterStatesImpl;
+import mod.chloeprime.gunsmithlib.common.util.GsScriptingUtil;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.LauncherContext;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
@@ -64,12 +64,7 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
         if (ctx == null) {
             return this.api;
         }
-        var shooter = this.api.getShooter();
-        var api = new ModernKineticGunScriptAPI();
-        api.setItemStack(ctx.gunStack());
-        api.setShooter(shooter);
-        api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
-        return api;
+        return GsScriptingUtil.api(this.api.getShooter(), ctx.gunStack());
     }
 
     /**
