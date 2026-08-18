@@ -8,11 +8,11 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.api.item.attachment.AttachmentType;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.client.GunsmithLibAnimationConstant;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
+import mod.chloeprime.gunsmithlib.common.util.GunPartIterator;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,9 +24,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * @since 3.4.0
@@ -70,9 +71,9 @@ public class ShieldBehavior {
     private static Optional<ShieldData> getUsedShieldFor(
             LivingEntity user,
             ItemStack weapon,
-            Function<ShieldData, Double> angleField) {
-        Predicate<ShieldData> condition = getConditionPredicate(user);
-        return getUsedShield(weapon, data -> condition.test(data) ? angleField.apply(data) : 0);
+            Function<ShieldData, Double> angleField
+    ) {
+        return getUsedShield(user, weapon, angleField);
     }
 
     private static boolean canBlockDamage(
@@ -83,9 +84,8 @@ public class ShieldBehavior {
         if (user instanceof Player player && player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())) {
             return false;
         }
-        Predicate<ShieldData> condition = getConditionPredicate(user);
         // 单位为弧度
-        var angle = getTotalAngle(weapon, data -> condition.test(data) ? angleField.apply(data) : 0);
+        var angle = getTotalAngle(user, weapon, angleField);
         if (angle <= 1e-4) {
             return false;
         }
@@ -108,53 +108,37 @@ public class ShieldBehavior {
         return cos >= Math.cos(angle);
     }
 
-    private static Predicate<ShieldData> getConditionPredicate(LivingEntity user) {
+    private static boolean testConditionPredicate(LivingEntity user, ShieldData data, BooleanSupplier customPredicate) {
         var operator = IGunOperator.fromLivingEntity(user);
         var isReloading = operator.getSynReloadState().getStateType() != ReloadState.StateType.NOT_RELOADING;
         var isAiming = operator.getSynAimingProgress() >= 0.5F;
-        return data -> {
-            if (data.getCondition() == ShieldData.Condition.CUSTOM) {
-                if (user.isRemoved()) {
-                    return false;
-                }
-                var gun = Gunsmith.getGunInfo(user.getMainHandItem()).orElse(null);
-                if (gun != null) {
-                    return gun.runScript(user, "gunsmith_is_shield_working", Boolean.class).orElse(false);
-                }
-            }
-            if (isReloading && data.disableShieldWhenReloading()) {
+        if (data.getCondition() == ShieldData.Condition.CUSTOM) {
+            if (user.isRemoved()) {
                 return false;
             }
-            var condition = data.getCondition();
-            return condition == ShieldData.Condition.ALWAYS || (condition == ShieldData.Condition.WHEN_AIMING) == isAiming;
-        };
+            return customPredicate.getAsBoolean();
+        }
+        if (isReloading && data.disableShieldWhenReloading()) {
+            return false;
+        }
+        var condition = data.getCondition();
+        return condition == ShieldData.Condition.ALWAYS || (condition == ShieldData.Condition.WHEN_AIMING) == isAiming;
     }
 
-    private static Optional<ShieldData> getUsedShield(ItemStack weapon, Function<ShieldData, Double> field) {
+    private static Optional<ShieldData> getUsedShield(LivingEntity user, ItemStack weapon, Function<ShieldData, Double> field) {
         var gun = Gunsmith.getGunInfo(weapon).orElse(null);
         if (gun == null) {
             return Optional.empty();
         }
-        ShieldData result = ShieldData.fromGun(gun).orElse(null);
-        double maxAngle = result != null ? field.apply(result) : 0;
-
-        for (var attachmentType : AttachmentType.values()) {
-            ItemStack attachment = gun.gunItem().getAttachment(gun.gunStack(), attachmentType);
-            ShieldData data = ShieldData.fromAttachment(attachment).orElse(null);
-            if (data == null) {
-                continue;
-            }
-            var angle = field.apply(data);
-            if (angle > maxAngle) {
-                maxAngle = angle;
-                result = data;
-            }
-        }
-        return Optional.ofNullable(result);
+        return GunPartIterator.iterate(gun,
+                gi -> ShieldData.fromGun(gi).filter(shield -> testConditionPredicate(user, shield, () -> gi.runScript(user, "gunsmith_is_shield_working", Boolean.class).orElse(false))),
+                ami -> Optional.empty(),
+                ati -> ShieldData.fromAttachment(ati).filter(shield -> testConditionPredicate(user, shield, () -> ati.runScript(user, gun, "gunsmithlib_attachment_is_shield_working", Boolean.class).orElse(false)))
+        ).max(Comparator.comparing(field));
     }
 
-    private static double getTotalAngle(ItemStack weapon, Function<ShieldData, Double> field) {
-        return getUsedShield(weapon, field).map(field).orElse(0.0);
+    private static double getTotalAngle(LivingEntity user, ItemStack weapon, Function<ShieldData, Double> field) {
+        return getUsedShield(user, weapon, field).map(field).orElse(0.0);
     }
 
     public static Vec3 getBetterSourcePosition(DamageSource source) {
