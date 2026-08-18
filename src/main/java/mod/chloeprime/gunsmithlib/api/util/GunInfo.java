@@ -7,6 +7,8 @@ import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.util.AttachmentDataUtils;
+import mod.chloeprime.gunsmithlib.common.util.GsScriptingUtil;
+import mod.chloeprime.gunsmithlib.common.util.GunPartIterator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -14,11 +16,11 @@ import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * @see Gunsmith#getGunInfo(ItemStack)
@@ -102,23 +104,34 @@ public record GunInfo(
     }
 
     public <T> Optional<T> runScript(LivingEntity shooter, String method, Class<T> retType, Object... args) {
+        return Optional.ofNullable(this.index.getScript())
+                .map(script -> checkFunction(script.get(method)))
+                .map(func -> func.invoke(GsScriptingUtil.varargWithApi(GsScriptingUtil.api(shooter, gunStack), args)).arg1())
+                .filter(result -> !result.isnil())
+                .map(result -> CoerceLuaToJava.coerce(result, retType))
+                .map(retType::cast);
+    }
+
+    /**
+     * 按枪械，弹药，配件的顺序运行脚本。
+     * 调用此方法时不会立即执行脚本，在返回的 Stream 背后的 iterator 迭代时才会运行对应的脚本。
+     *
+     * @since 6.5
+     */
+    public <T> Stream<T> runAllScript(LivingEntity shooter, String method, Class<T> retType, Object... args) {
         var api = new ModernKineticGunScriptAPI();
         api.setItemStack(this.gunStack);
         api.setShooter(shooter);
         api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
 
-        var argValues = new LuaValue[args.length + 1];
-        argValues[0] = CoerceJavaToLua.coerce(api);
-        for (int i = 0; i < args.length; i++) {
-            argValues[i + 1] = CoerceJavaToLua.coerce(args[i]);
-        }
-
-        return Optional.ofNullable(this.index.getScript())
-                .map(script -> checkFunction(script.get(method)))
-                .map(func -> func.invoke(argValues).arg1())
-                .filter(result -> !result.isnil())
-                .map(result -> CoerceLuaToJava.coerce(result, retType))
-                .map(retType::cast);
+        return GunPartIterator.iterate(this, gi -> Optional.ofNullable(gi.index().getScript())
+                        .map(script -> checkFunction(script.get(method)))
+                        .map(func -> func.invoke(GsScriptingUtil.varargWithApi(api, args)).arg1())
+                        .filter(result -> !result.isnil())
+                        .map(result -> CoerceLuaToJava.coerce(result, retType))
+                        .map(retType::cast),
+                ami -> ami.runScript(api, method, retType, args),
+                ati -> ati.runScript(api, method, retType, args));
     }
 
     private static LuaFunction checkFunction(LuaValue luaValue) {
