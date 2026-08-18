@@ -80,6 +80,19 @@ public class Gunsmith {
     }
 
     /**
+     * Create an ammo item for fetching gun/ammo data.<p>
+     *
+     * @param id ammo id
+     * @param count the stack size of the returned ammo stack
+     * @return an ammo item with the given gun id.
+     *
+     * @since 6.5
+     */
+    public static ItemStack createAmmoItemFromId(ResourceLocation id, int count) {
+        return AmmoItemBuilder.create().setId(id).setCount(count).build();
+    }
+
+    /**
      * Instantly reloads some ammo from inventory to inside the gun
      *
      * @param shooter     shooter entity
