@@ -1,9 +1,8 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.scripting;
 
-import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.GunDrawEvent;
-import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.util.GsScriptingUtil;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -33,15 +32,9 @@ public final class DrawPutAwayHooks {
         if (gun == null) {
             return;
         }
-        // Create API
-        var api = new ModernKineticGunScriptAPI();
-        api.setShooter(shooter);
-        api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
-        api.setItemStack(item);
-        // Execute Script
         Optional.ofNullable(gun.index().getScript())
                 .map(script -> GsHelper.checkFunction(script.get(hookName)))
-                .ifPresent(func -> func.call(CoerceJavaToLua.coerce(api)));
+                .ifPresent(func -> func.call(CoerceJavaToLua.coerce(GsScriptingUtil.api(shooter, item))));
     }
 
     private DrawPutAwayHooks() {

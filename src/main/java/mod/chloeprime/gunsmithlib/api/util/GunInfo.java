@@ -1,9 +1,8 @@
 package mod.chloeprime.gunsmithlib.api.util;
 
-import com.tacz.guns.api.entity.IGunOperator;
+import com.google.common.base.Suppliers;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.util.AttachmentDataUtils;
@@ -119,19 +118,15 @@ public record GunInfo(
      * @since 6.5
      */
     public <T> Stream<T> runAllScript(LivingEntity shooter, String method, Class<T> retType, Object... args) {
-        var api = new ModernKineticGunScriptAPI();
-        api.setItemStack(this.gunStack);
-        api.setShooter(shooter);
-        api.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
-
+        var api = Suppliers.memoize(() -> GsScriptingUtil.api(shooter, this.gunStack));
         return GunPartIterator.iterate(this, gi -> Optional.ofNullable(gi.index().getScript())
                         .map(script -> checkFunction(script.get(method)))
-                        .map(func -> func.invoke(GsScriptingUtil.varargWithApi(api, args)).arg1())
+                        .map(func -> func.invoke(GsScriptingUtil.varargWithApi(api.get(), args)).arg1())
                         .filter(result -> !result.isnil())
                         .map(result -> CoerceLuaToJava.coerce(result, retType))
                         .map(retType::cast),
-                ami -> ami.runScript(api, method, retType, args),
-                ati -> ati.runScript(api, method, retType, args));
+                ami -> ami.runScript(api.get(), method, retType, args),
+                ati -> ati.runScript(api.get(), method, retType, args));
     }
 
     private static LuaFunction checkFunction(LuaValue luaValue) {

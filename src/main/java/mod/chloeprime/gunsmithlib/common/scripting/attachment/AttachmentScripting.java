@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
-import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.attachment.AttachmentScriptingAPI;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.common.util.GsScriptingUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -43,11 +43,7 @@ public final class AttachmentScripting {
             ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter,
             String gunLuaMethodName, String id, Class<T> type
     ) {
-        var gunApi = new ModernKineticGunScriptAPI();
-        gunApi.setItemStack(gunItem);
-        gunApi.setShooter(shooter);
-        gunApi.setDataHolder(dataHolder);
-
+        var gunApi = GsScriptingUtil.api(shooter, dataHolder, gunItem);
         var gunIndex = gunApi.getGunIndex();
         if (gunIndex == null) {
             return original;

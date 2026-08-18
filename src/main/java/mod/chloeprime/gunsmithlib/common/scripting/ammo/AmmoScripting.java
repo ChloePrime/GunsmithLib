@@ -1,11 +1,9 @@
 package mod.chloeprime.gunsmithlib.common.scripting.ammo;
 
-import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
 import com.tacz.guns.api.event.common.GunDamageSourcePart;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
-import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.AmmoHitEntityEventLua;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ammo.AmmoScriptingAPI;
@@ -13,6 +11,7 @@ import mod.chloeprime.gunsmithlib.api.util.AmmoInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
+import mod.chloeprime.gunsmithlib.common.util.GsScriptingUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,11 +37,7 @@ public final class AmmoScripting {
             ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter,
             String gunLuaMethodName, String id, Class<T> type
     ) {
-        var gunApi = new ModernKineticGunScriptAPI();
-        gunApi.setItemStack(gunItem);
-        gunApi.setShooter(shooter);
-        gunApi.setDataHolder(dataHolder);
-
+        var gunApi = GsScriptingUtil.api(shooter, dataHolder, gunItem);
         var gunIndex = gunApi.getGunIndex();
         if (gunIndex == null) {
             return original;
@@ -121,10 +116,7 @@ public final class AmmoScripting {
         }
 
         var shooter = Objects.requireNonNull(event.getAttacker());
-        var gunApi = new ModernKineticGunScriptAPI();
-        gunApi.setItemStack(gun.gunStack());
-        gunApi.setShooter(shooter);
-        gunApi.setDataHolder(IGunOperator.fromLivingEntity(shooter).getDataHolder());
+        var gunApi = GsScriptingUtil.api(shooter, gun.gunStack());
         var ammoApi = new AmmoScriptingAPI(gunApi, ammo, data.getScriptParams());
         var luaEvent = new AmmoHitEntityEventLua(event);
 
