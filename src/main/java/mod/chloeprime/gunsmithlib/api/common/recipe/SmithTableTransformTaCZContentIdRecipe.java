@@ -7,7 +7,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper1211;
-import mod.chloeprime.gunsmithlib.mixin.SmithingTransformRecipeAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.minecraft.SmithingTransformRecipeAccessor;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;

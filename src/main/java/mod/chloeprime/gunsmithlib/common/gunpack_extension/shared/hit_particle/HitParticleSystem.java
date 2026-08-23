@@ -7,7 +7,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.SafetyD
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
-import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
