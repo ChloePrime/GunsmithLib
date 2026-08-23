@@ -5,7 +5,7 @@ import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.entity.IGunOperator;
 import mod.chloeprime.gunsmithlib.api.common.BulletCreateEvent;
 import mod.chloeprime.gunsmithlib.api.util.Rangefinder;
-import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

@@ -5,7 +5,7 @@ import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.client.resource.GunDisplayInstance;
 import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.ClientGunScriptingAPI;
 import mod.chloeprime.gunsmithlib.client.internal.EnhancedLuaStateMachine;
-import mod.chloeprime.gunsmithlib.mixin.client.GunAnimationStateContextAccessor;
+import mod.chloeprime.gunsmithlib.mixin.client.tacz.GunAnimationStateContextAccessor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;

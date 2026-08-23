@@ -2,7 +2,7 @@ package mod.chloeprime.gunsmithlib.proxies;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import mod.chloeprime.gunsmithlib.mixin.LevelAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.minecraft.LevelAccessor;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;

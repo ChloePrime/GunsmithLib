@@ -7,7 +7,7 @@ import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.EntityStates;
 import mod.chloeprime.gunsmithlib.common.util.LightHelper;
 import mod.chloeprime.gunsmithlib.common.util.LightType;
 import mod.chloeprime.gunsmithlib.common.util.MojangRandomGenerator;
-import mod.chloeprime.gunsmithlib.mixin.EntityAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.minecraft.EntityAccessor;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;

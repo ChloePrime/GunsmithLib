@@ -22,7 +22,7 @@ import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.GunAmmoVariantSet;
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
-import mod.chloeprime.gunsmithlib.mixin.ItemCooldownsAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.minecraft.ItemCooldownsAccessor;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;

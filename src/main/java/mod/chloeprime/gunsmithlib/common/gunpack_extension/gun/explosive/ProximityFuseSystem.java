@@ -9,7 +9,7 @@ import mod.chloeprime.gunsmithlib.common.internal.AmmoHitAnythingEventPoster;
 import mod.chloeprime.gunsmithlib.common.internal.BulletReadyToTraceEvent;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
-import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

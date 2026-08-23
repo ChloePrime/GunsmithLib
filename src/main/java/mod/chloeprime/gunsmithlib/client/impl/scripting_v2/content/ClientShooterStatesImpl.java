@@ -9,7 +9,7 @@ import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootSta
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.BaseShooterStatesImpl;
-import mod.chloeprime.gunsmithlib.mixin.client.GunAnimationStateContextAccessor;
+import mod.chloeprime.gunsmithlib.mixin.client.tacz.GunAnimationStateContextAccessor;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Optional;

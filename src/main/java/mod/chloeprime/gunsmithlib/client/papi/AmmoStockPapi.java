@@ -2,7 +2,7 @@ package mod.chloeprime.gunsmithlib.client.papi;
 
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.client.papi.framework.Papi;
-import mod.chloeprime.gunsmithlib.mixin.client.GunHudOverlayAccessor;
+import mod.chloeprime.gunsmithlib.mixin.client.tacz.GunHudOverlayAccessor;
 import net.minecraft.world.item.ItemStack;
 
 /**

@@ -5,7 +5,7 @@ import com.google.gson.JsonParseException;
 import mod.chloeprime.gunsmithlib.api.common.TaCZContentType;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
-import mod.chloeprime.gunsmithlib.mixin.SmithingTransformRecipeAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.minecraft.SmithingTransformRecipeAccessor;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;

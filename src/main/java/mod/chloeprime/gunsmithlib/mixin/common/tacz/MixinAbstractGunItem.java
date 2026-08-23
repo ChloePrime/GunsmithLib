@@ -1,0 +1,45 @@
+package mod.chloeprime.gunsmithlib.mixin.common.tacz;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.tacz.guns.api.item.gun.AbstractGunItem;
+import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.HideFromCreativeTabSystem;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantSystem;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.ArrayList;
+
+@Mixin(value = AbstractGunItem.class, remap = false)
+public class MixinAbstractGunItem {
+    @ModifyReturnValue(method = {"canReload", "hasInventoryAmmo"}, at = @At("TAIL"))
+    private boolean canReloadIfHasAmmoInBackpacks(boolean original, LivingEntity shooter, ItemStack gunItem) {
+        return original || (shooter.level().isClientSide
+                ? CapabilityBasedModCompat.getClientSyncedAmmoCountInBackpack(shooter) > 0
+                : CapabilityBasedModCompat.hasAmmoToConsume(shooter, gunItem));
+    }
+
+    /**
+     * 用于阻止切换枪械 id 时播放收枪拔枪动画
+     */
+    @ModifyReturnValue(method = "isSame", at = @At("RETURN"))
+    private boolean isSameAcrossVariantSwitching(boolean original, ItemStack a, ItemStack b) {
+        return original || AmmoVariantSystem.hasVariantConnection(a, b);
+    }
+
+    // 从创造标签页中隐藏功能
+
+    @ModifyReturnValue(method = "fillItemCategory", at = @At("RETURN"))
+    private static NonNullList<ItemStack> hideFromCreativeTabIfNeeded(NonNullList<ItemStack> original) {
+        var buffer = new ArrayList<>(original);
+        buffer.removeIf(HideFromCreativeTabSystem::shouldHide);
+
+        var result = NonNullList.<ItemStack>createWithCapacity(buffer.size());
+        result.addAll(buffer);
+
+        return result;
+    }
+}
