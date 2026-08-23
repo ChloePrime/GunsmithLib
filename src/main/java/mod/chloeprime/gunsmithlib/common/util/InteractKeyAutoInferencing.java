@@ -1,7 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
 import mod.chloeprime.gunsmithlib.Config;
-import mod.chloeprime.gunsmithlib.mixin.interactkey.StairBlockAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.tacz.interactkey.StairBlockAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;

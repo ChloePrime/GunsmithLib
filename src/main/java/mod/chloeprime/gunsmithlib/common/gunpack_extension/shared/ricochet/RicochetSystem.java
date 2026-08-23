@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import mod.chloeprime.gunsmithlib.api.common.RicochetEvent;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
-import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;

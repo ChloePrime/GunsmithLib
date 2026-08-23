@@ -14,7 +14,7 @@ import mod.chloeprime.gunsmithlib.common.internal.GunAttributeSyncState;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
 import net.minecraft.core.Holder;
-import mod.chloeprime.gunsmithlib.mixin.EntityKineticBulletAccessor;
+import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
