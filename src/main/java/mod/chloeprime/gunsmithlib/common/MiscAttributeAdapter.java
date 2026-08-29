@@ -4,6 +4,7 @@ import com.tacz.guns.api.GunProperties;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.GunDamageSourcePart;
+import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.resource.modifier.custom.EffectiveRangeModifier;
 import com.tacz.guns.resource.pojo.data.gun.FeedType;
 import com.tacz.guns.util.AttachmentDataUtils;
@@ -73,10 +74,11 @@ public class MiscAttributeAdapter {
             accessor.setArmorIgnore((float) attacker.getAttributeValue(ARMOR_PIERCING_RATIO.get()));
         }
         // 子弹飞行速度
+        var globalSpeedScale = AmmoConfig.GLOBAL_BULLET_SPEED_MODIFIER.get();
         var oldMotion = bullet.getDeltaMovement();
         var attribute = BULLET_SPEED.get();
         var oldSpeed = oldMotion.length();
-        var newSpeed = GsHelper.getAttributeValueWithBase(attacker, attribute, oldSpeed);
+        var newSpeed = GsHelper.getAttributeValueWithBase(attacker, attribute, oldSpeed / globalSpeedScale) * globalSpeedScale;
         // 速度沒有被Attribute修改的情況
         if (Math.abs(newSpeed - oldSpeed) < 1e-4) {
             return;
