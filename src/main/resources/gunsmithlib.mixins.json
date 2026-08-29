@@ -8,9 +8,8 @@
     "minVersion": "0.5.0"
   },
   "mixins": [
+    "common.luaj.LuaJcClassloadingFixMixin",
     "common.luaj.bugfix.MixinJavaMember",
-    "common.tacz.bugfix.TracerStartPosFixDisableBulletTrackingMixin",
-    "common.minecraft.ProjectileJoinWorldOwnerFixMixin",
     "common.minecraft.EntityAccessor",
     "common.minecraft.ItemCooldownsAccessor",
     "common.minecraft.LevelAccessor",
@@ -22,11 +21,11 @@
     "common.minecraft.MixinLivingEntity",
     "common.minecraft.MixinMob",
     "common.minecraft.MixinPlayer",
+    "common.minecraft.ProjectileJoinWorldOwnerFixMixin",
     "common.minecraft.SmithingTransformRecipeAccessor",
     "common.tacz.AlternativeArmorPierceFormulaMixin",
     "common.tacz.CommonGunIndexAccessor",
     "common.tacz.EntityKineticBulletAccessor",
-    "common.luaj.LuaJcClassloadingFixMixin",
     "common.tacz.MixinAbstractGunItem",
     "common.tacz.MixinAmmoIndexPojo",
     "common.tacz.MixinAttachmentData",
@@ -41,8 +40,9 @@
     "common.tacz.MixinModernKineticGunItem",
     "common.tacz.MixinModernKineticGunScriptAPI",
     "common.tacz.MixinProjectileExplosion",
-    "common.tacz.ReloadProcedureMixin",
     "common.tacz.MixinScriptManager",
+    "common.tacz.ReloadProcedureMixin",
+    "common.tacz.bugfix.TracerStartPosFixDisableBulletTrackingMixin",
     "common.tacz.interactkey.StairBlockAccessor",
     "common.tacz.interactkey.TacInteractKeyAutoInferenceMixin"
   ],
@@ -69,7 +69,8 @@
     "client.tacz.RecoilAttributeMixin",
     "client.tacz.animation.MixinGunAnimationStateContext",
     "client.tacz.animation.MixinObjectAnimationRunner",
-    "client.tacz.bugfix.TracerStartPosFixMixin"
+    "client.tacz.bugfix.TracerStartPosFixMixin",
+    "common.tacz.MixinRangefinderManager"
   ],
   "injectors": {
     "defaultRequire": 1

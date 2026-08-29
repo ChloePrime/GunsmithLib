@@ -67,6 +67,23 @@ public class GunsmithClientConfig {
                     Added in version 6.4.0""")
             .defineInRange("papi_rangefinding_distance", 128.0, 0, 1024);
 
+    /**
+     * @since 7.0.0
+     */
+    public static final ForgeConfigSpec.BooleanValue OFFICIAL_FIRE_CONTROL_ON_BLOCKS = BUILDER
+            .comment("""
+                    If true, fire control from TaCZ 7.0.0 will take effect when aiming at blocks.""")
+            .define("official_fire_control_on_blocks", true);
+
+    /**
+     * @since 7.0.0
+     */
+    public static final ForgeConfigSpec.IntValue OFFICIAL_FIRE_CONTROL_ON_BLOCK_CALIBRATION_PASSES = BUILDER
+            .comment("""
+                    Pass count for drop calculation calibration for official_fire_control_on_blocks.
+                    Slightly affects client performance.""")
+            .defineInRange("official_fire_control_on_block_calibration_passes", 4, 0, Integer.MAX_VALUE);
+
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 }
