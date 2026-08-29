@@ -84,12 +84,7 @@ public final class AmmoScripting {
                 event.getBullet(), event.getKilledEntity(), event.getAttacker(),
                 event.getGunId(), event.getGunDisplayId(),
                 event.getBaseDamage(), sources,
-                event.isHeadShot(), event.getHeadshotMultiplier(), event.getLogicalSide()
-        ) {
-            @Override
-            public void postEventToKubeJS(EntityHurtByGunEvent event) {
-            }
-        };
+                event.isHeadShot(), event.getHeadshotMultiplier(), event.getLogicalSide());
 
         onAmmoHitEntity(wrapped, "gunsmithlib_ammo_post_hit_entity");
     }

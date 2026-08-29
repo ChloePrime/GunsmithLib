@@ -9,6 +9,7 @@
   },
   "mixins": [
     "common.luaj.LuaJcClassloadingFixMixin",
+    "common.luaj.bugfix.MixinJavaMember",
     "common.minecraft.EntityAccessor",
     "common.minecraft.ItemCooldownsAccessor",
     "common.minecraft.LevelAccessor",
@@ -41,8 +42,6 @@
     "common.tacz.MixinProjectileExplosion",
     "common.tacz.ReloadProcedureMixin",
     "common.tacz.MixinScriptManager",
-    "common.luaj.bugfix.MixinJavaMember",
-    "common.tacz.bugfix.TracerStartPosFixDisableBulletTrackingMixin",
     "common.tacz.dfu.MixinGunPackLoader",
     "common.tacz.dfu.MixinGunpackUpgrader",
     "common.tacz.interactkey.StairBlockAccessor",
@@ -71,7 +70,8 @@
     "client.tacz.RecoilAttributeMixin",
     "client.tacz.animation.MixinGunAnimationStateContext",
     "client.tacz.animation.MixinObjectAnimationRunner",
-    "client.tacz.bugfix.TracerStartPosFixMixin"
+    "client.tacz.bugfix.TracerStartPosFixMixin",
+    "common.tacz.MixinRangefinderManager"
   ],
   "injectors": {
     "defaultRequire": 1
