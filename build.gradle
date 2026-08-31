@@ -155,7 +155,7 @@ dependencies {
     ;// JIJ Dependencies
     {
         // KuroUtils (My personal lib)
-        compileOnly jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.5.0") {
+        compileOnly jarJar("cn.chloeprime.kuroutils2:kuroutils2:2101.2.5.1") {
             exclude group: '*', module: '*'
         }
         localRuntime "cn.chloeprime.kuroutils2:kuroutils2:2101.2.5.0"
