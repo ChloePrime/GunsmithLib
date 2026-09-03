@@ -6,6 +6,7 @@ import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
+import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -26,10 +27,16 @@ public final class BulletTrailSystem {
     private static final Map<Entity, Boolean> CACHE = new MapMaker().weakKeys().makeMap();
 
     public static boolean hideVanillaTrailCached(Entity entity, ResourceLocation gunId) {
+        if (!ModInstallationStatus.AAA_PARTICLES_INSTALLED) {
+            return false;
+        }
         return CACHE.computeIfAbsent(entity, _entity -> hideVanillaTrail(gunId));
     }
 
     public static boolean hideVanillaTrail(ResourceLocation gunId) {
+        if (!ModInstallationStatus.AAA_PARTICLES_INSTALLED) {
+            return false;
+        }
         return GunsmithLibGunDataExtension
                 .forGunOrAmmo(Gunsmith.createGunItemFromId(gunId), data -> data.getBulletTrails() != null
                         ? data.hideVanillaBulletTrails()
