@@ -451,3 +451,64 @@ display 文件中有少量多弹种功能的可配置项。
   }
 }
 ```
+
+# 7.0 版本新增内容
+### 屏幕震动
+
+使用机械动力大炮同款屏幕震动系统 ([Ritchie's Projectile Library](https://www.curseforge.com/minecraft/mc-mods/ritchies-projectile-library)) :)
+
+```json5
+{
+  "gunsmithlib_extension": {
+    "screen_shake": {
+      // "on_shoot": {...},
+      // "on_hit": {...},
+      // "on_impact": {...},
+      // 该处的 key 决定触发时机，value 全部是同一个格式。
+      // 支持的 触发时机 key 有四种：
+      // - `on_shoot`:        开火时对周边实体（包括射手）施加屏幕震动
+      // - `on_hit`:          弹药命中时对命中目标施加屏幕震动
+      // - `on_impact`:       弹药命中时对周围实体施加屏幕震动
+      // - `on_explosion`:    弹药爆炸时对周围实体施加屏幕震动。如果为空则使用 {@link #on_impact}。
+      "on_explosion": {
+        // 基础震动强度
+        // 可空，默认值为 20。
+        "base_power": 20,
+        // 震动范围
+        // 可空，默认值为 32。
+        "range": 16,
+        // 震动方向 Yaw 分量
+        // 可空，默认值为 0.5。
+        "magnitude_yaw": 0.5,
+        // 震动方向 Pitch 分量
+        // 可空，默认值为 1.0。
+        "magnitude_pitch": 1.0,
+        // 震动方向 Roll 分量
+        // 可空，默认值为 0.5。
+        "magnitude_roll": 0.5,
+        // 震动强度，会改变振幅上限
+        // 可空，默认值为 1.3。
+        "intensity": 1.5,
+        // 震动迫切程度，影响震动频率
+        // 可空，默认值为 0.08。
+        "restitution": 0.5,
+        // 震动阻力大小
+        // 可空，默认值为 0.3。
+        "drag": 0.3,
+        // 震动平移方向 X 分量
+        // 可空，默认值为 0。
+        "translation_magnitude_x": 0,
+        // 震动平移方向 Y 分量
+        // 可空，默认值为 0。
+        "translation_magnitude_y": 0,
+        // 震动平移方向 Z 分量
+        // 可空，默认值为 0。
+        "translation_magnitude_z": 0
+      }
+    }
+    // 如果你希望让 AAA 子弹轨迹和原版子弹轨迹一起出现的话，请开启下面这一行
+    // 记得加逗号 :)
+    // "hide_vanilla_bullet_trails": false
+  }
+}
+```
