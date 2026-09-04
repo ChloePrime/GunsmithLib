@@ -196,6 +196,14 @@ repositories {
         }
     }
 
+    // 屏幕震动 API maven
+    maven { // Ritchie's Projectile Library
+        url = "https://maven.realrobotix.me/master/"
+        content {
+            includeGroup("com.rbasamoyai") // THIS IS IMPORTANT
+        }
+    }
+
     maven {
         url 'https://maven.blamejared.com'
     }
@@ -237,6 +245,13 @@ dependencies {
     // AAA Particles
     implementation fg.deobf('cn.chloeprime:aaa_particles-forge-1.20.1:2.2.3')
     implementation fg.deobf('maven.modrinth:architectury-api:9.2.14+forge')
+
+    // 屏幕震动 API
+    compileOnly jarJar(fg.deobf("com.rbasamoyai:ritchiesprojectilelib:2.1.2+mc.$minecraft_version-forge")) {
+        transitive = false
+        jarJar.ranged(it, '[2.1.2,)')
+    }
+    runtimeOnly fg.deobf("curse.maven:ritchies-projectile-library-1279407:7292523")
 
     // 镜喵背包
     implementation fg.deobf('maven.modrinth:sophisticated-core:1.20.1-1.2.82.1097')
