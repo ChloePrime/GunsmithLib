@@ -463,9 +463,22 @@ public class GsHelper {
         if (!(bullet instanceof EntityKineticBullet ekb)) {
             return Gunsmith.getGunInfo(owner.getMainHandItem());
         }
-        return Gunsmith.getGunInfo(owner.getMainHandItem())
-                .filter(gi -> Objects.equals(gi.gunId(), ekb.getGunId()))
-                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(ekb.getGunId())));
+        return gunInfoFromShooter(owner, ekb.getGunId());
+    }
+
+    /**
+     * 尝试获取某个射手实体的发射器物品。
+     * 如果主手物品的枪械 id 和子弹的枪械 id 一致，则使用主手物品，
+     * 否则根据子弹的枪械 id 创建一把新枪。
+     *
+     * @since 6.4.0
+     */
+    public static Optional<GunInfo> gunInfoFromShooter(LivingEntity shooter, ResourceLocation gunId) {
+        return Optional.ofNullable(shooter)
+                .map(LivingEntity::getMainHandItem)
+                .flatMap(Gunsmith::getGunInfo)
+                .filter(gi -> Objects.equals(gi.gunId(), gunId))
+                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId)));
     }
 
     private static Optional<LivingEntity> findFirstLivingOwner(Entity entity) {

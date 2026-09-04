@@ -8,6 +8,14 @@
     "ricochet": {
       "min_angle_of_incidence": 30,
       "gravity_scale": 0.5
+    },
+    "screen_shake": {
+      "on_explosion": {
+        "base_power": 40,
+        "range": 16,
+        "intensity": 1.5,
+        "restitution": 0.5
+      }
     }
   },
   "ammo": "tacz:40mm",

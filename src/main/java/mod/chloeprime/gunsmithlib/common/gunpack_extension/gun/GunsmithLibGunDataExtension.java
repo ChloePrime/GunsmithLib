@@ -7,6 +7,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.energy_v2.EnergyWeaponV2Data;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.GunExplosiveData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.screen_shake.ScreenShakeData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.shield.ShieldData;
@@ -79,6 +80,14 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
     @GunpackProperty
     private @Nullable EnergyWeaponV2Data battery_v2;
 
+    /**
+     * 屏幕震动数据
+     *
+     * @since 7.0
+     */
+    @GunpackProperty
+    private @Nullable ScreenShakeData screen_shake;
+
     // 下面是代码
 
     public static Optional<GunsmithLibGunDataExtension> of(ItemStack stack) {
@@ -133,5 +142,9 @@ public final class GunsmithLibGunDataExtension extends GunsmithLibSharedDataExte
 
     public Optional<EnergyWeaponV2Data> getVersion2BatteryData() {
         return Optional.ofNullable(battery_v2);
+    }
+
+    public Optional<ScreenShakeData> getScreenShakeData() {
+        return Optional.ofNullable(screen_shake);
     }
 }

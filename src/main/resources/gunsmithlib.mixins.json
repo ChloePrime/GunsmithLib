@@ -47,6 +47,7 @@
     "common.tacz.interactkey.TacInteractKeyAutoInferenceMixin"
   ],
   "client": [
+    "client.minecraft.CameraAccessor",
     "client.minecraft.MixinClientGamePacketListener",
     "client.tacz.GunAnimationStateContextAccessor",
     "client.tacz.GunHudOverlayAccessor",

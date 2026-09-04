@@ -21,6 +21,9 @@ public class TracerStartPosFixDisableBulletTrackingMixin {
     @Shadow @Final private Entity entity;
     @Shadow @Final private boolean trackDelta;
 
+    // 请勿删除这个方法。
+    // 这个方法给 Ritchie's Projectile API 提供了 RefMap。
+    // 删掉此方法可能导致无法加载世界。
     @WrapOperation(
             method = "sendChanges",
             at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))

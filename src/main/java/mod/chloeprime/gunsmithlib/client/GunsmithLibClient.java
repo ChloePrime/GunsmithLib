@@ -13,6 +13,7 @@ import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.screen_shake.ScreenShakeSystemClient;
 import mod.chloeprime.gunsmithlib.client.papi.GunsmithLibPapas;
 import mod.chloeprime.gunsmithlib.client.tooltip.DescriptionalGunAffix;
 import mod.chloeprime.gunsmithlib.client.gunpack_extension.EnhancedGunDisplayInstance;
@@ -65,6 +66,7 @@ public class GunsmithLibClient {
 
     public static void initClient() {
         GunsmithLibPapas.registerPapas();
+        ScreenShakeSystemClient.init();
     }
 
     @SubscribeEvent
