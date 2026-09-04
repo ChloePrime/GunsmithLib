@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.util;
 
+import cn.chloeprime.commons.ContextUtil;
 import cn.chloeprime.commons.lang4.FloatSupplier;
 import cn.chloeprime.commons.math.LinearAlgebraTypes;
 import cn.chloeprime.commons.rpc.RPC;
@@ -24,6 +25,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.GunA
 import mod.chloeprime.gunsmithlib.common.internal.EnhancedKineticBullet;
 import mod.chloeprime.gunsmithlib.mixin.common.minecraft.ItemCooldownsAccessor;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.Tag;
@@ -485,9 +487,29 @@ public class GsHelper {
         if (!(bullet instanceof EntityKineticBullet ekb)) {
             return Gunsmith.getGunInfo(owner.getMainHandItem());
         }
-        return Gunsmith.getGunInfo(owner.getMainHandItem())
-                .filter(gi -> Objects.equals(gi.gunId(), ekb.getGunId()))
-                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(ekb.getGunId(), bullet.registryAccess())));
+        return gunInfoFromShooter(owner, ekb.getGunId(), bullet.registryAccess());
+    }
+
+    /**
+     * 尝试获取某个射手实体的发射器物品。
+     * 如果主手物品的枪械 id 和子弹的枪械 id 一致，则使用主手物品，
+     * 否则根据子弹的枪械 id 创建一把新枪。
+     *
+     * @since 6.4.0
+     */
+    public static Optional<GunInfo> gunInfoFromShooter(LivingEntity shooter, ResourceLocation gunId) {
+        var regAccess = Optional.ofNullable(shooter)
+                .map(Entity::registryAccess)
+                .orElseGet(ContextUtil::getRegistryAccess);
+        return gunInfoFromShooter(shooter, gunId, regAccess);
+    }
+
+    public static Optional<GunInfo> gunInfoFromShooter(LivingEntity shooter, ResourceLocation gunId, HolderLookup.Provider registryAccess) {
+        return Optional.ofNullable(shooter)
+                .map(LivingEntity::getMainHandItem)
+                .flatMap(Gunsmith::getGunInfo)
+                .filter(gi -> Objects.equals(gi.gunId(), gunId))
+                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId, registryAccess)));
     }
 
     private static Optional<LivingEntity> findFirstLivingOwner(Entity entity) {
