@@ -99,6 +99,10 @@ public class FragSystem {
         fragCreator.setPos(hitPos.x(), hitPos.y() - fragCreator.getEyeHeight(), hitPos.z());
 
         var fragConstructor = (FragConstructor) (direction, velocity) -> {
+            // 让假玩家转头，
+            // 以确保火控系统正常运作。
+            fragCreator.lookAt(EntityAnchorArgument.Anchor.FEET, fragCreator.position().add(direction.x(), direction.y(), direction.z()));
+
             var frag = new EntityKineticBullet(ammo.level(), fragCreator, launcher, launcherAmmoId, launcherId, isTracer, launcherGunData, launcherBulletData);
             frag.setPos(hitPos);
             frag.shoot(direction.x(), direction.y(), direction.z(), velocity, 0);
