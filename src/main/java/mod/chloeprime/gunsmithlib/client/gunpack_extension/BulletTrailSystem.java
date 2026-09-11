@@ -12,10 +12,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayDeque;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * AAA 弹道轨迹系统
@@ -25,6 +28,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public final class BulletTrailSystem {
     private static final Map<Entity, Boolean> CACHE = new MapMaker().weakKeys().makeMap();
+    private static final Queue<Runnable> DELAY_QUEUE = new ArrayDeque<>();
 
     public static boolean hideVanillaTrailCached(Entity entity, ResourceLocation gunId) {
         if (!ModInstallationStatus.AAA_PARTICLES_INSTALLED) {
@@ -55,8 +59,24 @@ public final class BulletTrailSystem {
             return;
         }
         var bullet = event.getBullet();
-        for (HitParticleData trail : trails) {
-            AaaParticleProxy.bindParticleZP(bullet, trail.getParticleId(), Vec3.ZERO, 1, trail.getAaaParticleData());
+        DELAY_QUEUE.offer(() -> {
+            if (!bullet.isAlive()) {
+                return;
+            }
+            for (HitParticleData trail : trails) {
+                AaaParticleProxy.bindParticleZP(bullet, trail.getParticleId(), Vec3.ZERO, 1, trail.getAaaParticleData());
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void runQueuedOnRenderTick(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            return;
+        }
+        Runnable code;
+        while ((code = DELAY_QUEUE.poll()) != null) {
+            code.run();
         }
     }
 
