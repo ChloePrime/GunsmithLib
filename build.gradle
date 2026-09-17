@@ -132,6 +132,10 @@ repositories {
             includeGroup("com.rbasamoyai") // THIS IS IMPORTANT
         }
     }
+    // 机械动力和前置
+    maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
+    maven { url = "https://maven.gegy.dev/releases" } // Registrate
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
 
     maven {
         name = "Mod Maven"
@@ -207,6 +211,25 @@ dependencies {
         localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
         localRuntime "mekanism:Mekanism:1.21.1-10.7.9.72"
         localRuntime "curse.maven:explosive-enhancement-reforged-1036246:6520579"
+
+        // KubeJS, Create
+        // 用于测试子弹物品粒子
+        runtimeOnly ("com.simibubi.create:create-$minecraft_version:6.0.10-281") { transitive = false }
+        runtimeOnly "net.createmod.ponder:ponder-neoforge:1.0.87+mc$minecraft_version"
+        // compileOnly dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}"
+        runtimeOnly "dev.engine-room.flywheel:flywheel-neoforge-$minecraft_version:1.0.7"
+        // runtimeOnly "com.tterrag.registrate:Registrate:MC1.21.1-1.4.8"
+        runtimeOnly "dev.latvian.mods:better-advanced-tooltips:2101.1.0-build.6"
+        runtimeOnly "dev.latvian.mods:rhino:2101.2.7-build.85"
+        runtimeOnly "dev.latvian.mods:kubejs-neoforge:2101.7.2-build.381"
+        runtimeOnly "curse.maven:probejs-585406:8304356"
+        // KubeJS Create 的 pom 自带一条 com.simibubi.create:create-1.21.1:6.0.7-159:slim 的 runtime 依赖，
+        // 被版本对齐提升成本项目的 6.0.11-320 后，会去找 maven 上并不存在的 create-1.21.1-6.0.11-320-slim.jar。
+        // 上面的 runtimeOnly 已经提供了完整的 Create 本体，这里直接排除掉它带来的那条依赖。
+        runtimeOnly("dev.latvian.mods:kubejs-create-neoforge:2101.3.1-build.18") {
+            transitive false
+            exclude group: '*', module: '*'
+        }
     }
 }
 
