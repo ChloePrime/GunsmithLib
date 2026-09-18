@@ -70,6 +70,7 @@
     "client.tacz.RecoilAttributeMixin",
     "client.tacz.animation.MixinGunAnimationStateContext",
     "client.tacz.animation.MixinObjectAnimationRunner",
+    "client.tacz.bugfix.ContentItemParticleTextureFixMixin",
     "client.tacz.bugfix.TracerStartPosFixMixin",
     "common.tacz.MixinRangefinderManager"
   ],
