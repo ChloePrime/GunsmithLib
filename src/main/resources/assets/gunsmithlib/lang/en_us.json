@@ -1,4 +1,7 @@
 {
+  "block.gunsmithlib.gun_steel_block": "Gun Metal Block",
+  "block.gunsmithlib.giga_ammo_block": "Giga Shell Block",
+
   "entity.gunsmithlib.area_effect_cloud_3d": "3D Area Effect Cloud",
 
   "attribute.name.gunsmithlib.bullet_damage": "Bullet Damage",
@@ -48,5 +51,6 @@
 
   "gunsmithlib.message.airburst_rangefinder.too_close": "Too close, should be further than %.1fm",
   "gunsmithlib.message.airburst_rangefinder.too_far": "Too far",
+  "gunsmithlib.message.particle_block_hint": "Technical block made for providing texture for TaCZ content items' item particles",
   "gunsmithlib.message.press_sheft_to_expand_tooltip": "Hold §6L-Shift§r to view details"
 }

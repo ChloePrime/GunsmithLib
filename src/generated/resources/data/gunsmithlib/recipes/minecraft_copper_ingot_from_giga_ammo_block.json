@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "gunsmithlib:giga_ammo_block"
+    }
+  ],
+  "result": {
+    "count": 3,
+    "item": "minecraft:copper_ingot"
+  }
+}

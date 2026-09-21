@@ -1,4 +1,7 @@
 {
+  "block.gunsmithlib.gun_steel_block": "枪械金属块",
+  "block.gunsmithlib.giga_ammo_block": "巨大弹壳块",
+
   "entity.gunsmithlib.area_effect_cloud_3d": "三维区域效果云",
 
   "attribute.name.gunsmithlib.bullet_damage": "射击伤害",
@@ -48,5 +51,6 @@
 
   "gunsmithlib.message.airburst_rangefinder.too_close": "太近了，不得低于安全距离（%.1fm）",
   "gunsmithlib.message.airburst_rangefinder.too_far": "太远了",
+  "gunsmithlib.message.particle_block_hint": "为给TaCZ物品提供物品粒子材质的技术性方块",
   "gunsmithlib.message.press_sheft_to_expand_tooltip": "按住§6左Shift§r查看详情"
 }

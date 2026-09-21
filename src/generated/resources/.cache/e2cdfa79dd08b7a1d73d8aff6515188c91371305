@@ -1,0 +1,4 @@
+// 1.20.1	2026-09-22T03:01:09.0637042	Tags for minecraft:block mod id gunsmithlib
+b01d99539ab1af419e5eb6151249ebc96f420a09 data/forge/tags/blocks/storage_blocks.json
+b01d99539ab1af419e5eb6151249ebc96f420a09 data/minecraft/tags/blocks/mineable/pickaxe.json
+b01d99539ab1af419e5eb6151249ebc96f420a09 data/minecraft/tags/blocks/needs_stone_tool.json

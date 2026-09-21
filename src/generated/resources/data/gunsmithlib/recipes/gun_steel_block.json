@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "tag": "forge:storage_blocks/iron"
+    },
+    "X": {
+      "item": "minecraft:coal"
+    }
+  },
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "result": {
+    "count": 24,
+    "item": "gunsmithlib:gun_steel_block"
+  },
+  "show_notification": true
+}

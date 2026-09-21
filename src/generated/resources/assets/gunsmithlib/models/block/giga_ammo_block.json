@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "gunsmithlib:block/giga_ammo_block_bottom",
+    "side": "gunsmithlib:block/giga_ammo_block_side",
+    "top": "gunsmithlib:block/giga_ammo_block_top"
+  }
+}

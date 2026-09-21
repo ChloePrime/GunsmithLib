@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "gunsmithlib:block/giga_ammo_block",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "gunsmithlib:block/giga_ammo_block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "gunsmithlib:block/giga_ammo_block",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "gunsmithlib:block/giga_ammo_block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "gunsmithlib:block/giga_ammo_block"
+    },
+    "facing=west": {
+      "model": "gunsmithlib:block/giga_ammo_block",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

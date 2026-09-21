@@ -5,10 +5,13 @@ import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
 import mod.chloeprime.gunsmithlib.api.common.recipe.GunRecipeSerializers;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
+import mod.chloeprime.gunsmithlib.common.block.SimpleCustomInstrumentBlock;
+import mod.chloeprime.gunsmithlib.common.block.SimpleCustomInstrumentDirectionalBlock;
 import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
 import mod.chloeprime.gunsmithlib.common.entity.RangefinderMarker;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.entity.MagicLaser;
+import mod.chloeprime.gunsmithlib.common.item.ParticleTextureBlockItem;
 import mod.chloeprime.gunsmithlib.common.util.AttackDamageMobEffect;
 import mod.chloeprime.gunsmithlib.common.util.PercentBasedAttribute;
 import mod.chloeprime.gunsmithlib.network.ModNetwork;
@@ -21,7 +24,17 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -37,6 +50,7 @@ import org.slf4j.Logger;
 
 import java.awt.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Mod(GunsmithLib.MOD_ID)
 public class GunsmithLib {
@@ -48,6 +62,8 @@ public class GunsmithLib {
     public GunsmithLib() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        Blocks.DFR.register(bus);
+        Items.DFR.register(bus);
         Attributes.REGISTRY.register(bus);
         FireControlAttributes.init(bus);
         MobEffects.REGISTRY.register(bus);
@@ -69,6 +85,40 @@ public class GunsmithLib {
 
     public static ResourceLocation loc(String namespace, String path) {
         return new ResourceLocation(namespace, path);
+    }
+
+    public static final class Blocks {
+        private static final DeferredRegister<Block> DFR = DeferredRegister.create(ForgeRegistries.BLOCKS, MOD_ID);
+        public static final Supplier<Block> GUN_STEEL_BLOCK = DFR.register("gun_steel_block", () -> new SimpleCustomInstrumentBlock(SoundEvents.GUN_STEEL_BLOCK_INSTRUMENT, BlockBehaviour.Properties.of()
+                .strength(5.0F, 6.0F)
+                .requiresCorrectToolForDrops()
+                .mapColor(MapColor.METAL).sound(SoundType.NETHERITE_BLOCK)
+                .instrument(NoteBlockInstrument.IRON_XYLOPHONE)));
+        public static final Supplier<Block> GIGA_AMMO_BLOCK = DFR.register("giga_ammo_block", () -> new SimpleCustomInstrumentDirectionalBlock(SoundEvents.GIGA_AMMO_BLOCK_INSTRUMENT, BlockBehaviour.Properties.of()
+                .strength(3.0F, 6.0F)
+                .requiresCorrectToolForDrops()
+                .mapColor(MapColor.COLOR_ORANGE).sound(SoundType.COPPER)));
+
+        private Blocks() {
+        }
+    }
+
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static final class Items {
+        private static final DeferredRegister<Item> DFR = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+        public static final Supplier<BlockItem> GUN_STEEL_BLOCK = DFR.register("gun_steel_block", () -> new ParticleTextureBlockItem(Blocks.GUN_STEEL_BLOCK, new Item.Properties()));
+        public static final Supplier<BlockItem> GIGA_AMMO_BLOCK = DFR.register("giga_ammo_block", () -> new ParticleTextureBlockItem(Blocks.GIGA_AMMO_BLOCK, new Item.Properties()));
+
+        @SubscribeEvent
+        public static void addToCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+            if (CreativeModeTabs.BUILDING_BLOCKS.equals(event.getTabKey())) {
+                event.accept(GUN_STEEL_BLOCK);
+                event.accept(GIGA_AMMO_BLOCK);
+            }
+        }
+
+        private Items() {
+        }
     }
 
     public static class Attributes {
@@ -149,6 +199,8 @@ public class GunsmithLib {
         private static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MOD_ID);
         public static final RegistryObject<SoundEvent> SHIELD_BLOCKS_BULLET = REGISTRY.register("shield_blocks_bullet", () -> SoundEvent.createVariableRangeEvent(loc( "shield_blocks_bullet")));
         public static final RegistryObject<SoundEvent> BALLISTIC_COMPUTER = REGISTRY.register("ballistic_computer", () -> SoundEvent.createVariableRangeEvent(loc( "ballistic_computer")));
+        public static final RegistryObject<SoundEvent> GUN_STEEL_BLOCK_INSTRUMENT = REGISTRY.register("note_block_instrument.gun_steel_block", () -> SoundEvent.createVariableRangeEvent(loc( "note_block_instrument.gun_steel_block")));
+        public static final RegistryObject<SoundEvent> GIGA_AMMO_BLOCK_INSTRUMENT = REGISTRY.register("note_block_instrument.giga_ammo_block", () -> SoundEvent.createVariableRangeEvent(loc( "note_block_instrument.giga_ammo_block")));
     }
 
     public static class EntityTypes {
