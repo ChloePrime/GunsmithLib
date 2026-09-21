@@ -10,11 +10,14 @@ import mod.chloeprime.gunsmithlib.api.common.GunAttributes;
 import mod.chloeprime.gunsmithlib.api.common.GunLootFunctions;
 import mod.chloeprime.gunsmithlib.api.common.recipe.GunRecipeSerializers;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
+import mod.chloeprime.gunsmithlib.common.block.SimpleCustomInstrumentBlock;
+import mod.chloeprime.gunsmithlib.common.block.SimpleCustomInstrumentDirectionalBlock;
 import mod.chloeprime.gunsmithlib.common.entity.AreaEffectCloud3D;
 import mod.chloeprime.gunsmithlib.common.entity.RangefinderMarker;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantStorage;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.fire_control.FireControlAttributes;
 import mod.chloeprime.gunsmithlib.common.entity.MagicLaser;
+import mod.chloeprime.gunsmithlib.common.item.ParticleTextureBlockItem;
 import mod.chloeprime.gunsmithlib.common.util.AttackDamageMobEffect;
 import mod.chloeprime.gunsmithlib.common.util.LesRaisinsCrashFix;
 import net.minecraft.core.component.DataComponentType;
@@ -29,15 +32,26 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.PercentageAttribute;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -57,6 +71,9 @@ public class GunsmithLib {
 
     public GunsmithLib(IEventBus bus, ModContainer container) {
         container.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
+
+        Blocks.DFR.register(bus);
+        Items.DFR.register(bus);
         Attributes.REGISTRY.register(bus);
         FireControlAttributes.init(bus);
         MobEffects.REGISTRY.register(bus);
@@ -82,6 +99,40 @@ public class GunsmithLib {
 
     public static ResourceLocation loc(String namespace, String path) {
         return ResourceLocation.fromNamespaceAndPath(namespace, path);
+    }
+
+    public static final class Blocks {
+        private static final DeferredRegister<Block> DFR = DeferredRegister.createBlocks(MOD_ID);
+        public static final Supplier<Block> GUN_STEEL_BLOCK = DFR.register("gun_steel_block", () -> new SimpleCustomInstrumentBlock(SoundEvents.GUN_STEEL_BLOCK_INSTRUMENT, BlockBehaviour.Properties.of()
+                .strength(5.0F, 6.0F)
+                .requiresCorrectToolForDrops()
+                .mapColor(MapColor.METAL).sound(SoundType.NETHERITE_BLOCK)
+                .instrument(NoteBlockInstrument.IRON_XYLOPHONE)));
+        public static final Supplier<Block> GIGA_AMMO_BLOCK = DFR.register("giga_ammo_block", () -> new SimpleCustomInstrumentDirectionalBlock(SoundEvents.GIGA_AMMO_BLOCK_INSTRUMENT, BlockBehaviour.Properties.of()
+                .strength(3.0F, 6.0F)
+                .requiresCorrectToolForDrops()
+                .mapColor(MapColor.COLOR_ORANGE).sound(SoundType.COPPER)));
+
+        private Blocks() {
+        }
+    }
+
+    @EventBusSubscriber
+    public static final class Items {
+        private static final DeferredRegister<Item> DFR = DeferredRegister.createItems(MOD_ID);
+        public static final Supplier<BlockItem> GUN_STEEL_BLOCK = DFR.register("gun_steel_block", () -> new ParticleTextureBlockItem(Blocks.GUN_STEEL_BLOCK, new Item.Properties()));
+        public static final Supplier<BlockItem> GIGA_AMMO_BLOCK = DFR.register("giga_ammo_block", () -> new ParticleTextureBlockItem(Blocks.GIGA_AMMO_BLOCK, new Item.Properties()));
+
+        @SubscribeEvent
+        public static void addToCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+            if (CreativeModeTabs.BUILDING_BLOCKS.equals(event.getTabKey())) {
+                event.accept(GUN_STEEL_BLOCK.get());
+                event.accept(GIGA_AMMO_BLOCK.get());
+            }
+        }
+
+        private Items() {
+        }
     }
 
     public static class Attributes {
@@ -160,6 +211,8 @@ public class GunsmithLib {
         private static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MOD_ID);
         public static final DeferredHolder<SoundEvent, SoundEvent> SHIELD_BLOCKS_BULLET = REGISTRY.register("shield_blocks_bullet", () -> SoundEvent.createVariableRangeEvent(loc( "shield_blocks_bullet")));
         public static final DeferredHolder<SoundEvent, SoundEvent> BALLISTIC_COMPUTER = REGISTRY.register("ballistic_computer", () -> SoundEvent.createVariableRangeEvent(loc( "ballistic_computer")));
+        public static final DeferredHolder<SoundEvent, SoundEvent> GUN_STEEL_BLOCK_INSTRUMENT = REGISTRY.register("note_block_instrument.gun_steel_block", () -> SoundEvent.createVariableRangeEvent(loc( "note_block_instrument.gun_steel_block")));
+        public static final DeferredHolder<SoundEvent, SoundEvent> GIGA_AMMO_BLOCK_INSTRUMENT = REGISTRY.register("note_block_instrument.giga_ammo_block", () -> SoundEvent.createVariableRangeEvent(loc( "note_block_instrument.giga_ammo_block")));
     }
 
     public static class EntityTypes {

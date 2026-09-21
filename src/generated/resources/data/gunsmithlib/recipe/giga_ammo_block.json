@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "tag": "c:storage_blocks/copper"
+    },
+    "X": {
+      "tag": "c:gunpowders"
+    }
+  },
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "result": {
+    "count": 24,
+    "id": "gunsmithlib:giga_ammo_block"
+  }
+}

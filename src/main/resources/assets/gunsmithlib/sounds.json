@@ -16,5 +16,17 @@
     "sounds": [
       "gunsmithlib:computer_button"
     ]
+  },
+  "note_block_instrument.gun_steel_block": {
+    "subtitle": "subtitle.tacz.gun",
+    "sounds": [
+      "gunsmithlib:note_block_instrument/gun_steel_block"
+    ]
+  },
+  "note_block_instrument.giga_ammo_block": {
+    "subtitle": "subtitle.tacz.gun",
+    "sounds": [
+      "gunsmithlib:note_block_instrument/giga_ammo_block"
+    ]
   }
 }
