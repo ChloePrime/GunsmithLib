@@ -214,7 +214,7 @@ dependencies {
 
         // KubeJS, Create
         // 用于测试子弹物品粒子
-        runtimeOnly ("com.simibubi.create:create-$minecraft_version:6.0.10-281") { transitive = false }
+        runtimeOnly ("com.simibubi.create:create-$minecraft_version:6.0.9-216") { transitive = false }
         runtimeOnly "net.createmod.ponder:ponder-neoforge:1.0.87+mc$minecraft_version"
         // compileOnly dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}"
         runtimeOnly "dev.engine-room.flywheel:flywheel-neoforge-$minecraft_version:1.0.7"

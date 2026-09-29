@@ -28,7 +28,7 @@ public class BulletCreateEventDistributor {
                 : null;
         var gun = Gunsmith.getGunInfo(shooter.getMainHandItem())
                 .filter(gi -> gunId == null || gunId.equals(gi.gunId()))
-                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId, shooter.level().registryAccess())))
+                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId, bullet.registryAccess())))
                 .orElse(null);
         if (gun == null) {
             return;

@@ -1,14 +1,14 @@
 package mod.chloeprime.gunsmithlib.client.gunpack_extension;
 
 import com.google.common.collect.MapMaker;
+import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.resource.index.CommonGunIndex;
 import mod.chloeprime.gunsmithlib.api.common.BulletCreateEvent;
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.ammo.GunsmithLibAmmoDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -31,17 +31,18 @@ public final class BulletTrailSystem {
         if (!ModInstallationStatus.AAA_PARTICLES_INSTALLED) {
             return false;
         }
-        return CACHE.computeIfAbsent(entity, _entity -> hideVanillaTrail(gunId, entity.registryAccess()));
+        return CACHE.computeIfAbsent(entity, _entity -> hideVanillaTrail(gunId));
     }
 
-    public static boolean hideVanillaTrail(ResourceLocation gunId, RegistryAccess registryAccess1211) {
+    public static boolean hideVanillaTrail(ResourceLocation gunId) {
         if (!ModInstallationStatus.AAA_PARTICLES_INSTALLED) {
             return false;
         }
-        return GunsmithLibGunDataExtension
-                .forGunOrAmmo(Gunsmith.createGunItemFromId(gunId, registryAccess1211), data -> data.getBulletTrails() != null
+        return TimelessAPI.getCommonGunIndex(gunId)
+                .map(CommonGunIndex::getGunData)
+                .flatMap(gunData -> GunsmithLibAmmoDataExtension.forGunOrAmmo(gunData, data -> data.getBulletTrails() != null
                         ? data.hideVanillaBulletTrails()
-                        : null)
+                        : null))
                 .orElse(false);
     }
 

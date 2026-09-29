@@ -32,7 +32,7 @@ public class MixinGunPackLoader {
             return null;
         }
         try {
-            return new GunPackLoader.GunPack(GunpackUpgraderWrapper.upgrade(original.path()), original.name());
+            return new GunPackLoader.GunPack(GunpackUpgraderWrapper.upgrade(original.path()), original.name(), original.overlays());
         } catch (IOException ex) {
             GunsmithLib.LOGGER.error("Failed to upgrade gunpack {}", original.name(), ex);
             return null;

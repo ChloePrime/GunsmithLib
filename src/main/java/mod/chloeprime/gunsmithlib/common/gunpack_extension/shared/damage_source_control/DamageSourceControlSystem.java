@@ -32,13 +32,10 @@ public final class DamageSourceControlSystem {
         if (event.getLogicalSide().isClient()) {
             return;
         }
-        var shooter = event.getAttacker();
-        var regAccess1211 = Optional.ofNullable(event.getBullet())
-                .map(Entity::registryAccess)
-                .orElseGet(ContextUtil::getRegistryAccess);
-        var gun = shooter != null
-                ? shooter.getMainHandItem()
-                : Gunsmith.createGunItemFromId(event.getGunId(), regAccess1211);
+        var gun = GsHelper.gunInfoFromBullet(event.getBullet()).orElse(null);
+        if (gun == null) {
+            return;
+        }
         var data = (DamageSourceControlData) GunsmithLibSharedDataExtension
                 .forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getDamageSourceControlData)
                 .orElse(null);
