@@ -5,6 +5,7 @@ import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.explosive.SafetyDistanceSystem;
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.compat.aaap.AaaParticleProxy;
 import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
@@ -78,7 +79,7 @@ public class HitParticleSystem {
         var hitPos = hit.getLocation().add(normal.scale(0.25));
         var hitPosAaa = hit.getLocation().add(ammo.getDeltaMovement().normalize().scale(-0.125));
         // 获取当前生效的粒子 data
-        var gunInfo = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId)).orElse(null);
+        var gunInfo = GsHelper.gunInfoFromBullet(ammo, gunId).orElse(null);
         if (gunInfo == null) {
             return;
         }
@@ -151,8 +152,15 @@ public class HitParticleSystem {
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean isHidingExplodeParticle(ItemStack stack) {
-        for (var datum : HitParticleData.of(stack)) {
+        return Gunsmith.getGunInfo(stack)
+                .map(HitParticleSystem::isHidingExplodeParticle)
+                .orElse(false);
+    }
+
+    public static boolean isHidingExplodeParticle(GunInfo gun) {
+        for (var datum : HitParticleData.of(gun)) {
             // 防止 AAA 限定粒子在没有安装 AAA 时顶掉原版爆炸
             if (!datum.isActivated(true)) {
                 continue;

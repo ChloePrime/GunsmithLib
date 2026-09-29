@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control;
 
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import mod.chloeprime.gunsmithlib.common.util.TagKeyOr;
@@ -44,6 +45,10 @@ public class RaytraceControlData {
     private transient final Supplier<List<TagKeyOr<Block>>> obstructList = TagKeyOr.compile(Registries.BLOCK, () -> obstructs);
 
     public static Optional<RaytraceControlData> of(ItemStack gun) {
+        return GunsmithLibSharedDataExtension.forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getRaytraceControlData);
+    }
+
+    public static Optional<RaytraceControlData> of(GunInfo gun) {
         return GunsmithLibSharedDataExtension.forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getRaytraceControlData);
     }
 }

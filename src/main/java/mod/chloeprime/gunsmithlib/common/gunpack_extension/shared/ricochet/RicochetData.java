@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.ricochet;
 
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
 import net.minecraft.world.item.ItemStack;
@@ -74,6 +75,10 @@ public class RicochetData {
     }
 
     public static Optional<RicochetData> of(ItemStack gun) {
+        return GunsmithLibSharedDataExtension.forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getRicochetData);
+    }
+
+    public static Optional<RicochetData> of(GunInfo gun) {
         return GunsmithLibSharedDataExtension.forGunOrAmmo(gun, GunsmithLibSharedDataExtension::getRicochetData);
     }
 }

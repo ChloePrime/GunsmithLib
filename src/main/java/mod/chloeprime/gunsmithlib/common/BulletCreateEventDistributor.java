@@ -1,9 +1,8 @@
 package mod.chloeprime.gunsmithlib.common;
 
 import mod.chloeprime.gunsmithlib.api.common.BulletCreateEvent;
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.InternalBulletCreateEvent;
-import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,13 +31,7 @@ public class BulletCreateEventDistributor {
             return;
         }
 
-        var gunId = bullet instanceof EntityKineticBulletAccessor accessor
-                ? accessor.getGunId()
-                : null;
-        var gun = Gunsmith.getGunInfo(shooter.getMainHandItem())
-                .filter(gi -> gunId == null || gunId.equals(gi.gunId()))
-                .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId)))
-                .orElse(null);
+        var gun = GsHelper.gunInfoFromBullet(bullet).orElse(null);
         if (gun == null) {
             return;
         }

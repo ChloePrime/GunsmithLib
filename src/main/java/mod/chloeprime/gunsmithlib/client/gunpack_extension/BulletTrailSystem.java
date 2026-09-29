@@ -1,9 +1,10 @@
 package mod.chloeprime.gunsmithlib.client.gunpack_extension;
 
 import com.google.common.collect.MapMaker;
+import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.resource.index.CommonGunIndex;
 import mod.chloeprime.gunsmithlib.api.common.BulletCreateEvent;
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
-import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.ammo.GunsmithLibAmmoDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.compat.ModInstallationStatus;
@@ -41,10 +42,11 @@ public final class BulletTrailSystem {
         if (!ModInstallationStatus.AAA_PARTICLES_INSTALLED) {
             return false;
         }
-        return GunsmithLibGunDataExtension
-                .forGunOrAmmo(Gunsmith.createGunItemFromId(gunId), data -> data.getBulletTrails() != null
+        return TimelessAPI.getCommonGunIndex(gunId)
+                .map(CommonGunIndex::getGunData)
+                .flatMap(gunData -> GunsmithLibAmmoDataExtension.forGunOrAmmo(gunData, data -> data.getBulletTrails() != null
                         ? data.hideVanillaBulletTrails()
-                        : null)
+                        : null))
                 .orElse(false);
     }
 

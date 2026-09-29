@@ -7,9 +7,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.ExplodeUtil;
 import com.tacz.guns.util.block.ProjectileExplosion;
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.damage_source_control.DamageSourceControlSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleSystem;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
@@ -48,7 +48,9 @@ public class MixinExplodeUtil {
         if (!(exploder instanceof EntityKineticBullet bullet)) {
             return;
         }
-        gunsmith$useNoParticlePacket = HitParticleSystem.isHidingExplodeParticle(Gunsmith.createGunItemFromId(bullet.getGunId()));
+        gunsmith$useNoParticlePacket = GsHelper.gunInfoFromBullet(bullet, bullet.getGunId())
+                .map(HitParticleSystem::isHidingExplodeParticle)
+                .orElse(false);
     }
 
     @WrapOperation(

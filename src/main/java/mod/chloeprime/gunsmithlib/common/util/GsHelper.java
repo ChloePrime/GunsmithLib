@@ -453,7 +453,10 @@ public class GsHelper {
      *
      * @since 6.4.0
      */
-    public static Optional<GunInfo> gunInfoFromBullet(Entity bullet) {
+    public static Optional<GunInfo> gunInfoFromBullet(@Nullable Entity bullet) {
+        if (bullet == null) {
+            return Optional.empty();
+        }
         var owner = findFirstLivingOwner(bullet).orElse(null);
         if (owner == null) {
             return bullet instanceof EntityKineticBullet ekb
@@ -467,13 +470,33 @@ public class GsHelper {
     }
 
     /**
+     * 尝试获取某个子弹实体的发射器物品，
+     * 确保返回的武器一定拥有指定的武器 ID。
+     *
+     * @since 7.0.0
+     */
+    public static Optional<GunInfo> gunInfoFromBullet(@Nullable Entity bullet, @Nonnull ResourceLocation gunId) {
+        Objects.requireNonNull(gunId);
+
+        if (bullet != null) {
+            var owner = findFirstLivingOwner(bullet).orElse(null);
+            if (owner != null) {
+                return gunInfoFromShooter(owner, gunId);
+            }
+        }
+        return Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId));
+    }
+
+    /**
      * 尝试获取某个射手实体的发射器物品。
      * 如果主手物品的枪械 id 和子弹的枪械 id 一致，则使用主手物品，
      * 否则根据子弹的枪械 id 创建一把新枪。
      *
      * @since 6.4.0
      */
-    public static Optional<GunInfo> gunInfoFromShooter(LivingEntity shooter, ResourceLocation gunId) {
+    public static Optional<GunInfo> gunInfoFromShooter(@Nullable LivingEntity shooter, @Nonnull ResourceLocation gunId) {
+        Objects.requireNonNull(gunId);
+
         return Optional.ofNullable(shooter)
                 .map(LivingEntity::getMainHandItem)
                 .flatMap(Gunsmith::getGunInfo)
@@ -481,7 +504,7 @@ public class GsHelper {
                 .or(() -> Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(gunId)));
     }
 
-    private static Optional<LivingEntity> findFirstLivingOwner(Entity entity) {
+    private static Optional<LivingEntity> findFirstLivingOwner(@Nullable Entity entity) {
         for (int i = 0; i < 64; i++) {
             if (entity instanceof LivingEntity living) {
                 return Optional.of(living);

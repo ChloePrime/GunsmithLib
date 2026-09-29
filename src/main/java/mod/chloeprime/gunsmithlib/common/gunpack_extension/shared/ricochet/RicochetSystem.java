@@ -7,8 +7,8 @@ import cn.chloeprime.commons.rpc.RemoteCallable;
 import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import mod.chloeprime.gunsmithlib.api.common.RicochetEvent;
-import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.internal.InternalEvent;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.mixin.common.tacz.EntityKineticBulletAccessor;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.ResourceLocation;
@@ -51,8 +51,7 @@ public class RicochetSystem {
         if (ammo.level().isClientSide()) {
             return;
         }
-        var gunStack = Gunsmith.createGunItemFromId(gunId);
-        var data = RicochetData.of(gunStack).orElse(null);
+        var data = GsHelper.gunInfoFromBullet(ammo, gunId).flatMap(RicochetData::of).orElse(null);
         if (data == null) {
             return;
         }

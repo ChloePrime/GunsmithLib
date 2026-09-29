@@ -8,6 +8,7 @@ import com.google.common.collect.Multimap;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.api.util.AmmoInfo;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
@@ -241,9 +242,12 @@ public class GunsmithLibSharedDataExtension {
     }
 
     public static <T> Optional<T> forGunOrAmmo(
-            ItemStack gun,
-            Function<GunsmithLibSharedDataExtension, T> field
+            @Nonnull ItemStack gun,
+            @Nonnull Function<GunsmithLibSharedDataExtension, T> field
     ) {
+        Objects.requireNonNull(gun);
+        Objects.requireNonNull(field);
+
         var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
         if (gunInfo == null) {
             return Optional.empty();
@@ -253,9 +257,12 @@ public class GunsmithLibSharedDataExtension {
 
     @SuppressWarnings("OptionalIsPresent")
     public static <T> Optional<T> forGunOrAmmo(
-            GunInfo gunInfo,
-            Function<GunsmithLibSharedDataExtension, T> field
+            @Nonnull GunInfo gunInfo,
+            @Nonnull Function<GunsmithLibSharedDataExtension, T> field
     ) {
+        Objects.requireNonNull(gunInfo);
+        Objects.requireNonNull(field);
+
         var onGun = GunsmithLibSharedDataExtension
                 .forGun(gunInfo)
                 .map(field);
@@ -272,10 +279,38 @@ public class GunsmithLibSharedDataExtension {
         return Optional.empty();
     }
 
-    public static <T> List<T> forGunOrAmmoWithAttachment(
-            ItemStack gun,
-            Function<GunsmithLibSharedDataExtension, T> field
+    /**
+     * @since 7.0.0
+     */
+    @SuppressWarnings("OptionalIsPresent")
+    public static <T> Optional<T> forGunOrAmmo(
+            @Nonnull GunData data,
+            @Nonnull Function<GunsmithLibSharedDataExtension, T> field
     ) {
+        Objects.requireNonNull(data);
+        Objects.requireNonNull(field);
+
+        var onGun = GunsmithLibGunDataExtension.of(data).map(field);
+        if (onGun.isPresent()) {
+            return onGun;
+        }
+        var onAmmo = TimelessAPI.getCommonAmmoIndex(data.getAmmoId())
+                .flatMap(GunsmithLibAmmoDataExtension::of)
+                .map(field);
+        if (onAmmo.isPresent()) {
+            return onAmmo;
+        }
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unused")
+    public static <T> List<T> forGunOrAmmoWithAttachment(
+            @Nonnull ItemStack gun,
+            @Nonnull Function<GunsmithLibSharedDataExtension, T> field
+    ) {
+        Objects.requireNonNull(gun);
+        Objects.requireNonNull(field);
+
         var gunInfo = Gunsmith.getGunInfo(gun).orElse(null);
         if (gunInfo == null) {
             return Collections.emptyList();
@@ -284,9 +319,12 @@ public class GunsmithLibSharedDataExtension {
     }
 
     public static <T> List<T> forGunOrAmmoWithAttachment(
-            GunInfo gunInfo,
-            Function<GunsmithLibSharedDataExtension, T> field
+            @Nonnull GunInfo gunInfo,
+            @Nonnull Function<GunsmithLibSharedDataExtension, T> field
     ) {
+        Objects.requireNonNull(gunInfo);
+        Objects.requireNonNull(field);
+
         var fromBase = forGunOrAmmo(gunInfo, field).orElse(null);
         var fromAttach = (List<T>) null;
         var iGun = gunInfo.gunItem();

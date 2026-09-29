@@ -74,7 +74,7 @@ public class FragSystem {
         if (SafetyDistanceSystem.isVanillaExplosionInSafeDistance(ammo, event.getHitResult().getLocation())) {
             return;
         }
-        var gun = Gunsmith.getGunInfo(Gunsmith.createGunItemFromId(event.getAmmo().getGunId())).orElse(null);
+        var gun = GsHelper.gunInfoFromBullet(event.getAmmo()).orElse(null);
         var data = gun == null ? null : GunExplosiveFragData.of(gun).orElse(null);
         if (data == null) {
             return;
