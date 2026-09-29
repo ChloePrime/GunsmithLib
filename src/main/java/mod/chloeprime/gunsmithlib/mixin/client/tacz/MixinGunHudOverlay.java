@@ -47,8 +47,8 @@ public class MixinGunHudOverlay {
     // 剩余弹药数量包括背包内的弹药
     @Inject(
             method = "handleCacheCount",
-            at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lcom/tacz/guns/client/gui/overlay/GunHudOverlay;handleInventoryAmmo(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Inventory;)V"))
-    private static void addRemainingAmmoInBackpackToTotalRemainingAmmoCount(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, boolean useInventoryAmmo, CallbackInfo ci) {
+            at = @At(value = "INVOKE_ASSIGN", target = "Lcom/tacz/guns/client/gameplay/ClientAmmoCount;getCached(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/api/item/IGun;)I"))
+    private static void addRemainingAmmoInBackpackToTotalRemainingAmmoCount(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, CallbackInfo ci) {
         cacheInventoryAmmoCount += CapabilityBasedModCompat.getClientSyncedAmmoCountInBackpack(player);
         cacheInventoryAmmoCount = Math.min(MAX_AMMO_COUNT, cacheInventoryAmmoCount);
     }
@@ -58,7 +58,7 @@ public class MixinGunHudOverlay {
             method = "render",
             at = @At(ordinal = 0, value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;FFIZ)I"),
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lcom/tacz/guns/client/gui/overlay/GunHudOverlay;handleCacheCount(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/resource/pojo/data/gun/GunData;Lcom/tacz/guns/api/item/IGun;Z)V"),
+                    from = @At(value = "INVOKE", target = "Lcom/tacz/guns/client/gui/overlay/GunHudOverlay;handleCacheCount(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/world/item/ItemStack;Lcom/tacz/guns/resource/pojo/data/gun/GunData;Lcom/tacz/guns/api/item/IGun;)V"),
                     to = @At(value = "INVOKE", remap = true, target = "Lnet/minecraft/SharedConstants;getCurrentVersion()Lnet/minecraft/WorldVersion;")
             ))
     private int energyWeaponShowHeat(
@@ -87,7 +87,7 @@ public class MixinGunHudOverlay {
     }
 
     @Inject(method = "handleCacheCount", at = @At("TAIL"))
-    private static void energyWeaponShowTotalAmmo(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, boolean useInventoryAmmo, CallbackInfo ci) {
+    private static void energyWeaponShowTotalAmmo(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, CallbackInfo ci) {
         var cache = new MutableInt(cacheInventoryAmmoCount);
         EnergyWeaponVisuals.HUD.modifyBackupAmmoDisplay(stack, cache);
         cacheInventoryAmmoCount = cache.getValue();

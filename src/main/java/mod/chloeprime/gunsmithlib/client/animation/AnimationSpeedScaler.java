@@ -20,6 +20,7 @@ public class AnimationSpeedScaler {
             return new Millis();
         }
 
+        @SuppressWarnings("unused")
         public static TimeTracker createNanosTracker() {
             return new Nanos();
         }
