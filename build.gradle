@@ -252,7 +252,7 @@ dependencies {
 
     // TACZ
     if (USE_LOCAL_TACZ_V) {
-        implementation fg.deobf('libs:tacz-1.20.1:0822-101059-all')
+        implementation fg.deobf('libs:tacz-1.20.1:0929-114218-all')
     } else {
         implementation fg.deobf('curse.maven:timeless-and-classics-zero-1028108:8055552-sources-8055584')
     }
