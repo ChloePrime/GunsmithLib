@@ -1,5 +1,6 @@
 package mod.chloeprime.gunsmithlib.api.common.scripting_v2.content;
 
+import com.tacz.guns.entity.EntityKineticBullet;
 import mod.chloeprime.gunsmithlib.api.util.AABB;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.EntityStatesImpl;
 import net.minecraft.util.Mth;
@@ -21,6 +22,8 @@ public interface EntityStates {
     static EntityStates of(Entity entity) {
         if (entity instanceof LivingEntity shooter) {
             return ShooterStates.of(shooter);
+        } else if (entity instanceof EntityKineticBullet bullet) {
+            return BulletEntityAPI.of(bullet);
         } else {
             return new EntityStatesImpl(entity);
         }

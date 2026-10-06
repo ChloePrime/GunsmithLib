@@ -3,6 +3,7 @@ package mod.chloeprime.gunsmithlib.mixin.common.tacz;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
+import com.tacz.guns.util.ExplodeUtil;
 import com.tacz.guns.util.TacHitResult;
 import mod.chloeprime.gunsmithlib.api.common.AmmoHitEntityEvent;
 import mod.chloeprime.gunsmithlib.api.common.AmmoSelfExplodeEvent;
@@ -233,8 +234,19 @@ public abstract class MixinBullet extends Projectile implements EnhancedKineticB
         explosion = gunsmith$isExplodeBackup;
     }
 
+    // 控制脚本
+
+    @Override
+    public void gunsmithlib$explodeAt(Vec3 pos) {
+        ExplodeUtil.createExplosion(this.getOwner(), this, this.explosionDamage, this.explosionRadius, this.explosionKnockback, this.explosionDestroyBlock, pos);
+    }
+
     @Shadow(remap = false) public abstract ResourceLocation getGunId();
     @Shadow(remap = false) private boolean explosion;
+    @Shadow(remap = false) private float explosionDamage;
+    @Shadow(remap = false) private float explosionRadius;
+    @Shadow(remap = false) private boolean explosionKnockback;
+    @Shadow(remap = false) private boolean explosionDestroyBlock;
 
     public MixinBullet(EntityType<? extends Projectile> type, Level level) {
         super(type, level);

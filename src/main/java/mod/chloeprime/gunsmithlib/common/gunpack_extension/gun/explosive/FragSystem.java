@@ -42,6 +42,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
@@ -61,7 +62,10 @@ public class FragSystem {
     @SubscribeEvent
     public static void onAmmoHitBlock(InternalEvent.AmmoHitAnything.Post eventWrapper) {
         var event = eventWrapper.getImpl();
-        var ammo = event.getAmmo();
+        createFragile(event.getAmmo(), event.getHitResult(), null, true);
+    }
+
+    public static void createFragile(Projectile ammo, HitResult hit, @Nullable GunExplosiveFragData dataOverride, boolean doModifyProperties) {
         var shooter = ammo.getOwner() instanceof LivingEntity st ? st : null;
         if (shooter == null) {
             return;
@@ -71,12 +75,13 @@ public class FragSystem {
             return;
         }
         // 爆炸弹在安全距离外爆炸时，不生成弹片
-        if (SafetyDistanceSystem.isVanillaExplosionInSafeDistance(ammo, event.getHitResult().getLocation())) {
+        var hitPos = hit.getLocation();
+        if (SafetyDistanceSystem.isVanillaExplosionInSafeDistance(ammo, hitPos)) {
             return;
         }
-        var gun = GsHelper.gunInfoFromBullet(event.getAmmo()).orElse(null);
-        var data = gun == null ? null : GunExplosiveFragData.of(gun).orElse(null);
-        if (data == null) {
+        var gun = GsHelper.gunInfoFromBullet(ammo).orElse(null);
+        var data = dataOverride != null ? dataOverride : (gun == null ? null : GunExplosiveFragData.of(gun).orElse(null));
+        if (data == null || gun == null) {
             return;
         }
         // 发射破片
@@ -85,7 +90,9 @@ public class FragSystem {
         if (launcherInfo == null) {
             return;
         }
-        int dataCount = GsHelper.modifyProperty(gun, shooter, GunsmithLibGunProperties.FRAG_COUNT, Integer.class, data.getCount());
+        int dataCount = doModifyProperties
+                ? GsHelper.modifyProperty(gun, shooter, GunsmithLibGunProperties.FRAG_COUNT, Integer.class, data.getCount())
+                : data.getCount();
         var launcherId = launcherInfo.gunId();
         var launcherGunData = (GunData) launcherInfo.index().getGunData();
         var launcherBulletData = (BulletData) launcherInfo.index().getBulletData();
@@ -93,8 +100,6 @@ public class FragSystem {
         var isTracer = launcherBulletData.getTracerCountInterval() >= 0;
         var distribution = data.getDistribution();
         var rng = shooter.getRandom();
-        var hit = event.getHitResult();
-        var hitPos = hit.getLocation();
         var fragCreator = setupFragCreator(serverLevel, launcherInfo);
         fragCreator.setPos(hitPos.x(), hitPos.y() - fragCreator.getEyeHeight(), hitPos.z());
 
