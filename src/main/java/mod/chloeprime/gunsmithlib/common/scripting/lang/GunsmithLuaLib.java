@@ -2,6 +2,7 @@ package mod.chloeprime.gunsmithlib.common.scripting.lang;
 
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Vector3d;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -10,7 +11,6 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
-import java.awt.*;
 import java.util.UUID;
 
 /**
@@ -26,6 +26,8 @@ public class GunsmithLuaLib extends VarArgFunction {
     static final int INT_COLOR_FROM_RGB = 4;
     static final int UUID_FROM_STRING   = 5;
     static final int UUID_TO_STRING     = 6;
+    static final int NEW_VECTOR_3       = 7;
+    static final int NEW_VECTOR_3D      = 8;
 
     static final String[] NAMES = {
             "new_identifier",
@@ -34,6 +36,8 @@ public class GunsmithLuaLib extends VarArgFunction {
             "int_color_from_rgb",
             "uuid_from_string",
             "uuid_to_string",
+            "new_vector3",
+            "new_vector3d",
     };
 
     @Override
@@ -68,6 +72,13 @@ public class GunsmithLuaLib extends VarArgFunction {
             }
             case UUID_TO_STRING -> {
                 return CoerceLuaToJava.coerce(args.arg(1), UUID.class).toString();
+            }
+            case NEW_VECTOR_3, NEW_VECTOR_3D -> {
+                if (args.narg() == 1) {
+                    double scalar = args.arg(1).checkdouble();
+                    return new Vector3d(scalar, scalar, scalar);
+                }
+                return new Vector3d(args.arg(1).checkdouble(), args.arg(2).checkdouble(), args.arg(3).checkdouble());
             }
             default -> throw new LuaError("not yet supported: %s[%d]".formatted(this, opcode));
         }

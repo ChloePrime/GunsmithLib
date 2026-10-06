@@ -39,4 +39,6 @@ public interface EnhancedKineticBullet extends TraceableEntity {
     void gunsmith$onMovedToPos(Vec3 newPos);
 
     Vec3 gunsmithlib$getHitPos();
+
+    void gunsmithlib$explodeAt(Vec3 pos);
 }
