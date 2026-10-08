@@ -163,7 +163,7 @@ dependencies {
         compileOnly 'com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura'
 
         // TACZ
-        api 'com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.8-r2'
+        api 'com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.8-hotfix-r6'
 
         // Pack Upgrader
         compileOnly jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed')
@@ -183,8 +183,8 @@ dependencies {
     ;// Test Mods
     {
         // 镜喵背包
-        localRuntime 'maven.modrinth:sophisticated-core:1.21.1-1.3.65.1096'
-        localRuntime 'maven.modrinth:sophisticated-backpacks:1.21.1-3.24.21.1314'
+        localRuntime 'maven.modrinth:sophisticated-core:1.21.1-1.5.7.2381'
+        localRuntime 'maven.modrinth:sophisticated-backpacks:1.21.1-3.26.9.2195'
 
         // JEI
         localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:19.27.0.340"
@@ -192,7 +192,7 @@ dependencies {
         // 光影加载器
         localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
         localRuntime "maven.modrinth:iris:1.8.12+1.21.1-neoforge"
-        localRuntime "curse.maven:accelerated-rendering-1314021:8366742"
+        // localRuntime "curse.maven:accelerated-rendering-1314021:8366742"
 
         // 其他测试用 mod
         localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
