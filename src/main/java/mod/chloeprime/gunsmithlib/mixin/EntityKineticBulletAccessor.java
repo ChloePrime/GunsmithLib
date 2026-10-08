@@ -12,6 +12,7 @@ public interface EntityKineticBulletAccessor extends EnhancedKineticBullet {
     @Accessor ResourceLocation getGunId();
     @Accessor void setArmorIgnore(float value);
     @Accessor void setExplosionDelayCount(int value);
+    @Accessor void setGunId(ResourceLocation value);
 
     @Accessor boolean getExplosion();
     @Accessor float getExplosionRadius();
