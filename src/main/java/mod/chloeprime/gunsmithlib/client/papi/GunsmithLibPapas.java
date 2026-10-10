@@ -13,6 +13,7 @@ public final class GunsmithLibPapas {
         PapiManager.addPapi(TargetNamePapi.NAME, TargetNamePapi.INSTANCE);
         PapiManager.addPapi(TargetPosPapi.NAME, TargetPosPapi.INSTANCE);
         PapiManager.addPapi(TargetSizePapi.NAME, TargetSizePapi.INSTANCE);
+        PapiManager.addPapi(ChargeProgressPapi.NAME, ChargeProgressPapi.INSTANCE);
         LightPapi.register();
     }
 
