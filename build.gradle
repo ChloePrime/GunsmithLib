@@ -199,10 +199,9 @@ repositories {
         }
     }
 
-    maven {
-        name = "Chloe_Maven"
-        url = "https://maven.chloeprime.cn:4080/releases/"
-    }
+    // Chloe Maven
+    maven { url = "https://maven.chloeprime.cn:4080/releases/" }
+    maven { url = "https://maven.chloeprime.cn:4080/snapshots/" }
 
     maven { url 'https://modmaven.dev/' }
     maven { url 'https://jitpack.io' }
@@ -308,7 +307,7 @@ dependencies {
 
     runtimeOnly fg.deobf("mekanism:Mekanism:1.20.1-10.4.9.61")
     runtimeOnly fg.deobf("maven.modrinth:plonk:V1OyyHVE")
-    runtimeOnly fg.deobf("curse.maven:gunsmithlib-standard-ammo-library-1524136:8094867")
+    runtimeOnly fg.deobf("cn.chloeprime.gunsmithlib_std_ammo:gunsmithlib_std_ammo-forge-1.20.1-tacz1.1.8:1.1.3-alpha.5")
     runtimeOnly fg.deobf("curse.maven:explosive-enhancement-reforged-1036246:5960819")
     runtimeOnly fg.deobf("maven.modrinth:spark:1.10.53-forge")
 
