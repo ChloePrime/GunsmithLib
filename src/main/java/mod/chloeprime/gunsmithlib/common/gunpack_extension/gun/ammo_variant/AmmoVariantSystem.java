@@ -296,6 +296,7 @@ public class AmmoVariantSystem {
         if (user != null) {
             AttachmentPropertyManager.postChangeEvent(user, stack);
             RPC.call(RPCTarget.near(user), AmmoVariantSystem::refreshCachedProperty, user, gunIdAfter);
+            IGunOperator.fromLivingEntity(user).getDataHolder().currentGunId = gunIdAfter;
         }
 
         return true;
@@ -339,6 +340,7 @@ public class AmmoVariantSystem {
         if (user == null) {
             return;
         }
+        IGunOperator.fromLivingEntity(user).getDataHolder().currentGunId = gunIdAfter;
         GunsmithLibClient.setClientGunIdAndUpdateAttachmentCache(user.getMainHandItem(), gunIdAfter, user);
     }
 
