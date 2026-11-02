@@ -65,6 +65,9 @@ end
 而 `blit(texture, x, y, width, height, z, u, v, u_width, v_height)` 的
 `u`、`v`、`u_width`、`v_height` 是 **0-1** 的 UV 坐标，`z` 为渲染层级。
 
+如果想绘制跟随世界物体的 HUD（例如敌人头顶的血条、锁定准星），
+请使用锚定在世界坐标上的 [InWorldGuiGraphics](in_world_gui_graphics.md)。
+
 ### 注意事项
 
 1. 返回的对象只在当前回调期间有效，请不要保存到全局变量中跨帧使用。

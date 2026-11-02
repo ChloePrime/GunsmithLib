@@ -1,19 +1,10 @@
 package mod.chloeprime.gunsmithlib.api.client.scripting_v2.content;
 
-import com.mojang.math.Axis;
-import mod.chloeprime.gunsmithlib.mixin.client.minecraft.GuiGraphicsAccessor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.awt.*;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * 对原版 {@link GuiGraphics} 的封装，供客户端脚本在 HUD 渲染期间绘制内容。
@@ -35,36 +26,20 @@ import java.util.Objects;
  * @since 7.0.0
  */
 @SuppressWarnings("unused")
-public class GuiGraphicsAPI {
-    private final GuiGraphics impl;
-
-    /**
-     * 内部构造方法，请通过状态机 context 的 {@code gui_graphics()} 获取实例。
-     *
-     * @param impl 被封装的原版 {@link GuiGraphics}
-     */
-    @ApiStatus.Internal
-    public GuiGraphicsAPI(GuiGraphics impl) {
-        this.impl = Objects.requireNonNull(impl, "impl");
-    }
-
+public interface GuiGraphicsAPI {
     /**
      * 获取当前 GUI 的缩放后宽度。
      *
      * @return 当前 GUI 的缩放后宽度
      */
-    public int width() {
-        return impl.guiWidth();
-    }
+    int width();
 
     /**
      * 获取当前 GUI 的缩放后高度。
      *
      * @return 当前 GUI 的缩放后高度
      */
-    public int height() {
-        return impl.guiHeight();
-    }
+    int height();
 
     // 变换
 
@@ -73,18 +48,14 @@ public class GuiGraphicsAPI {
      * <p>
      * 必须和 {@link #pop_pose()} 成对使用，否则会影响后续的 HUD 渲染。
      */
-    public void push_pose() {
-        impl.pose().pushPose();
-    }
+    void push_pose();
 
     /**
      * 弹出最近一次压入的矩阵变换。
      *
      * @see #push_pose()
      */
-    public void pop_pose() {
-        impl.pose().popPose();
-    }
+    void pop_pose();
 
     /**
      * 平移坐标系。
@@ -93,9 +64,7 @@ public class GuiGraphicsAPI {
      * @param y y 轴平移量
      * @param z z 轴平移量，HUD 渲染中通常填 {@code 0}
      */
-    public void translate(float x, float y, float z) {
-        impl.pose().translate(x, y, z);
-    }
+    void translate(float x, float y, float z);
 
     /**
      * 绕指定坐标轴旋转坐标系。
@@ -103,15 +72,7 @@ public class GuiGraphicsAPI {
      * @param axis    旋转轴，可选 {@code "x"}、{@code "y"}、{@code "z"}
      * @param degrees 旋转角度，单位为角度
      */
-    public void rotate(String axis, float degrees) {
-        var quaternion = switch (axis.toLowerCase(Locale.ROOT)) {
-            case "x" -> Axis.XP.rotationDegrees(degrees);
-            case "y" -> Axis.YP.rotationDegrees(degrees);
-            case "z" -> Axis.ZP.rotationDegrees(degrees);
-            default -> throw new IllegalArgumentException("Invalid rotation axis: " + axis + " (expected x, y or z)");
-        };
-        impl.pose().mulPose(quaternion);
-    }
+    void rotate(String axis, float degrees);
 
     /**
      * 缩放坐标系。
@@ -120,9 +81,7 @@ public class GuiGraphicsAPI {
      * @param y y 轴缩放比例
      * @param z z 轴缩放比例，HUD 渲染中通常填 {@code 1}
      */
-    public void scale(float x, float y, float z) {
-        impl.pose().scale(x, y, z);
-    }
+    void scale(float x, float y, float z);
 
     // 矩形
 
@@ -135,9 +94,7 @@ public class GuiGraphicsAPI {
      * @param max_y 右下角 y 坐标
      * @param color 颜色，{@link Color} 对象
      */
-    public void fill(int min_x, int min_y, int max_x, int max_y, Color color) {
-        impl.fill(min_x, min_y, max_x, max_y, color.getRGB());
-    }
+    void fill(int min_x, int min_y, int max_x, int max_y, Color color);
 
     /**
      * 绘制一个渐变色矩形。
@@ -149,9 +106,7 @@ public class GuiGraphicsAPI {
      * @param color_from 起始颜色，{@link Color} 对象
      * @param color_to   结束颜色，{@link Color} 对象
      */
-    public void fill_gradient(int x1, int y1, int x2, int y2, Color color_from, Color color_to) {
-        impl.fillGradient(x1, y1, x2, y2, color_from.getRGB(), color_to.getRGB());
-    }
+    void fill_gradient(int x1, int y1, int x2, int y2, Color color_from, Color color_to);
 
     /**
      * 绘制一条水平线。
@@ -161,9 +116,7 @@ public class GuiGraphicsAPI {
      * @param y     线的 y 坐标
      * @param color 颜色，{@link Color} 对象
      */
-    public void h_line(int min_x, int max_x, int y, Color color) {
-        impl.hLine(min_x, max_x, y, color.getRGB());
-    }
+    void h_line(int min_x, int max_x, int y, Color color);
 
     /**
      * 绘制一条竖直线。
@@ -173,9 +126,7 @@ public class GuiGraphicsAPI {
      * @param max_y 终点 y 坐标
      * @param color 颜色，{@link Color} 对象
      */
-    public void v_line(int x, int min_y, int max_y, Color color) {
-        impl.vLine(x, min_y, max_y, color.getRGB());
-    }
+    void v_line(int x, int min_y, int max_y, Color color);
 
     /**
      * 绘制一个空心矩形（边框）。
@@ -186,9 +137,7 @@ public class GuiGraphicsAPI {
      * @param height 高度
      * @param color 颜色，{@link Color} 对象
      */
-    public void render_outline(int x, int y, int width, int height, Color color) {
-        impl.renderOutline(x, y, width, height, color.getRGB());
-    }
+    void render_outline(int x, int y, int width, int height, Color color);
 
     // 颜色
 
@@ -199,10 +148,7 @@ public class GuiGraphicsAPI {
      *
      * @param color 颜色，{@link Color} 对象
      */
-    public void set_color(Color color) {
-        var rgba = color.getRGBComponents(GET_COLOR_BUFFER.get());
-        impl.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-    }
+    void set_color(Color color);
 
     // 文本
 
@@ -219,9 +165,7 @@ public class GuiGraphicsAPI {
      * @param drop_shadow 是否绘制阴影
      * @return 绘制出的文本宽度
      */
-    public int draw_string(String text, float x, float y, Color color, boolean drop_shadow) {
-        return impl.drawString(font(), Component.translatable(text), Mth.floor(x), Mth.floor(y), color.getRGB(), drop_shadow);
-    }
+    int draw_string(String text, float x, float y, Color color, boolean drop_shadow);
 
     /**
      * 绘制一行居中文本。
@@ -233,9 +177,7 @@ public class GuiGraphicsAPI {
      * @param y     文本顶端 y 坐标
      * @param color 文本颜色，{@link Color} 对象
      */
-    public void draw_string_centered(String text, int x, int y, Color color) {
-        impl.drawCenteredString(font(), Component.translatable(text), x, y, color.getRGB());
-    }
+    void draw_string_centered(String text, int x, int y, Color color);
 
     /**
      * 绘制自动换行的文本。
@@ -248,9 +190,7 @@ public class GuiGraphicsAPI {
      * @param line_width 每行的最大宽度
      * @param color      文本颜色，{@link Color} 对象
      */
-    public void draw_string_wrapped(String text, int x, int y, int line_width, Color color) {
-        impl.drawWordWrap(font(), Component.translatable(text), x, y, line_width, color.getRGB());
-    }
+    void draw_string_wrapped(String text, int x, int y, int line_width, Color color);
 
     // 贴图与物品
 
@@ -268,9 +208,7 @@ public class GuiGraphicsAPI {
      * @param width   绘制宽度（同时也是取样宽度）
      * @param height  绘制高度（同时也是取样高度）
      */
-    public void blit(String texture, int x, int y, int u, int v, int width, int height) {
-        impl.blit(parseTexture(texture), x, y, 0, u, v, width, height, 256, 256);
-    }
+    void blit(String texture, int x, int y, int u, int v, int width, int height);
 
     /**
      * 绘制一张贴图，直接指定 UV 坐标和渲染层级。
@@ -289,9 +227,7 @@ public class GuiGraphicsAPI {
      * @param u_width  UV 宽度，范围为 0-1
      * @param v_height UV 高度，范围为 0-1
      */
-    public void blit(String texture, int x, int y, int width, int height, int z, float u, float v, float u_width, float v_height) {
-        ((GuiGraphicsAccessor) impl).invokeInnerBlit(parseTexture(texture), x, x + width, y, y + height, z, u, u + u_width, v, v + v_height);
-    }
+    void blit(String texture, int x, int y, int width, int height, int z, float u, float v, float u_width, float v_height);
 
     /**
      * 绘制九宫格拉伸的贴图。
@@ -308,14 +244,10 @@ public class GuiGraphicsAPI {
      * @param source_width  源区域宽度，单位为像素
      * @param source_height 源区域高度，单位为像素
      */
-    public void blit_nine_sliced(
+    void blit_nine_sliced(
             String texture, int x, int y, int width, int height,
             int slice_size, int u, int v, int source_width, int source_height
-    ) {
-        impl.blitNineSliced(parseTexture(texture), x, y, width, height,
-                slice_size, slice_size, slice_size, slice_size,
-                source_width, source_height, u, v);
-    }
+    );
 
     /**
      * 绘制九宫格拉伸的贴图。
@@ -335,15 +267,11 @@ public class GuiGraphicsAPI {
      * @param source_width  源区域宽度，单位为像素
      * @param source_height 源区域高度，单位为像素
      */
-    public void blit_nine_sliced(
+    void blit_nine_sliced(
             String texture, int x, int y, int width, int height,
             int left_slice, int top_slice, int right_slice, int bottom_slice,
             int u, int v, int source_width, int source_height
-    ) {
-        impl.blitNineSliced(parseTexture(texture), x, y, width, height,
-                left_slice, top_slice, right_slice, bottom_slice,
-                source_width, source_height, u, v);
-    }
+    );
 
     /**
      * 绘制重复平铺的贴图。
@@ -359,12 +287,10 @@ public class GuiGraphicsAPI {
      * @param source_width  源区域宽度，单位为像素
      * @param source_height 源区域高度，单位为像素
      */
-    public void blit_repeating(
+    void blit_repeating(
             String texture, int x, int y, int width, int height,
             int u, int v, int source_width, int source_height
-    ) {
-        impl.blitRepeating(parseTexture(texture), x, y, width, height, u, v, source_width, source_height);
-    }
+    );
 
     /**
      * 绘制重复平铺的贴图。
@@ -381,13 +307,11 @@ public class GuiGraphicsAPI {
      * @param texture_width 贴图总宽度，单位为像素
      * @param texture_height 贴图总高度，单位为像素
      */
-    public void blit_repeating(
+    void blit_repeating(
             String texture, int x, int y, int width, int height,
             int u, int v, int source_width, int source_height,
             int texture_width, int texture_height
-    ) {
-        impl.blitRepeating(parseTexture(texture), x, y, width, height, u, v, source_width, source_height, texture_width, texture_height);
-    }
+    );
 
     /**
      * 绘制一个物品。
@@ -396,9 +320,7 @@ public class GuiGraphicsAPI {
      * @param x     左上角 x 坐标
      * @param y     左上角 y 坐标
      */
-    public void render_item(ItemStack stack, int x, int y) {
-        impl.renderItem(stack, x, y);
-    }
+    void render_item(ItemStack stack, int x, int y);
 
     /**
      * 绘制物品的角标（数量、耐久条等）。
@@ -407,9 +329,7 @@ public class GuiGraphicsAPI {
      * @param x     左上角 x 坐标
      * @param y     左上角 y 坐标
      */
-    public void render_item_decorations(ItemStack stack, int x, int y) {
-        impl.renderItemDecorations(font(), stack, x, y);
-    }
+    void render_item_decorations(ItemStack stack, int x, int y);
 
     // 裁剪
 
@@ -423,31 +343,12 @@ public class GuiGraphicsAPI {
      * @param max_x 裁剪区域右下角 x 坐标
      * @param max_y 裁剪区域右下角 y 坐标
      */
-    public void enable_scissor(int min_x, int min_y, int max_x, int max_y) {
-        impl.enableScissor(min_x, min_y, max_x, max_y);
-    }
+    void enable_scissor(int min_x, int min_y, int max_x, int max_y);
 
     /**
      * 关闭最近一次开启的裁剪区域。
      *
      * @see #enable_scissor(int, int, int, int)
      */
-    public void disable_scissor() {
-        impl.disableScissor();
-    }
-
-
-    private static final ThreadLocal<float[]> GET_COLOR_BUFFER = ThreadLocal.withInitial(() -> new float[4]);
-
-    private static Font font() {
-        return Objects.requireNonNull(Minecraft.getInstance().font, "font");
-    }
-
-    private static ResourceLocation parseTexture(String id) {
-        var location = ResourceLocation.tryParse(id);
-        if (location == null) {
-            throw new IllegalArgumentException("Invalid texture id: " + id);
-        }
-        return location;
-    }
+    void disable_scissor();
 }
