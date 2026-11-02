@@ -5,6 +5,7 @@ import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import mod.chloeprime.gunsmithlib.api.client.GunsmithLibAnimationConstant;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.GuiGraphicsAPI;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibCommonScriptExtension;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
@@ -13,6 +14,7 @@ import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.ClientShooterStatesImpl;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
@@ -113,6 +115,24 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
                 .map(GunInfo::index)
                 .map(CommonGunIndex::getScriptParam)
                 .orElseGet(fallbackParams);
+    }
+
+    /**
+     * 获取一个封装了新建 {@link GuiGraphics} 实例的 API 对象。
+     * <p>
+     * 每次调用都会创建一个新的 {@link GuiGraphics}（使用全新的 {@code PoseStack}），
+     * 不会受到当前 HUD 渲染状态的影响。
+     * <p>
+     * 返回的对象只在当前回调期间有效，请不要跨帧保存。
+     * 建议在 HUD 渲染期间（例如 {@code gunsmithlib_modify_display_property} 回调中）使用。
+     *
+     * @return 封装了新建 {@link GuiGraphics} 实例的 API 对象
+     * @since 7.0.0
+     */
+    public GuiGraphicsAPI gui_graphics() {
+        var minecraft = Minecraft.getInstance();
+        var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
+        return new GuiGraphicsAPI(graphics);
     }
 
     /**
