@@ -6,17 +6,23 @@ import com.tacz.guns.resource.index.CommonGunIndex;
 import mod.chloeprime.gunsmithlib.api.client.GunsmithLibAnimationConstant;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.ClientShootStates;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.GuiGraphicsAPI;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.InWorldGuiGraphics;
 import mod.chloeprime.gunsmithlib.api.common.GunScriptAPIExtension;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibCommonScriptExtension;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.client.AbstractGunAnimationStateContextExtension;
 import mod.chloeprime.gunsmithlib.client.GunsmithLibClient;
 import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.ClientShooterStatesImpl;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.GuiGraphicsAPIImpl;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.InWorldGuiGraphicsImpl;
+import mod.chloeprime.gunsmithlib.client.util.WorldToScreenProjection;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
 import org.luaj.vm2.LuaTable;
 
 import java.util.Optional;
@@ -118,6 +124,19 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
     }
 
     /**
+     * 获取客户端射手的各种状态的接口。
+     * 如果在玩家未进入游戏时不小心触发状态机钩子，那么此时调用该方法会返回 {@code nil}
+     *
+     * @return 客户端射手的各种状态的接口
+     */
+    @Override
+    public @Nullable ClientShootStates shooter_states() {
+        return Optional.ofNullable(Minecraft.getInstance().player)
+                .map(shooter -> new ClientShooterStatesImpl(shooter, this.api))
+                .orElse(null);
+    }
+
+    /**
      * 获取一个封装了新建 {@link GuiGraphics} 实例的 API 对象。
      * <p>
      * 每次调用都会创建一个新的 {@link GuiGraphics}（使用全新的 {@code PoseStack}），
@@ -132,20 +151,83 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
     public GuiGraphicsAPI gui_graphics() {
         var minecraft = Minecraft.getInstance();
         var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
-        return new GuiGraphicsAPI(graphics);
+        return new GuiGraphicsAPIImpl(graphics);
     }
 
     /**
-     * 获取客户端射手的各种状态的接口。
-     * 如果在玩家未进入游戏时不小心触发状态机钩子，那么此时调用该方法会返回 {@code nil}
+     * 创建一个锚定在世界坐标上的 HUD 绘制对象，用于绘制跟随世界物体的 HUD
+     * （例如敌人头顶的血条、锁定准星）。
+     * <p>
+     * 返回对象的坐标系原点为 {@code worldPos} 在屏幕上的投影位置，
+     * {@code +x} 向右、{@code +y} 向下，其余绘制方法与 {@link GuiGraphicsAPI} 完全一致。
+     * 默认会根据近大远小进行缩放。
+     * <p>
+     * 锚点位于相机背后或相机尚未初始化时 {@link InWorldGuiGraphics#visible()} 为 {@code false}，
+     * 此时所有绘制调用都不会产生效果。
+     * <p>
+     * 与 {@link #gui_graphics()} 一样，返回的对象只在当前回调期间有效，请不要跨帧保存。
      *
-     * @return 客户端射手的各种状态的接口
+     * @param worldPos 锚点的世界坐标
+     * @return 锚定在世界坐标上的 HUD 绘制对象
+     * @since 7.0.0
      */
-    @Override
-    public @Nullable ClientShootStates shooter_states() {
-        return Optional.ofNullable(Minecraft.getInstance().player)
-                .map(shooter -> new ClientShooterStatesImpl(shooter, this.api))
-                .orElse(null);
+    public InWorldGuiGraphics gui_graphics_in_world(Vector3d worldPos) {
+        return gui_graphics_in_world(worldPos, 1.0F);
+    }
+
+    /**
+     * 创建一个锚定在世界坐标上的 HUD 绘制对象，并指定缩放。
+     *
+     * @param worldPos 锚点的世界坐标
+     * @param scale    每个 HUD 单位对应的 GUI 像素数
+     * @return 锚定在世界坐标上的 HUD 绘制对象
+     * @see #gui_graphics_in_world(Vector3d)
+     * @since 7.0.0
+     */
+    public InWorldGuiGraphics gui_graphics_in_world(Vector3d worldPos, float scale) {
+        return gui_graphics_in_world(worldPos, scale, true);
+    }
+
+    /**
+     * 创建一个锚定在世界坐标上的 HUD 绘制对象，并指定缩放和是否随距离缩放。
+     * <p>
+     * {@code distanceScaled} 为 {@code true} 时 HUD 的视觉尺寸在世界中保持恒定：
+     * 锚点距离相机 {@code InWorldGuiGraphicsImpl.REFERENCE_DISTANCE}（8）格时
+     * 1 个 HUD 单位等于 1 个 GUI 像素，距离越远 HUD 越小、越近越大，
+     * 并且会跟随 FOV 与瞄准缩放一起缩放（开镜放大时 HUD 也会同步放大）。
+     * 适合血条这类“贴在世界物体上”的 HUD。
+     * 为 {@code false} 时 HUD 在屏幕上保持恒定尺寸，适合锁定准星这类 HUD。
+     *
+     * @param worldPos       锚点的世界坐标
+     * @param scale          每个 HUD 单位对应的 GUI 像素数
+     * @param distanceScaled 是否随距离缩放
+     * @return 锚定在世界坐标上的 HUD 绘制对象
+     * @since 7.0.0
+     */
+    public InWorldGuiGraphics gui_graphics_in_world(Vector3d worldPos, float scale, boolean distanceScaled) {
+        var minecraft = Minecraft.getInstance();
+        var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
+        return InWorldGuiGraphicsImpl.at(graphics, worldPos, scale, distanceScaled);
+    }
+
+    /**
+     * 将世界坐标转换为用于 HUD 渲染的屏幕坐标。
+     * <p>
+     * 返回值的坐标系与 {@link GuiGraphicsAPI}（以及原版 {@link GuiGraphics}）一致，
+     * 都是 GUI 缩放后的屏幕坐标，可以直接用于绘制。
+     * <p>
+     * 投影用的是本帧世界渲染实际使用的视图投影矩阵，
+     * 所以瞄准缩放、疾跑等造成的 FOV 变化都会被正确计算。
+     * <p>
+     * 如果相机尚未初始化（例如刚进入世界、还没有渲染过一帧），
+     * 或者传入的坐标位于相机背后，那么会返回 {@code nil}。
+     *
+     * @param worldPos 输入的世界坐标
+     * @return 该世界坐标在屏幕上的屏幕坐标（浮点数，可直接用于绘制），无法投影时返回 {@code null}
+     * @since 7.0.0
+     */
+    public @Nullable Vector2f world_pos_to_screen_pos(Vector3d worldPos) {
+        return WorldToScreenProjection.worldToScreen(worldPos);
     }
 
     // 下面是内部 API

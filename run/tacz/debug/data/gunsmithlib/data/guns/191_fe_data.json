@@ -3,6 +3,10 @@
     "battery_v2": {
       "capacity": 90000,
       "max_input_speed": 3000
+    },
+    "fire_control": {
+      "angular_range": 60,
+      "range_override" : 500
     }
   },
   "ammo": "tacz:58x42",
