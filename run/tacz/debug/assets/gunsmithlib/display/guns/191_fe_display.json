@@ -10,7 +10,7 @@
   "animation": "tacz:qbz_191",
   "use_default_animation": "rifle",
   "third_person_animation": "default",
-  "state_machine": "gunsmithlib:pure_energy_191_state_machine",
+  "state_machine": "gunsmithlib:hud_example",
   "transform": {
     "scale": {
       "thirdperson": [0.6, 0.6, 0.6],

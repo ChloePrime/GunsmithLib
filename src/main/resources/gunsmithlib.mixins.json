@@ -50,6 +50,7 @@
   ],
   "client": [
     "client.minecraft.CameraAccessor",
+    "client.minecraft.GuiGraphicsAccessor",
     "client.minecraft.MixinClientGamePacketListener",
     "client.tacz.GunAnimationStateContextAccessor",
     "client.tacz.GunHudOverlayAccessor",
