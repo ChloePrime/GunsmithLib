@@ -1,7 +1,9 @@
 package mod.chloeprime.gunsmithlib.api.client.scripting_v2.content;
 
+import mod.chloeprime.gunsmithlib.common.scripting.lang.GunsmithLuaLib;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
@@ -56,6 +58,35 @@ public interface GuiGraphicsAPI {
      * @see #push_pose()
      */
     void pop_pose();
+
+    /**
+     * 压入一次文本样式（ChatFormatting）。
+     * <p>
+     * 必须和 {@link #pop_style()} 成对使用，否则会影响后续的 HUD 渲染。
+     *
+     * @see net.minecraft.ChatFormatting
+     */
+    void push_format(String chat_formatting);
+
+    /**
+     * 压入一次文本样式。
+     * <p>
+     * 使用 {@code gunsmithlib.new_style_builder()} 来构建 Style 实例。
+     * <p>
+     * 必须和 {@link #pop_style()} 成对使用，否则会影响后续的 HUD 渲染。
+     *
+     * @see GunsmithLuaLib
+     * @see TextStyleBuilder
+     */
+    void push_style(Style style);
+
+    /**
+     * 弹出最近一次压入的文本样式。
+     *
+     * @see #push_format
+     * @see #push_style
+     */
+    void pop_style();
 
     /**
      * 平移坐标系。

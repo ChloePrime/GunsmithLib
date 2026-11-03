@@ -31,6 +31,9 @@ end
 | height()                                                                                                                            | `number` (int) | 获取 GUI 的缩放后高度                                               | 7.0.0    |
 | push_pose()                                                                                                                         | `nil`          | 压入一次矩阵变换                                                    | 7.0.0    |
 | pop_pose()                                                                                                                          | `nil`          | 弹出最近一次压入的矩阵变换                                          | 7.0.0    |
+| push_format(chat_formatting)                                                                                                        | `nil`          | 压入一次文本样式（ChatFormatting）                                  | 7.0.0    |
+| push_style(style)                                                                                                                   | `nil`          | 压入一次文本样式（Style 对象）                                      | 7.0.0    |
+| pop_style()                                                                                                                         | `nil`          | 弹出最近一次压入的文本样式                                          | 7.0.0    |
 | translate(x, y, z)                                                                                                                  | `nil`          | 平移坐标系                                                          | 7.0.0    |
 | scale(x, y, z)                                                                                                                      | `nil`          | 缩放坐标系                                                          | 7.0.0    |
 | rotate(axis, degrees)                                                                                                               | `nil`          | 绕指定坐标轴旋转坐标系，axis 为 "x"、"y" 或 "z"                     | 7.0.0    |
@@ -68,10 +71,52 @@ end
 如果想绘制跟随世界物体的 HUD（例如敌人头顶的血条、锁定准星），
 请使用锚定在世界坐标上的 [InWorldGuiGraphics](in_world_gui_graphics.md)。
 
+### 文本样式
+
+`push_format()` 和 `push_style()` 给**之后绘制的文本**压入一次样式，`pop_style()` 弹出最近一次压入的样式。
+样式只作用于文本（`draw_string()`、`draw_string_centered()`、`draw_string_wrapped()`），
+不影响矩形、贴图、物品等其他绘制。
+
+- `push_format(chat_formatting)`：传入原版 `ChatFormatting` 的名称，不区分大小写
+  （如 `"aqua"`、`"gold"`、`"bold"`、`"underline"`），
+  也可以直接传单字符的格式化代码（如 `"a"` 绿色、`"l"` 粗体）。
+- `push_style(style)`：传入 `Style` 对象，用 `gunsmithlib.new_style_builder()` 构建。
+  `new_style_builder()` 支持链式调用 `bold()`、`italic()`、`underline()`、`strikethrough()`、
+  `obfuscated()`、`color(color)`、`font(font_id)`，每个开关都另有接受 `boolean` 的重载
+  （如 `bold(false)` 表示关闭），最后用 `create()` 取出 `Style`。
+
+多次压入的样式会**叠加**：后压入的样式在已有样式的基础上生效，
+只覆盖它自己设置的效果（颜色、粗体、字体……），没设置的沿用之前压入的样式。
+`pop_style()` 撤销最近一次压入的样式，回到之前的状态；
+需要盖掉下层压入的粗体这类效果时，用 `bold(false)` 显式关闭即可。
+所以也可以分开叠加多种效果，例如先 `push_format("aqua")` 再 `push_format("bold")`，就是青色粗体。
+
+```lua
+function M.gunsmithlib_render_hud(context, gui)
+    -- 青色 + 粗体：分开压入即可叠加
+    gui:push_format("aqua")
+    gui:push_format("bold")
+    gui:draw_string("gunsmithlib.hud.title", 8, 8, gunsmithlib.new_color(255, 255, 255), true)
+    gui:pop_style()
+    gui:pop_style()
+
+    -- 金色粗体副标题，一次性构建完整的 Style
+    local subtitle_style = gunsmithlib.new_style_builder()
+            :bold()
+            :color(gunsmithlib.new_color(255, 200, 0))
+            :create()
+    gui:push_style(subtitle_style)
+    gui:draw_string("gunsmithlib.hud.subtitle", 8, 20, gunsmithlib.new_color(255, 255, 255), true)
+    gui:pop_style()
+end
+```
+
+样式里设置了颜色时，文本会以样式中的颜色绘制，`draw_string()` 的 `color` 参数这时不起作用。
+
 ### 注意事项
 
 1. 返回的对象只在当前回调期间有效，请不要保存到全局变量中跨帧使用。
-2. `push_pose()` 必须和 `pop_pose()` 成对使用，`enable_scissor()` 必须和 `disable_scissor()` 成对使用，
-   否则会影响后续的 HUD 渲染。
+2. `push_pose()` 必须和 `pop_pose()` 成对使用，`push_format()` / `push_style()` 必须和 `pop_style()` 成对使用，
+   `enable_scissor()` 必须和 `disable_scissor()` 成对使用，否则会影响后续的 HUD 渲染。
 3. 建议在 HUD 渲染期间（例如 `gunsmithlib_render_hud` 回调中）绘制；
    在其他时机绘制可能不会显示在正确的位置。

@@ -8,8 +8,6 @@ import mod.chloeprime.gunsmithlib.mixin.client.minecraft.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -39,7 +37,7 @@ import java.util.Objects;
  *
  * @since 7.0.0
  */
-public class InWorldGuiGraphicsImpl implements InWorldGuiGraphics {
+public class InWorldGuiGraphicsImpl extends AbstractGuiGraphicsAPIImpl implements InWorldGuiGraphics {
     /**
      * 距离缩放模式下的参考距离：锚点距离相机为这个值时，
      * 1 个 HUD 单位恰好等于 1 个 GUI 像素（以基准视野为准；
@@ -229,7 +227,7 @@ public class InWorldGuiGraphicsImpl implements InWorldGuiGraphics {
         }
         pushTransform();
         try {
-            return impl.drawString(font(), Component.translatable(text), Mth.floor(x), Mth.floor(y), color.getRGB(), drop_shadow);
+            return impl.drawString(font(), parseText(text), Mth.floor(x), Mth.floor(y), color.getRGB(), drop_shadow);
         } finally {
             popTransform();
         }
@@ -237,12 +235,12 @@ public class InWorldGuiGraphicsImpl implements InWorldGuiGraphics {
 
     @Override
     public void draw_string_centered(String text, int x, int y, Color color) {
-        draw(() -> impl.drawCenteredString(font(), Component.translatable(text), x, y, color.getRGB()));
+        draw(() -> impl.drawCenteredString(font(), parseText(text), x, y, color.getRGB()));
     }
 
     @Override
     public void draw_string_wrapped(String text, int x, int y, int line_width, Color color) {
-        draw(() -> impl.drawWordWrap(font(), Component.translatable(text), x, y, line_width, color.getRGB()));
+        draw(() -> impl.drawWordWrap(font(), parseText(text), x, y, line_width, color.getRGB()));
     }
 
     // 贴图与物品
@@ -390,13 +388,5 @@ public class InWorldGuiGraphicsImpl implements InWorldGuiGraphics {
 
     private static Font font() {
         return Objects.requireNonNull(Minecraft.getInstance().font, "font");
-    }
-
-    private static ResourceLocation parseTexture(String id) {
-        var location = ResourceLocation.tryParse(id);
-        if (location == null) {
-            throw new IllegalArgumentException("Invalid texture id: " + id);
-        }
-        return location;
     }
 }

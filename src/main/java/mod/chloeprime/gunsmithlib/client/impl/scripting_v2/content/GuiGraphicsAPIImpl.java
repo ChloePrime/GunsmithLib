@@ -6,8 +6,6 @@ import mod.chloeprime.gunsmithlib.mixin.client.minecraft.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +18,7 @@ import java.util.Objects;
  *
  * @since 7.0.0
  */
-public class GuiGraphicsAPIImpl implements GuiGraphicsAPI {
+public class GuiGraphicsAPIImpl extends AbstractGuiGraphicsAPIImpl {
     private final GuiGraphics impl;
 
     /**
@@ -104,17 +102,17 @@ public class GuiGraphicsAPIImpl implements GuiGraphicsAPI {
 
     @Override
     public int draw_string(String text, float x, float y, Color color, boolean drop_shadow) {
-        return impl.drawString(font(), Component.translatable(text), Mth.floor(x), Mth.floor(y), color.getRGB(), drop_shadow);
+        return impl.drawString(font(), parseText(text), Mth.floor(x), Mth.floor(y), color.getRGB(), drop_shadow);
     }
 
     @Override
     public void draw_string_centered(String text, int x, int y, Color color) {
-        impl.drawCenteredString(font(), Component.translatable(text), x, y, color.getRGB());
+        impl.drawCenteredString(font(), parseText(text), x, y, color.getRGB());
     }
 
     @Override
     public void draw_string_wrapped(String text, int x, int y, int line_width, Color color) {
-        impl.drawWordWrap(font(), Component.translatable(text), x, y, line_width, color.getRGB());
+        impl.drawWordWrap(font(), parseText(text), x, y, line_width, color.getRGB());
     }
 
     @Override
@@ -189,13 +187,5 @@ public class GuiGraphicsAPIImpl implements GuiGraphicsAPI {
 
     private static Font font() {
         return Objects.requireNonNull(Minecraft.getInstance().font, "font");
-    }
-
-    private static ResourceLocation parseTexture(String id) {
-        var location = ResourceLocation.tryParse(id);
-        if (location == null) {
-            throw new IllegalArgumentException("Invalid texture id: " + id);
-        }
-        return location;
     }
 }
