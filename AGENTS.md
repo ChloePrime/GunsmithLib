@@ -193,6 +193,7 @@ TaCZ 的 `data` JSON 通过 Gson 反序列化。GunsmithLib 用 Mixin 在 TaCZ �
 - `api/**` 视为对外 API，`common/**` 为实现细节；内部/实验性 API 分别标 `@ApiStatus.Internal` / `@ApiStatus.Experimental`。
 - 空安全混用 `javax.annotation.Nullable` 与 `org.jetbrains.annotations.Nullable`，跟随所在文件即可；公共入口用 `Objects.requireNonNull`/`@Nonnull`。
 - 日志统一 `GunsmithLib.LOGGER`（SLF4J），不要 `System.out`。
+- **向量类型统一用 `net.minecraft.world.phys.Vec3`**，不要用 `org.joml.Vector3d`。是直接暴露给 Lua 的 API 是个例外：`mod.chloeprime.gunsmithlib.api.common.scripting_v2` 与 `mod.chloeprime.gunsmithlib.api.client.scripting_v2` 包内类的方法形参保持 `Vector3d`（Lua 侧已有约定，不要改动）；此外只有在接口签名被第三方库强绑定等必要场合（如继承 `Vector3dPapi`）才可使用 `Vector3d`。
 - `Component.translatable` 在没有对应翻译资源时会把传入的翻译键原样显示出来，因此需要把任意字面文本包装成 `Component` 时可以直接使用它，无需改用 `Component.literal`。
 - 包名用 `snake_case` 表示特性（`ammo_variant`、`fire_control`、`screen_shake`、`raytrace_control`…），类名 `PascalCase`。
 - 版本号只在 `gradle.properties` 的 `mod_version` 修改；字符串含 `alpha` 时 `isRelease=false`，`publish` 会发到 snapshots 仓库。

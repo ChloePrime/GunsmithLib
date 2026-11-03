@@ -17,6 +17,7 @@ import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.GuiGraphicsAP
 import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.InWorldGuiGraphicsImpl;
 import mod.chloeprime.gunsmithlib.client.util.WorldToScreenProjection;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
+import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.ApiStatus;
@@ -207,7 +208,7 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
     public InWorldGuiGraphics gui_graphics_in_world(Vector3d worldPos, float scale, boolean distanceScaled) {
         var minecraft = Minecraft.getInstance();
         var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
-        return InWorldGuiGraphicsImpl.at(graphics, worldPos, scale, distanceScaled);
+        return InWorldGuiGraphicsImpl.at(graphics, LinearAlgebraTypes.joml2moj(worldPos), scale, distanceScaled);
     }
 
     /**
@@ -227,7 +228,7 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
      * @since 7.0.0
      */
     public @Nullable Vector2f world_pos_to_screen_pos(Vector3d worldPos) {
-        return WorldToScreenProjection.worldToScreen(worldPos);
+        return WorldToScreenProjection.worldToScreen(LinearAlgebraTypes.joml2moj(worldPos));
     }
 
     // 下面是内部 API

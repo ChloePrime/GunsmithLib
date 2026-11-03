@@ -1,30 +1,48 @@
 package mod.chloeprime.gunsmithlib.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.api.util.TargetSearcher;
+import mod.chloeprime.gunsmithlib.client.gunpack_extension.GunsmithLibGunDisplayExtension;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.InWorldGuiGraphicsImpl;
+import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.hooks.RenderHudHook;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
+import java.util.ArrayDeque;
+import java.util.Optional;
+import java.util.Queue;
+
 @EventBusSubscriber(Dist.CLIENT)
 public class FireControlVisuals {
     private static @Nullable TargetSearcher.SearchResult aiming;
+    private static int version;
     private static long lastAimCalculationTime;
     private static float lastAimCalculationPartialTicks;
+    private static long lastAimSelectTime;
+    private static float lastAimSelectPartialTicks;
     private static final Minecraft MC = Minecraft.getInstance();
+    private static final Queue<Runnable> DEFERRED_GUI_CALLS = new ArrayDeque<>();
 
     @SubscribeEvent
     public static void onRenderLiving(RenderLivingEvent.Post<?, ?> event) {
@@ -32,9 +50,23 @@ public class FireControlVisuals {
         if (aiming == null || aiming.entity() != event.getEntity()) {
             return;
         }
-        render(event.getEntity(), aiming.pos(),
-                MC.getEntityRenderDispatcher(), event.getRenderer().getFont(),
-                event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
+        var pos = aiming.pos();
+        if (version == 1) {
+            renderV1(event.getEntity(), pos,
+                    MC.getEntityRenderDispatcher(), event.getRenderer().getFont(),
+                    event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderLevelLast(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            return;
+        }
+        if (version == 2 && aiming != null) {
+            var pos = aiming.pos();
+            RenderHudHook.withHudMode(() -> renderV2(pos, event.getPartialTick()));
+        }
     }
 
     private static void refreshCachedAimingEntity(float partialTick) {
@@ -51,18 +83,27 @@ public class FireControlVisuals {
                 aiming = null;
                 return;
             }
+            var oldEntity = Optional.ofNullable(aiming).map(TargetSearcher.SearchResult::entity).orElse(null);
+            version = GunsmithLibGunDisplayExtension.of(player.getMainHandItem())
+                    .map(GunsmithLibGunDisplayExtension::getFireControlHudVersion)
+                    .orElse(GunsmithLibGunDisplayExtension.DEFAULT_FIRE_CONTROL_HUD_VERSION);
             aiming = Gunsmith.getGunInfo(player.getMainHandItem())
                     // 用PartialTick计算会有bug，传入1反而更稳定
-                    .flatMap(gun -> TargetSearcher.search(player, gun, 1))
+                    .flatMap(gi -> TargetSearcher.search(player, gi, partialTick))
                     .orElse(null);
+            var newEntity = Optional.ofNullable(aiming).map(TargetSearcher.SearchResult::entity).orElse(null);
+            if (newEntity != oldEntity) {
+                lastAimSelectTime = now;
+                lastAimSelectPartialTicks = partialTick;
+            }
         }
     }
 
     private static final Component AIMING_GLYPH = Component.literal("[+]").withStyle(ChatFormatting.RED);
 
-    private static void render(Entity pEntity, Vec3 aimPos,
-                               EntityRenderDispatcher dispatcher, Font font,
-                               PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    private static void renderV1(Entity pEntity, Vec3 aimPos,
+                                 EntityRenderDispatcher dispatcher, Font font,
+                                 PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         var pDisplayName = AIMING_GLYPH;
         var offset = aimPos.subtract(pEntity.position());
         int i = 0;
@@ -76,5 +117,36 @@ public class FireControlVisuals {
             font.drawInBatch(pDisplayName, f2, (float) i, 0xFFFF_FFFF, false, matrix4f, buffer, Font.DisplayMode.SEE_THROUGH, 0, packedLight);
         }
         poseStack.popPose();
+    }
+
+    private static final String TEX_V2_INNER = GunsmithLib.loc("textures/gui/v2_crosshair_inner.png").toString();
+    private static final String TEX_V2_OUTER = GunsmithLib.loc("textures/gui/v2_crosshair_outer.png").toString();
+
+    private static void renderV2(Vec3 aimPos, float partialTick) {
+        var mc = Minecraft.getInstance();
+        var iconRadius = 12;
+        var gg = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
+        var gui = InWorldGuiGraphicsImpl.at(gg, aimPos, 1, false);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        // Inner
+        gui.blit(TEX_V2_INNER, -iconRadius, -iconRadius, 2 * iconRadius, 2 * iconRadius, 0, 0, 0, 1, 1);
+        // Outer
+        float scale = Optional.ofNullable(mc.level)
+                .map(Level::getGameTime)
+                .map(gt -> (gt - lastAimSelectTime) + (partialTick - lastAimSelectPartialTicks))
+                .map(aimTime -> aimTime / 10)
+                .map(alpha -> Mth.clamp(alpha, 0, 1))
+                .map(alpha -> Mth.lerp(Mth.sqrt(Mth.sin(alpha * Mth.PI / 2)), 3, 1))
+                .orElse(1F);
+        var rotCycle = 2.0;
+        var now = System.currentTimeMillis() / 1000.0;
+        var rot = (now % 1) * 360 / -rotCycle;
+        gui.push_pose();
+        gui.rotate("z", (float) rot);
+        gui.scale(scale, scale, scale);
+        gui.blit(TEX_V2_OUTER, -iconRadius, -iconRadius, 2 * iconRadius, 2 * iconRadius, 0, 0, 0, 1, 1);
+        gui.pop_pose();
+        RenderSystem.disableBlend();
     }
 }
