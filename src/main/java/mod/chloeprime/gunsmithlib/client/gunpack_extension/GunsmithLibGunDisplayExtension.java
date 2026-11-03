@@ -65,6 +65,20 @@ public class GunsmithLibGunDisplayExtension {
     @GunpackProperty
     private @Nullable DescriptionalAffixData descriptional_affixes;
 
+    public static int DEFAULT_FIRE_CONTROL_HUD_VERSION = 2;
+
+    /**
+     * 火控 HUD 版本。
+     * <ul>
+     *   <li>0 为关闭，可使用 {@code gunsmithlib_render_hud_before_hand} 钩子渲染自定义准心 HUD。</li>
+     *   <li>1 为 "[+]"</li>
+     *   <li>2 为 7.0.0 默认版本</li>
+     * <ul/>
+     * @since 7.0.0
+     */
+    @GunpackProperty
+    private int fire_control_hud_version = DEFAULT_FIRE_CONTROL_HUD_VERSION;
+
     // 下面是实现
 
     public static Optional<GunsmithLibGunDisplayExtension> of(ItemStack gun) {
@@ -95,5 +109,9 @@ public class GunsmithLibGunDisplayExtension {
 
     public @Nullable DescriptionalAffixData getDescriptionalAffixData() {
         return descriptional_affixes;
+    }
+
+    public int getFireControlHudVersion() {
+        return fire_control_hud_version;
     }
 }

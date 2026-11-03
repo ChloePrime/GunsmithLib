@@ -4,7 +4,6 @@ import com.mojang.math.Axis;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.GuiGraphicsAPI;
 import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.InWorldGuiGraphics;
 import mod.chloeprime.gunsmithlib.client.util.WorldToScreenProjection;
-import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import mod.chloeprime.gunsmithlib.mixin.client.minecraft.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -13,10 +12,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.awt.*;
@@ -91,13 +90,13 @@ public class InWorldGuiGraphicsImpl implements InWorldGuiGraphics {
      *                       为 {@code false} 时 HUD 在屏幕上保持恒定尺寸，适合锁定准星这类 HUD
      * @return 锚定在世界坐标上的 HUD 绘制对象，锚点不可见时 {@link #visible()} 为 {@code false}
      */
-    public static InWorldGuiGraphicsImpl at(GuiGraphics impl, Vector3d worldPos, float scale, boolean distanceScaled) {
+    public static InWorldGuiGraphicsImpl at(GuiGraphics impl, Vec3 worldPos, float scale, boolean distanceScaled) {
         var screen = WorldToScreenProjection.worldToScreen(worldPos);
         if (screen == null) {
             return new InWorldGuiGraphicsImpl(impl, null, scale, 0);
         }
-        var camera = LinearAlgebraTypes.moj2joml(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
-        var distance = camera.distance(worldPos);
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        var distance = camera.distanceTo(worldPos);
         var autoScale = distanceScaled ? getWorldScaledScale(worldPos, distance) : 1;
         return new InWorldGuiGraphicsImpl(impl, screen, scale * autoScale, distance);
     }
@@ -115,7 +114,7 @@ public class InWorldGuiGraphicsImpl implements InWorldGuiGraphics {
      * @param distance 锚点到相机的距离，取不到投影信息时用它近似
      * @return 每个 HUD 单位对应的 GUI 像素数
      */
-    private static float getWorldScaledScale(Vector3d worldPos, double distance) {
+    private static float getWorldScaledScale(Vec3 worldPos, double distance) {
         var pixelsPerBlock = WorldToScreenProjection.screenPixelsPerBlock(worldPos);
         if (!(pixelsPerBlock > 0)) {
             // 取不到投影信息（例如相机还没初始化）时，退回到按距离近似

@@ -46,6 +46,39 @@ public final class RenderHudHook {
      */
     public static final String BEFORE_HAND_HOOK_NAME = "gunsmithlib_render_hud_before_hand";
 
+    public static void withHudMode(Runnable code) {
+        var minecraft = Minecraft.getInstance();
+        var window = minecraft.getWindow();
+        var savedProjection = RenderSystem.getProjectionMatrix();
+        var savedSorting = RenderSystem.getVertexSorting();
+        // 和原版 HUD 完全一致的 GUI 正交投影（近平面 1000，远平面为原版 GUI 的默认值 21000）
+        var guiProjection = new Matrix4f().setOrtho(
+                0.0F,
+                (float) ((double) window.getWidth() / window.getGuiScale()),
+                (float) ((double) window.getHeight() / window.getGuiScale()),
+                0.0F, 1000.0F, GUI_FAR_PLANE);
+        var modelViewStack = RenderSystem.getModelViewStack();
+
+        RenderSystem.setProjectionMatrix(guiProjection, VertexSorting.ORTHOGRAPHIC_Z);
+        modelViewStack.pushPose();
+        modelViewStack.setIdentity();
+        modelViewStack.translate(0.0D, 0.0D, 1000.0F - GUI_FAR_PLANE);
+        RenderSystem.applyModelViewMatrix();
+        try {
+            var bufferSource = minecraft.renderBuffers().bufferSource();
+            // 关掉深度测试，让 HUD 直接盖在这个时机已经渲染好的画面上
+            RenderSystem.disableDepthTest();
+            code.run();
+            bufferSource.endBatch();
+        } finally {
+            RenderSystem.enableDepthTest();
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            modelViewStack.popPose();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.setProjectionMatrix(savedProjection, savedSorting);
+        }
+    }
+
     /**
      * 原版 GUI 正交投影的远平面，和 {@code ForgeHooksClient.getGuiFarPlane()} 的默认值一致。
      */
@@ -93,36 +126,9 @@ public final class RenderHudHook {
      * 原版随后会清一次深度缓冲再渲染手部，因此手和手持物会盖在 HUD 之上。
      */
     private static void renderBeforeHand(Minecraft minecraft, AnimScriptReady asr) {
-        var window = minecraft.getWindow();
-        var savedProjection = RenderSystem.getProjectionMatrix();
-        var savedSorting = RenderSystem.getVertexSorting();
-        // 和原版 HUD 完全一致的 GUI 正交投影（近平面 1000，远平面为原版 GUI 的默认值 21000）
-        var guiProjection = new Matrix4f().setOrtho(
-                0.0F,
-                (float) ((double) window.getWidth() / window.getGuiScale()),
-                (float) ((double) window.getHeight() / window.getGuiScale()),
-                0.0F, 1000.0F, GUI_FAR_PLANE);
-        var modelViewStack = RenderSystem.getModelViewStack();
-
-        RenderSystem.setProjectionMatrix(guiProjection, VertexSorting.ORTHOGRAPHIC_Z);
-        modelViewStack.pushPose();
-        modelViewStack.setIdentity();
-        modelViewStack.translate(0.0D, 0.0D, 1000.0F - GUI_FAR_PLANE);
-        RenderSystem.applyModelViewMatrix();
-        try {
-            var bufferSource = minecraft.renderBuffers().bufferSource();
-            var graphics = new GuiGraphicsAPIImpl(new GuiGraphics(minecraft, bufferSource));
-            // 关掉深度测试，让 HUD 直接盖在这个时机已经渲染好的画面上
-            RenderSystem.disableDepthTest();
-            invokeHook(asr, BEFORE_HAND_HOOK_NAME, graphics);
-            bufferSource.endBatch();
-        } finally {
-            RenderSystem.enableDepthTest();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            modelViewStack.popPose();
-            RenderSystem.applyModelViewMatrix();
-            RenderSystem.setProjectionMatrix(savedProjection, savedSorting);
-        }
+        var bufferSource = minecraft.renderBuffers().bufferSource();
+        var graphics = new GuiGraphicsAPIImpl(new GuiGraphics(minecraft, bufferSource));
+        withHudMode(() -> invokeHook(asr, BEFORE_HAND_HOOK_NAME, graphics));
     }
 
     /**

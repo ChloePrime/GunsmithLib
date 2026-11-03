@@ -2,6 +2,7 @@ package mod.chloeprime.gunsmithlib.client.util;
 
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -54,7 +55,7 @@ public final class WorldToScreenProjection {
      * @param worldPos 世界坐标
      * @return 屏幕坐标；相机尚未初始化，或该坐标位于相机背后时返回 {@code null}
      */
-    public static @Nullable Vector2f worldToScreen(Vector3d worldPos) {
+    public static @Nullable Vector2f worldToScreen(Vec3 worldPos) {
         if (!available) {
             return null;
         }
@@ -65,9 +66,9 @@ public final class WorldToScreenProjection {
             return null;
         }
         var clip = new Vector4f(
-                (float) (worldPos.x - CAMERA_POS.x),
-                (float) (worldPos.y - CAMERA_POS.y),
-                (float) (worldPos.z - CAMERA_POS.z),
+                (float) (worldPos.x() - CAMERA_POS.x),
+                (float) (worldPos.y() - CAMERA_POS.y),
+                (float) (worldPos.z() - CAMERA_POS.z),
                 1.0F);
         VIEW_PROJECTION.transform(clip);
         // w <= 0 说明该点在相机背后（或与相机平面重合），此时的投影结果没有意义
@@ -92,13 +93,13 @@ public final class WorldToScreenProjection {
      * @param worldPos 世界坐标
      * @return 1 个方块对应的屏幕像素数；相机尚未初始化，或该坐标位于相机背后时返回 {@code 0}
      */
-    public static float screenPixelsPerBlock(Vector3d worldPos) {
+    public static float screenPixelsPerBlock(Vec3 worldPos) {
         var origin = worldToScreen(worldPos);
         if (origin == null) {
             return 0;
         }
         var up = Minecraft.getInstance().gameRenderer.getMainCamera().getUpVector();
-        var shifted = new Vector3d(
+        var shifted = new Vec3(
                 worldPos.x + up.x(),
                 worldPos.y + up.y(),
                 worldPos.z + up.z());
