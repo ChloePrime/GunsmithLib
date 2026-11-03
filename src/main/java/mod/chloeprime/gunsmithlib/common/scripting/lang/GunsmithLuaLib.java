@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.common.scripting.lang;
 
 import mod.chloeprime.gunsmithlib.GunsmithLib;
+import mod.chloeprime.gunsmithlib.api.client.scripting_v2.content.TextStyleBuilder;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3d;
 import org.luaj.vm2.LuaError;
@@ -28,6 +29,7 @@ public class GunsmithLuaLib extends VarArgFunction {
     static final int UUID_TO_STRING     = 6;
     static final int NEW_VECTOR_3       = 7;
     static final int NEW_VECTOR_3D      = 8;
+    static final int NEW_STYLE_BUILDER  = 9;
 
     static final String[] NAMES = {
             "new_identifier",
@@ -38,6 +40,7 @@ public class GunsmithLuaLib extends VarArgFunction {
             "uuid_to_string",
             "new_vector3",
             "new_vector3d",
+            "new_style_builder",
     };
 
     @Override
@@ -79,6 +82,9 @@ public class GunsmithLuaLib extends VarArgFunction {
                     return new Vector3d(scalar, scalar, scalar);
                 }
                 return new Vector3d(args.arg(1).checkdouble(), args.arg(2).checkdouble(), args.arg(3).checkdouble());
+            }
+            case NEW_STYLE_BUILDER -> {
+                return new TextStyleBuilder();
             }
             default -> throw new LuaError("not yet supported: %s[%d]".formatted(this, opcode));
         }

@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,9 +30,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-import java.util.ArrayDeque;
+import java.awt.*;
 import java.util.Optional;
-import java.util.Queue;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class FireControlVisuals {
@@ -42,7 +42,6 @@ public class FireControlVisuals {
     private static long lastAimSelectTime;
     private static float lastAimSelectPartialTicks;
     private static final Minecraft MC = Minecraft.getInstance();
-    private static final Queue<Runnable> DEFERRED_GUI_CALLS = new ArrayDeque<>();
 
     @SubscribeEvent
     public static void onRenderLiving(RenderLivingEvent.Post<?, ?> event) {
@@ -63,9 +62,9 @@ public class FireControlVisuals {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             return;
         }
-        if (version == 2 && aiming != null) {
-            var pos = aiming.pos();
-            RenderHudHook.withHudMode(() -> renderV2(pos, event.getPartialTick()));
+        var curAiming = aiming;
+        if (version == 2 && curAiming != null) {
+            RenderHudHook.withHudMode(() -> renderV2(curAiming.entity(), curAiming.pos(), event.getCamera().getPosition(), event.getPartialTick()));
         }
     }
 
@@ -122,7 +121,7 @@ public class FireControlVisuals {
     private static final String TEX_V2_INNER = GunsmithLib.loc("textures/gui/v2_crosshair_inner.png").toString();
     private static final String TEX_V2_OUTER = GunsmithLib.loc("textures/gui/v2_crosshair_outer.png").toString();
 
-    private static void renderV2(Vec3 aimPos, float partialTick) {
+    private static void renderV2(Entity target, Vec3 aimPos, Vec3 cameraPos, float partialTick) {
         var mc = Minecraft.getInstance();
         var iconRadius = 12;
         var gg = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
@@ -132,7 +131,7 @@ public class FireControlVisuals {
         // Inner
         gui.blit(TEX_V2_INNER, -iconRadius, -iconRadius, 2 * iconRadius, 2 * iconRadius, 0, 0, 0, 1, 1);
         // Outer
-        float scale = Optional.ofNullable(mc.level)
+        float iconScale = Optional.ofNullable(mc.level)
                 .map(Level::getGameTime)
                 .map(gt -> (gt - lastAimSelectTime) + (partialTick - lastAimSelectPartialTicks))
                 .map(aimTime -> aimTime / 10)
@@ -144,9 +143,19 @@ public class FireControlVisuals {
         var rot = (now % 1) * 360 / -rotCycle;
         gui.push_pose();
         gui.rotate("z", (float) rot);
-        gui.scale(scale, scale, scale);
+        gui.scale(iconScale, iconScale, iconScale);
         gui.blit(TEX_V2_OUTER, -iconRadius, -iconRadius, 2 * iconRadius, 2 * iconRadius, 0, 0, 0, 1, 1);
         gui.pop_pose();
+        // Target Name
+        if (target != null && aimPos.distanceToSqr(cameraPos) > 16 * 16) {
+            gui.push_pose();
+            var textScale = 0.75F;
+            gui.scale(textScale, textScale, textScale);
+            gui.push_style(Style.EMPTY.applyLegacyFormat(ChatFormatting.AQUA));
+            gui.draw_string_centered(target.getDisplayName().getString(), 0, (int) ((-iconRadius - 6) / textScale), Color.WHITE);
+            gui.pop_style();
+            gui.pop_pose();
+        }
         RenderSystem.disableBlend();
     }
 }

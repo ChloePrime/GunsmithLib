@@ -71,7 +71,7 @@ src/main/java/mod/chloeprime/gunsmithlib/
 │   └── client/             枪械 Tooltip 事件、动画常量、客户端 scripting_v2 接口
 ├── common/                 实现层（多数对外不可见）
 │   ├── gunpack_extension/  数据驱动扩展核心：gun/ ammo/ attachment/ shared/
-│   ├── scripting/          Lua 绑定与脚本加载（ScriptBakery 等）
+│   ├── scripting/          Lua 绑定与脚本加载（ScriptBakery、lang/GunsmithLuaLib 库函数等）
 │   ├── impl/scripting_v2/  脚本 API 的 Java 实现
 │   ├── internal/           内部事件/状态，标注 @ApiStatus.Internal
 │   ├── loot/ entity/ block/ item/ compat/ util/
@@ -90,7 +90,8 @@ src/main/java/mod/chloeprime/gunsmithlib/
 - `assets/gunsmithlib/`：`lang/en_us.json` + `lang/zh_cn.json`、textures、shaders、sounds.json。
 - `data/gunsmithlib/`、`src/generated/resources/`（datagen 产物，改完要提交）。
 - `docs/`：**面向枪包作者的中文文档，会随 jar 发行**。改行为必须同步更新：
-  `gunpack_extensions.md`、`attributes.md`、`scripting.md` / `scripting_v2.md`、`modifiable_properties.md`、`gunpack_display_extensions.md`、`textshow_papi_extension.md`、`changelogs/<version>.md`。
+  `gunpack_extensions.md`、`attributes.md`、`scripting.md` / `scripting_v2.md`、`stdlib_extension.md`（`gunsmithlib.*` 库函数）、
+  `api_classes/*`（脚本里能拿到的对象，如 `GuiGraphicsAPI`）、`modifiable_properties.md`、`gunpack_display_extensions.md`、`textshow_papi_extension.md`、`changelogs/<version>.md`。
 
 ## 4. 核心架构（务必先理解）
 
@@ -126,6 +127,10 @@ TaCZ 的 `data` JSON 通过 Gson 反序列化。GunsmithLib 用 Mixin 在 TaCZ �
 
 - 逻辑脚本：v1 接口在 `api/common/GunScriptAPIExtension`、`CommonScriptingExtension`；v2 包装器 `api/common/scripting_v2/GunsmithLibCommonScriptExtension`、`GunsmithLibLogicScriptExtension`。
 - 动画状态机脚本：`api/client/scripting_v2/*`。
+- 全局 `gunsmithlib` 库（`gunsmithlib.new_color`、`new_identifier`、`new_vector3d`、`new_style_builder` …）：
+  `common/scripting/lang/GunsmithLuaLib`，是一个 `VarArgFunction` 子类——函数名表 `NAMES` 与一串 `opcode` 常量一一对应，
+  `INIT` 时把函数表绑进脚本环境的 `gunsmithlib` 全局和 `package.loaded`。脚本里所有 `gunsmithlib.*` 调用都走这里，
+  **改这个类等于改脚本 API 契约**：新函数只能追加，已有函数名不要改/删。
 - 注入点：`MixinScriptManager`、`MixinLuaStateMachineFactory`、`MixinLuaAnimationStateMachine` 等。
 - 新增脚本 API：接口放 `api/**/scripting_v2`，实现放 `common/impl/scripting_v2` 或 `Abstract*` 默认方法；Lua table 参数用 `@TableSchema(XxxData.class)` 标注；**旧方法保留并委托给新实现**，不要直接删。
 - 脚本按 `ResourceLocation` 由 `ScriptBakery` 加载（`gunsmithlib_extension` 里的 `script` + `script_param`）。
@@ -185,6 +190,16 @@ TaCZ 的 `data` JSON 通过 Gson 反序列化。GunsmithLib 用 Mixin 在 TaCZ �
 - 脚本：接口 + 实现 + 文档（`docs/scripting.md`、`docs/scripting_v2.md`），参数用 `@TableSchema`。
 - PAPI：`client/papi/` 新类 + `GunsmithLibPapas` 注册 + `docs/textshow_papi_extension.md`。
 
+**新增一个 `gunsmithlib.*` 库函数**
+
+1. 在 `common/scripting/lang/GunsmithLuaLib` 的 `NAMES` **末尾**追加函数名，并加一个 `opcode` 常量：
+   值 = 该名字在 `NAMES` 里的下标 + 1（luaj 的 `bind` 按 `NEW_IDENTIFIER_1 + i` 递增绑定，**插在中间会让后面所有函数整体错位**）。
+   函数名用 snake_case，风格照现有：`new_xxx` / `xxx_from_xxx` / `xxx_to_xxx`。
+2. 在 `invoke0` 里加对应 `case`：参数用 `args.checkjstring` / `checkdouble` / `CoerceLuaToJava.coerce` 取，
+   可选参数用 `args.narg()` 判断；返回值直接返回 Java 对象即可（外层会过一遍 `CoerceJavaToLua`）。
+   返回出去的类型要能被 Lua 正常使用，放在 `api/**`（例：`TextStyleBuilder` 在 `api/client/scripting_v2/content`）。
+3. 补 `docs/stdlib_extension.md` 的 API 表格（函数签名、返回值类型、`添加版本`），并在 `changelogs` 记一条。
+
 ## 6. 代码风格
 
 - Java 17；大量使用 `var`；工具类用 `final` + 私有构造；4 空格缩进。
@@ -225,5 +240,6 @@ TaCZ 的 `data` JSON 通过 Gson 反序列化。GunsmithLib 用 Mixin 在 TaCZ �
 - **RPC 方法签名**：目标方法必须 `private static`，参数需可序列化（基本类型、NBT、可被基础库编解码的类型）。
 - **数据包热重载**：自定义 JSON 走 `SimpleCodecResourceReloadListener` 时别忘了 `OnDatapackSyncEvent` 同步，否则单人/联机行为不一致。
 - **`gunsmithlib.mixins.json` 的 `compatibilityLevel` 是 `JAVA_8`**（历史配置），不要随手改成 `JAVA_17`，除非已实测。
+- **`GunsmithLuaLib` 的 `NAMES` 顺序就是 `opcode` 顺序**：新函数只能追加到 `NAMES` 末尾并顺延 `opcode` 常量；中间插队会让它之后的所有 `gunsmithlib.*` 函数错位（调 A 实际执行 B，而且不报错）。
 - **资源改动会进 jar**：`src/main/resources/docs` 会随模组发布，文档里的 JSON5 示例就是给枪包作者看的正式契约。
 - **不要提交** `build/`、`run*/`、`.gradle/`、`libs/*.jar`（`.gitignore` 已覆盖）。
