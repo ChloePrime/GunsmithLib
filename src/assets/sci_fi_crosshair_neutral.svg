@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Sci-fi fire-control lock reticle (neutral, yellow)</title>
+  <desc id="desc">A neon yellow target-lock reticle for neutral targets: four chamfered corner brackets, a segmented scanner ring with inward chevrons, and a precise diamond aim point.</desc>
+
+  <defs>
+    <linearGradient id="edge" x1="96" y1="80" x2="416" y2="432" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFCE8"/>
+      <stop offset="0.36" stop-color="#FFE27A"/>
+      <stop offset="0.74" stop-color="#FFC12E"/>
+      <stop offset="1" stop-color="#F08A00"/>
+    </linearGradient>
+
+    <linearGradient id="core" x1="256" y1="243" x2="256" y2="269" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFEDB0"/>
+    </linearGradient>
+
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientTransform="translate(256 256) scale(58)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFD65C" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#FFC12E" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFC12E" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="fx" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="1.6" result="grown"/>
+      <feFlood flood-color="#1F1400" flood-opacity="0.9" result="ink"/>
+      <feComposite in="ink" in2="grown" operator="in" result="outline"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="glow"/>
+      <feMerge>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- One quarter of the outer scanner ring: a 50-degree arc centred on a diagonal. -->
+    <path id="arc" d="M432.66 320.30 A188 188 0 0 1 320.30 432.66"/>
+    <!-- Chamfered corner bracket framing the target. -->
+    <path id="bracket" d="M146 202 V162 L162 146 H202"/>
+    <!-- Inward chevron mounted in the ring gap, pointing at the aim point. -->
+    <path id="chevron" d="M256 66 L244 46 H268 Z"/>
+  </defs>
+
+  <!-- Faint plasma bloom behind the reticle. -->
+  <circle cx="256" cy="256" r="58" fill="url(#halo)"/>
+
+  <g filter="url(#fx)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Outer segmented scanner ring. -->
+    <g stroke="url(#edge)" stroke-width="11">
+      <use href="#arc"/>
+      <use href="#arc" transform="rotate(90 256 256)"/>
+      <use href="#arc" transform="rotate(180 256 256)"/>
+      <use href="#arc" transform="rotate(270 256 256)"/>
+    </g>
+
+    <!-- Four chamfered lock brackets. -->
+    <g stroke="url(#edge)" stroke-width="10">
+      <use href="#bracket"/>
+      <use href="#bracket" transform="rotate(90 256 256)"/>
+      <use href="#bracket" transform="rotate(180 256 256)"/>
+      <use href="#bracket" transform="rotate(270 256 256)"/>
+    </g>
+
+    <!-- Lock chevrons in the cardinal gaps of the scanner ring. -->
+    <g fill="url(#edge)" stroke="none">
+      <use href="#chevron"/>
+      <use href="#chevron" transform="rotate(90 256 256)"/>
+      <use href="#chevron" transform="rotate(180 256 256)"/>
+      <use href="#chevron" transform="rotate(270 256 256)"/>
+    </g>
+
+    <!-- Short precision cross. -->
+    <g stroke="url(#edge)" stroke-width="5">
+      <path d="M256 226 V194"/>
+      <path d="M286 256 H318"/>
+      <path d="M256 286 V318"/>
+      <path d="M226 256 H194"/>
+    </g>
+
+    <!-- Aim point: broken ring plus diamond core. -->
+    <circle cx="256" cy="256" r="18" stroke="url(#edge)" stroke-width="3"
+            stroke-dasharray="15 13.27" transform="rotate(45 256 256)"/>
+    <path d="M256 246 L266 256 L256 266 L246 256 Z" fill="url(#core)" stroke="none"/>
+
+    <!-- Sensor nodes on the scanner arcs. -->
+    <g fill="#FFF8DB" stroke="none">
+      <circle cx="388.94" cy="388.94" r="3.4"/>
+      <circle cx="123.06" cy="388.94" r="3.4"/>
+      <circle cx="123.06" cy="123.06" r="3.4"/>
+      <circle cx="388.94" cy="123.06" r="3.4"/>
+    </g>
+  </g>
+</svg>
