@@ -393,13 +393,15 @@ publishing {
             groupId = group
             artifactId = base.archivesName.get()
             version = version
+            from components.java
+            // 传入 false 以避免生成依赖信息
+            jarJar.component(it, false)
+            // 再次清除依赖信息
             pom.withXml {
                 def node = asNode()
                 if(node.dependencies.size() > 0)
-                    node.remove(node.dependencies) // Remove deps, as they are all mappings-dependent and/or forge
+                    node.remove(node.dependencies)
             }
-            from components.java
-            jarJar.component(it)
         }
     }
 }
