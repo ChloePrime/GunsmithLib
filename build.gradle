@@ -266,11 +266,11 @@ dependencies {
     implementation fg.deobf('maven.modrinth:architectury-api:9.2.14+forge')
 
     // 屏幕震动 API
-    compileOnly jarJar(fg.deobf("com.rbasamoyai:ritchiesprojectilelib:2.1.2+mc.$minecraft_version-forge")) {
+    compileOnly fg.deobf("com.rbasamoyai:ritchiesprojectilelib:2.1.2+mc.$minecraft_version-forge")
+    runtimeOnly fg.deobf(jarJar("curse.maven:ritchies-projectile-library-1279407:7292523")) {
         transitive = false
-        jarJar.ranged(it, '[2.1.2,)')
+        jarJar.ranged(it, '[7292523,)')
     }
-    runtimeOnly fg.deobf("curse.maven:ritchies-projectile-library-1279407:7292523")
 
     // KubeJS, Create
     // 用于测试子弹物品粒子
