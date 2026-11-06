@@ -125,6 +125,13 @@ repositories {
             includeGroup "com.eliotlash.mclib"
         }
     }
+    // 屏幕震动 API maven
+    maven { // Ritchie's Projectile Library
+        url = "https://maven.realrobotix.me/ritchiesprojectilelib/"
+        content {
+            includeGroup("com.rbasamoyai") // THIS IS IMPORTANT
+        }
+    }
 
     maven {
         name = "Mod Maven"
@@ -168,6 +175,9 @@ dependencies {
         compileOnly jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed')
         localRuntime 'me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed'
         localRuntime jarJar(project("modules:gunsmithlib_bundled_kotlin_stdlib"))
+
+        // 屏幕震动 API
+        compileOnly localRuntime(jarJar("com.rbasamoyai:ritchiesprojectilelib:2.1.2+mc.$minecraft_version-neoforge"))
     }
 
     ;// Optional Dependencies
