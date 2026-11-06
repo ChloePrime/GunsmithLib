@@ -34,17 +34,21 @@ public final class WorldToScreenProjection {
     /**
      * 缓存关卡渲染实际使用的视图投影矩阵。
      * <p>
-     * 必须使用在 {@code LevelRenderer} 内部触发的阶段：此时事件里的
-     * pose stack 才是关卡渲染的视图矩阵，投影矩阵才是世界渲染所用的投影矩阵。
-     * 而 {@code AFTER_LEVEL} 阶段传入的 pose stack 是投影矩阵所在的栈，
-     * 不能用来当视图矩阵使用。
+     * 视图矩阵（相机朝向）与投影矩阵分别在事件的 {@code getModelViewMatrix()} 和
+     * {@code getProjectionMatrix()} 里，两者相乘就是关卡渲染世界坐标时实际使用的变换，
+     * 因此瞄准缩放、疾跑/水下造成的 FOV 变化、视角摇晃、反胃效果都能被正确处理。
+     * <p>
+     * <b>不能像 1.20.1 那样用 {@code getPoseStack().last().pose()} 当视图矩阵</b>：
+     * 1.21.1 起 {@code LevelRenderer} 把视图矩阵放进了 {@code RenderSystem} 的 model view stack，
+     * 派发事件时传入的 PoseStack 只是实体渲染用的临时栈，此刻已经被清空（单位矩阵）。
+     * 把它当视图矩阵会丢掉相机朝向，{@link #worldToScreen(Vec3)} 算出来的屏幕坐标就会偏。
      */
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
             return;
         }
-        VIEW_PROJECTION.set(event.getProjectionMatrix()).mul(event.getPoseStack().last().pose());
+        VIEW_PROJECTION.set(event.getProjectionMatrix()).mul(event.getModelViewMatrix());
         CAMERA_POS.set(LinearAlgebraTypes.moj2joml(event.getCamera().getPosition()));
         available = true;
     }
