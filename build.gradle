@@ -80,7 +80,6 @@ repositories {
             }
         }
         filter {
-            includeGroup('com.github.MUKSC')
             includeGroup('com.github.FiguraMC.luaj')
             includeGroup('com.github.rtyley')
         }
@@ -163,7 +162,7 @@ dependencies {
         compileOnly 'com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura'
 
         // TACZ
-        api 'com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.8-r2'
+        api 'curse.maven:timeless-and-classics-zero-1028108:9454361-sources-9454571'
 
         // Pack Upgrader
         compileOnly jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed')
