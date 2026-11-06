@@ -10,11 +10,11 @@ import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
@@ -34,7 +34,7 @@ import java.util.Optional;
  *
  * @since 7.0.0
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public final class RenderHudHook {
     /**
      * 常规 HUD 钩子的名字。
@@ -60,9 +60,9 @@ public final class RenderHudHook {
         var modelViewStack = RenderSystem.getModelViewStack();
 
         RenderSystem.setProjectionMatrix(guiProjection, VertexSorting.ORTHOGRAPHIC_Z);
-        modelViewStack.pushPose();
-        modelViewStack.setIdentity();
-        modelViewStack.translate(0.0D, 0.0D, 1000.0F - GUI_FAR_PLANE);
+        modelViewStack.pushMatrix();
+        modelViewStack.identity();
+        modelViewStack.translate(0, 0, 1000F - GUI_FAR_PLANE);
         RenderSystem.applyModelViewMatrix();
         try {
             var bufferSource = minecraft.renderBuffers().bufferSource();
@@ -73,7 +73,7 @@ public final class RenderHudHook {
         } finally {
             RenderSystem.enableDepthTest();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            modelViewStack.popPose();
+            modelViewStack.popMatrix();
             RenderSystem.applyModelViewMatrix();
             RenderSystem.setProjectionMatrix(savedProjection, savedSorting);
         }

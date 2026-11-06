@@ -6,6 +6,7 @@ import mod.chloeprime.gunsmithlib.mixin.client.minecraft.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -126,41 +127,12 @@ public class GuiGraphicsAPIImpl extends AbstractGuiGraphicsAPIImpl {
     }
 
     @Override
-    public void blit_nine_sliced(
-            String texture, int x, int y, int width, int height,
-            int slice_size, int u, int v, int source_width, int source_height
-    ) {
-        impl.blitNineSliced(parseTexture(texture), x, y, width, height,
-                slice_size, slice_size, slice_size, slice_size,
-                source_width, source_height, u, v);
-    }
-
-    @Override
-    public void blit_nine_sliced(
-            String texture, int x, int y, int width, int height,
-            int left_slice, int top_slice, int right_slice, int bottom_slice,
-            int u, int v, int source_width, int source_height
-    ) {
-        impl.blitNineSliced(parseTexture(texture), x, y, width, height,
-                left_slice, top_slice, right_slice, bottom_slice,
-                source_width, source_height, u, v);
-    }
-
-    @Override
-    public void blit_repeating(
-            String texture, int x, int y, int width, int height,
-            int u, int v, int source_width, int source_height
-    ) {
-        impl.blitRepeating(parseTexture(texture), x, y, width, height, u, v, source_width, source_height);
-    }
-
-    @Override
-    public void blit_repeating(
-            String texture, int x, int y, int width, int height,
-            int u, int v, int source_width, int source_height,
+    protected void blitRegion1211(
+            ResourceLocation texture, int x, int y, int width, int height,
+            int u, int v, int u_width, int v_height,
             int texture_width, int texture_height
     ) {
-        impl.blitRepeating(parseTexture(texture), x, y, width, height, u, v, source_width, source_height, texture_width, texture_height);
+        impl.blit(texture, x, y, width, height, u, v, u_width, v_height, texture_width, texture_height);
     }
 
     @Override

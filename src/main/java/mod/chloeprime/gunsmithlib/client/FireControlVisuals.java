@@ -23,14 +23,13 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Optional;
 
@@ -65,7 +64,7 @@ public class FireControlVisuals {
         }
         var curAiming = aiming;
         if (version == 2 && curAiming != null) {
-            RenderHudHook.withHudMode(() -> renderV2(curAiming.entity(), curAiming.pos(), event.getCamera().getPosition(), event.getPartialTick()));
+            RenderHudHook.withHudMode(() -> renderV2(curAiming.entity(), curAiming.pos(), event.getCamera().getPosition(), event.getPartialTick().getGameTimeDeltaPartialTick(false)));
         }
     }
 

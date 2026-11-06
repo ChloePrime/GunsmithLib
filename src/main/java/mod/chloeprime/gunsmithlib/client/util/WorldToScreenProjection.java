@@ -3,10 +3,10 @@ package mod.chloeprime.gunsmithlib.client.util;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -25,7 +25,7 @@ import org.joml.Vector4f;
  *
  * @since 7.0.0
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public final class WorldToScreenProjection {
     private static final Matrix4f VIEW_PROJECTION = new Matrix4f();
     private static final Vector3d CAMERA_POS = new Vector3d();

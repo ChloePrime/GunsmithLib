@@ -8,6 +8,7 @@ import mod.chloeprime.gunsmithlib.mixin.client.minecraft.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -258,45 +259,12 @@ public class InWorldGuiGraphicsImpl extends AbstractGuiGraphicsAPIImpl implement
     }
 
     @Override
-    public void blit_nine_sliced(
-            String texture, int x, int y, int width, int height,
-            int slice_size, int u, int v, int source_width, int source_height
-    ) {
-        var location = parseTexture(texture);
-        draw(() -> impl.blitNineSliced(location, x, y, width, height,
-                slice_size, slice_size, slice_size, slice_size,
-                source_width, source_height, u, v));
-    }
-
-    @Override
-    public void blit_nine_sliced(
-            String texture, int x, int y, int width, int height,
-            int left_slice, int top_slice, int right_slice, int bottom_slice,
-            int u, int v, int source_width, int source_height
-    ) {
-        var location = parseTexture(texture);
-        draw(() -> impl.blitNineSliced(location, x, y, width, height,
-                left_slice, top_slice, right_slice, bottom_slice,
-                source_width, source_height, u, v));
-    }
-
-    @Override
-    public void blit_repeating(
-            String texture, int x, int y, int width, int height,
-            int u, int v, int source_width, int source_height
-    ) {
-        var location = parseTexture(texture);
-        draw(() -> impl.blitRepeating(location, x, y, width, height, u, v, source_width, source_height));
-    }
-
-    @Override
-    public void blit_repeating(
-            String texture, int x, int y, int width, int height,
-            int u, int v, int source_width, int source_height,
+    protected void blitRegion1211(
+            ResourceLocation texture, int x, int y, int width, int height,
+            int u, int v, int u_width, int v_height,
             int texture_width, int texture_height
     ) {
-        var location = parseTexture(texture);
-        draw(() -> impl.blitRepeating(location, x, y, width, height, u, v, source_width, source_height, texture_width, texture_height));
+        draw(() -> impl.blit(texture, x, y, width, height, u, v, u_width, v_height, texture_width, texture_height));
     }
 
     @Override
@@ -372,8 +340,8 @@ public class InWorldGuiGraphicsImpl extends AbstractGuiGraphicsAPIImpl implement
         var anchor = Objects.requireNonNull(this.anchor, "anchor");
         var pose = impl.pose();
         pose.pushPose();
-        pose.mulPoseMatrix(anchor);
-        pose.mulPoseMatrix(currentTransform());
+        pose.mulPose(anchor);
+        pose.mulPose(currentTransform());
     }
 
     private void popTransform() {
