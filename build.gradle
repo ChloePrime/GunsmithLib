@@ -175,11 +175,6 @@ dependencies {
         // TACZ
         api 'curse.maven:timeless-and-classics-zero-1028108:9454361-sources-9454571'
 
-        // Pack Upgrader
-        compileOnly jarJar('me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed')
-        localRuntime 'me.muksc.taczpackupgrader:tacz-pack-upgrader:2.1.2-kff-dep-removed'
-        localRuntime jarJar(project("modules:gunsmithlib_bundled_kotlin_stdlib"))
-
         // 屏幕震动 API
         compileOnly localRuntime(jarJar("com.rbasamoyai:ritchiesprojectilelib:2.1.2+mc.$minecraft_version-neoforge"))
     }
