@@ -1,4 +1,7 @@
 {
+  "gunsmithlib.text.hello_hud": "你好，HUD！%ssssssss，砰!",
+  "gunsmithlib.text.sprintf_example": "指令之意：%d",
+
   "pack.gunsmithlib.name" : "GunsmithLib测试用枪包",
   "pack.gunsmithlib.desc" : "也可以作为示例使用哦",
   "gunsmithlib.gun.191_fe.name": "QBZ-191纯电版",
