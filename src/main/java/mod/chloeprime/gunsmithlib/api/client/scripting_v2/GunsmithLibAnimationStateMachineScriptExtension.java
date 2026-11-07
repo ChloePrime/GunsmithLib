@@ -18,8 +18,10 @@ import mod.chloeprime.gunsmithlib.client.impl.scripting_v2.content.InWorldGuiGra
 import mod.chloeprime.gunsmithlib.client.util.WorldToScreenProjection;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.util.LinearAlgebraTypes;
+import mod.chloeprime.gunsmithlib.mixin.client.minecraft.I18nAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -229,6 +231,20 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
      */
     public @Nullable Vector2f world_pos_to_screen_pos(Vector3d worldPos) {
         return WorldToScreenProjection.worldToScreen(LinearAlgebraTypes.joml2moj(worldPos));
+    }
+
+    /**
+     * 将一个翻译键转换为翻译后的文本并进行。
+     * 如果没有传入 {@code args}, 则不会进行字符串格式化。
+     *
+     * @param langKey 本地化键
+     * @return 译文或输入的本地化键
+     * @since 7.1.0
+     */
+    public final String translate(String langKey, Object... args) {
+        return args.length == 0
+                ? I18nAccessor.getLanguage().getOrDefault(langKey)
+                : I18n.get(langKey, args);
     }
 
     // 下面是内部 API
