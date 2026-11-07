@@ -13,9 +13,9 @@ end
 function M.gunsmithlib_render_hud(context, gui)
     local ext = context:gunsmithlib_extension()
 
-    gui:draw_string(ext:translate("gunsmithlib.text.hello_hud"), 8, 8, gunsmithlib.new_color(255, 255, 255), true)
+    gui:draw_string(ext:translate("gunsmithlib.text.hello_hud", {}), 8, 8, gunsmithlib.new_color(255, 255, 255), true)
 
-    local lang_with_sprintf = ext:translate("gunsmithlib.text.sprintf_example", math.random(10, 99));
+    local lang_with_sprintf = ext:translate("gunsmithlib.text.sprintf_example", { math.random(10, 99), math.random(10, 99) })
     gui:draw_string(lang_with_sprintf, 8, 16, gunsmithlib.new_color(255, 255, 255), true)
 
     local ammo_cnt = context:getAmmoCount()
