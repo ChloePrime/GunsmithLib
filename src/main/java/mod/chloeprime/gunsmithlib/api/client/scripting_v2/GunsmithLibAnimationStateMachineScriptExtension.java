@@ -236,6 +236,10 @@ public class GunsmithLibAnimationStateMachineScriptExtension extends GunsmithLib
     /**
      * 将一个翻译键转换为翻译后的文本并进行。
      * 如果没有传入 {@code args}, 则不会进行字符串格式化。
+     * <p>
+     * 警告：1.21.1 的 LuaJ 调用 vararg Java 方法有 bug 且无法使用 Mixin 修复。在上游修复之前如果你要做跨版本兼容，
+     * 那么需要将 vararg 手动转换成数组传入。例：{@code translate("text.xxx.xxx")} -> {@code translate("text.xxx.xxx", {})}，
+     * {@code translate("text.xxx.xxx", arg1, arg2)} -> {@code translate("text.xxx.xxx", { arg1, arg2 })}
      *
      * @param langKey 本地化键
      * @return 译文或输入的本地化键

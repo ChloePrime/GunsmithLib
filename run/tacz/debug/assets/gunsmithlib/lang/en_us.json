@@ -1,6 +1,6 @@
 {
   "gunsmithlib.text.hello_hud": "Hello, HUD! %ssssssss, Boom!",
-  "gunsmithlib.text.sprintf_example": "Will of The Index: %d",
+  "gunsmithlib.text.sprintf_example": "Will of The Index: %d %d",
 
   "pack.gunsmithlib.name" : "GunsmithLib Debug Gunpack",
   "pack.gunsmithlib.desc" : "Can be used as an example usage too",
