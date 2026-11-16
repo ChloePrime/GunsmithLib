@@ -37,7 +37,7 @@ public class MixinGunPackLoader {
             // original 为 null 说明原枪包被 TaCZ 的依赖检查拒绝（例如只声明支持 1.20.1），
             // 此时从升级后的枪包读取命名空间。
             var name = original != null ? original.name() : GunpackUpgraderWrapper.readName(upgraded);
-            return new GunPackLoader.GunPack(upgraded, name, GunpackUpgraderWrapper.resolveOverlays(upgraded));
+            return new GunPackLoader.GunPack(upgraded, name, GunpackUpgraderWrapper.resolveOverlays(upgraded), false);
         } catch (Exception ex) {
             GunsmithLib.LOGGER.error("Failed to upgrade gunpack {}", path, ex);
             return original;
