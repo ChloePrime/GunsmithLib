@@ -173,7 +173,7 @@ dependencies {
         compileOnly 'com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura'
 
         // TACZ
-        api 'curse.maven:timeless-and-classics-zero-1028108:9454361-sources-9454571'
+        api 'curse.maven:timeless-and-classics-zero-1028108:9623169-sources-9640565'
 
         // 屏幕震动 API
         compileOnly localRuntime(jarJar("com.rbasamoyai:ritchiesprojectilelib:2.1.2+mc.$minecraft_version-neoforge"))
