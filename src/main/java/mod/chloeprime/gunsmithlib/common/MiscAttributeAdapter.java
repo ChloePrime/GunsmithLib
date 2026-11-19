@@ -50,7 +50,12 @@ public class MiscAttributeAdapter {
         }
         // 爆头
         if (!isMelee) {
-            event.setHeadshotMultiplier((float) attacker.getAttributeValue(HEADSHOT_MULTIPLIER.get()));
+            var gun = GsHelper.gunInfoFromBullet(event.getBullet(), event.getGunId()).orElse(null);
+            var baseHeadshotMultiplier = (float) attacker.getAttributeValue(HEADSHOT_MULTIPLIER.get());
+            var headshotMultiplier = gun != null
+                    ? GsHelper.modifyProperty(gun, attacker, GunProperties.HEADSHOT_MULTIPLIER.name(), Float.class, baseHeadshotMultiplier)
+                    : baseHeadshotMultiplier;
+            event.setHeadshotMultiplier(headshotMultiplier);
         }
         // 左键近战武器分散增益
         var coefficient = GsHelper.getBuffCoefficient(event.getGunId(), isMelee);
@@ -69,9 +74,12 @@ public class MiscAttributeAdapter {
             return;
         }
         var bullet = event.getImpl().getBullet();
+        var gun = event.getImpl().getGunInfo();
         // 穿甲
         if (bullet instanceof EntityKineticBulletAccessor accessor) {
-            accessor.setArmorIgnore((float) attacker.getAttributeValue(ARMOR_PIERCING_RATIO.get()));
+            var baseAP = (float) attacker.getAttributeValue(ARMOR_PIERCING_RATIO.get());
+            var ap = GsHelper.modifyProperty(gun, attacker, GunProperties.ARMOR_IGNORE.name(), Float.class, baseAP);
+            accessor.setArmorIgnore(ap);
         }
         // 子弹飞行速度
         var globalSpeedScale = AmmoConfig.GLOBAL_BULLET_SPEED_MODIFIER.get();
