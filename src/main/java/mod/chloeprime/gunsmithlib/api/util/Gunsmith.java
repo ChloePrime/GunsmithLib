@@ -7,6 +7,7 @@ import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
+import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
 import mod.chloeprime.gunsmithlib.common.internal.MagicReloadImpl;
 import mod.chloeprime.gunsmithlib.proxies.ClientProxy;
@@ -93,6 +94,18 @@ public class Gunsmith {
      */
     public static ItemStack createAmmoItemFromId(ResourceLocation id, int count) {
         return AmmoItemBuilder.create().setId(id).setCount(count).build();
+    }
+
+    /**
+     * Create an attachment item for fetching attachment data.<p>
+     *
+     * @param id attachment id
+     * @return an attachment item with the given gun id.
+     *
+     * @since 7.2
+     */
+    public static ItemStack createAttachmentItemFromId(ResourceLocation id) {
+        return AttachmentItemBuilder.create().setId(id).build();
     }
 
     /**

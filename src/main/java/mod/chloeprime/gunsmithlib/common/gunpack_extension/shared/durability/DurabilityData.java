@@ -7,10 +7,14 @@ import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
+import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.GunsmithLibGunProperties;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.scripting.attachment.AttachmentScripting;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
@@ -204,14 +208,22 @@ public class DurabilityData {
     }
 
     public static Optional<DurabilityData> of(GunInfo gun) {
-        return GunsmithLibSharedDataExtension
-                .forGun(gun)
+        return of(gun.index().getGunData());
+    }
+
+    public static Optional<DurabilityData> of(GunData gun) {
+        return GunsmithLibGunDataExtension
+                .of(gun)
                 .map(GunsmithLibSharedDataExtension::getDurabilityData);
     }
 
     public static Optional<DurabilityData> of(AttachmentInfo attachment) {
-        return GunsmithLibSharedDataExtension
-                .forAttachment(attachment)
+        return of(attachment.index().getData());
+    }
+
+    public static Optional<DurabilityData> of(AttachmentData attachment) {
+        return GunsmithLibAttachmentDataExtension
+                .of(attachment)
                 .map(GunsmithLibSharedDataExtension::getDurabilityData);
     }
 }
