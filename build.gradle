@@ -187,6 +187,11 @@ dependencies {
         compileOnly 'maven.modrinth:architectury-api:13.0.8+neoforge'
         localRuntime 'cn.chloeprime:aaa_particles-neoforge-1.21.1:2.2.3'
         localRuntime 'maven.modrinth:architectury-api:13.0.8+neoforge'
+
+        // JEI
+        compileOnly "mezz.jei:jei-${minecraft_version}-common-api:19.27.0.340"
+        compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:19.27.0.340"
+        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:19.27.0.340"
     }
 
     ;// Test Mods
@@ -194,9 +199,6 @@ dependencies {
         // 镜喵背包
         localRuntime 'maven.modrinth:sophisticated-core:1.21.1-1.3.65.1096'
         localRuntime 'maven.modrinth:sophisticated-backpacks:1.21.1-3.24.21.1314'
-
-        // JEI
-        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:19.27.0.340"
 
         // 光影加载器
         localRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
