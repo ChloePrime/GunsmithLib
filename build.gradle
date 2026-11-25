@@ -298,6 +298,8 @@ dependencies {
     }
 
     // JEI
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:15.20.0.129")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:15.20.0.129")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:15.20.0.129")
 
     // 光影加载器
