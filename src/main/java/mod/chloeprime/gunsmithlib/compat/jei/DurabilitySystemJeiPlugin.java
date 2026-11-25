@@ -12,6 +12,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilityData;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -56,6 +57,10 @@ public class DurabilitySystemJeiPlugin implements IModPlugin {
         if (damage3of4 == null || damage3of4.isEmpty()) {
             return;
         }
+        // 1.21.1: 初始化组件
+        damage3of4.set(DataComponents.DAMAGE, 0);
+        damage3of4.set(DataComponents.MAX_DAMAGE, repairData.maxDurability1211());
+
         int maxDamage = damage3of4.getMaxDamage();
         damage3of4.setDamageValue(maxDamage * 3 / 4);
         var damageHalf = damage3of4.copy();
@@ -84,7 +89,8 @@ public class DurabilitySystemJeiPlugin implements IModPlugin {
     private record RepairData(
             ResourceLocation contentId,
             int type,
-            @Nullable Ingredient repairMaterial
+            @Nullable Ingredient repairMaterial,
+            int maxDurability1211
     ) {
         public static final int TYPE_GUN        = 0;
         public static final int TYPE_ATTACHMENT = 2;
@@ -94,13 +100,13 @@ public class DurabilitySystemJeiPlugin implements IModPlugin {
         var gun = TimelessAPI.getAllCommonGunIndex()
                 .stream()
                 .map(pair -> {
-                    var key = new RepairData(pair.getKey(), RepairData.TYPE_GUN, null);
+                    var key = new RepairData(pair.getKey(), RepairData.TYPE_GUN, null, 0);
                     return Pair.of(key, DurabilityData.of(pair.getValue().getGunData()).orElse(null));
                 });
         var attach = TimelessAPI.getAllCommonAttachmentIndex()
                 .stream()
                 .map(pair -> {
-                    var key = new RepairData(pair.getKey(), RepairData.TYPE_ATTACHMENT, null);
+                    var key = new RepairData(pair.getKey(), RepairData.TYPE_ATTACHMENT, null, 0);
                     return Pair.of(key, DurabilityData.of(pair.getValue().getData()).orElse(null));
                 });
 
@@ -109,7 +115,7 @@ public class DurabilitySystemJeiPlugin implements IModPlugin {
                 .map(pair -> {
                     var archetype = pair.getKey();
                     var durData = Objects.requireNonNull(pair.getValue());
-                    return new RepairData(archetype.contentId(), archetype.type(), durData.getRepairMaterial().orElse(null));
+                    return new RepairData(archetype.contentId(), archetype.type(), durData.getRepairMaterial().orElse(null), durData.getMaxDurability());
                 });
     }
 }

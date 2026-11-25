@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunAttachmentAttributeAggregator;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilityData;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,6 +28,10 @@ import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack {
+    @Shadow
+    @Nullable
+    public abstract <T> T set(DataComponentType<? super T> component, @org.jetbrains.annotations.Nullable T value);
+
     private @Unique List<Component> gunsmithlib$capturedTooltipList;
 
     @ModifyExpressionValue(
@@ -68,7 +74,6 @@ public abstract class MixinItemStack {
         }
         var durData = DurabilityData.of(self).orElse(null);
         if (durData == null) {
-            ci.cancel();
             return;
         }
         var transformTo = durData.getTransformToOnDurabilityExhausted().orElse(null);
@@ -88,6 +93,24 @@ public abstract class MixinItemStack {
             }
             ci.cancel();
         }
+    }
+
+    /**
+     * 1.21.1 初始化耐久组件
+     */
+    @Inject(
+            method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V",
+            at = @At("HEAD"))
+    private void initDurabilityComponents1211(int damage, ServerLevel level, LivingEntity entity, Consumer<Item> onBreak, CallbackInfo ci) {
+        var self = (ItemStack) (Object) this;
+        DurabilityData.of(self).ifPresent(durData -> {
+            if (!self.has(DataComponents.DAMAGE)) {
+                self.set(DataComponents.DAMAGE, 0);
+            }
+            if (!self.has(DataComponents.MAX_DAMAGE)) {
+                self.set(DataComponents.MAX_DAMAGE, durData.getMaxDurability());
+            }
+        });
     }
 
     //
