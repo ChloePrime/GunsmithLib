@@ -19,6 +19,7 @@ import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLi
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunsmithLibAttributeModifierEntry;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.damage_source_control.DamageSourceControlData;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilityData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.raytrace_control.RaytraceControlData;
@@ -149,6 +150,14 @@ public class GunsmithLibSharedDataExtension {
     @GunpackProperty
     private @Nullable Map<String, Object> script_param;
 
+    /**
+     * 耐久数据。
+     *
+     * @since 7.2
+     */
+    @GunpackProperty
+    private @Nullable DurabilityData durability;
+
     // 下面是具体实现
 
     public List<GunsmithLibAttributeModifierEntry> getAttributeModifiers() {
@@ -206,6 +215,13 @@ public class GunsmithLibSharedDataExtension {
 
     public @Nonnull LuaTable getScriptParams() {
         return bakedScript.get().parameters();
+    }
+
+    /**
+     * @since 7.2
+     */
+    public @Nullable DurabilityData getDurabilityData() {
+        return durability;
     }
 
     private static final GunsmithLibAttributeModifierEntry[] EMPTY_MODIFIER_POJO_ARRAY = new GunsmithLibAttributeModifierEntry[0];

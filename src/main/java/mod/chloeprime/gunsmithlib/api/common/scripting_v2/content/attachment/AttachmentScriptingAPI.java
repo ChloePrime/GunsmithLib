@@ -10,7 +10,9 @@ import mod.chloeprime.gunsmithlib.api.common.scripting_v2.GunsmithLibCommonScrip
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.ShooterStates;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.SyncedData;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilitySystem;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -113,6 +115,23 @@ public record AttachmentScriptingAPI(
      */
     public SyncedData synced_data() {
         return new ItemSyncedDataImpl(attachment_info().attachmentStack(), false, this::updateAttachment);
+    }
+
+    /**
+     * 消耗配件耐久
+     *
+     * @param amount 希望消耗的耐久度
+     * @return 实际消耗的耐久
+     * @since 7.2
+     */
+    public int damage_attachment(int amount) {
+        var gunApi = getGunApi();
+        var gun = GsHelper.unpack(gunApi.getAbstractGunItem(), gunApi.getItemStack()).orElse(null);
+        var shooter = gunApi.getShooter();
+        if (shooter == null || gun==null) {
+            return 0;
+        }
+        return DurabilitySystem.damageAttachment(gun, attachment_type_object(), amount, shooter);
     }
 
 
@@ -244,6 +263,17 @@ public record AttachmentScriptingAPI(
      */
     public SyncedData getSyncedData() {
         return synced_data();
+    }
+
+    /**
+     * 消耗配件耐久
+     *
+     * @param amount 希望消耗的耐久度
+     * @return 实际消耗的耐久
+     * @since 7.2
+     */
+    public int damageAttachment(int amount) {
+        return damage_attachment(amount);
     }
 
 

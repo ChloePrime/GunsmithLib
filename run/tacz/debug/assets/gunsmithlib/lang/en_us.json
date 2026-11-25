@@ -11,6 +11,8 @@
   "gunsmithlib.gun.m320_jumping.name": "M320 (Ricochet)",
   "gunsmithlib.ammo.pig.name": "§cPig Ammo",
   "gunsmithlib.ammo.pig.desc": "Ammo scripting example. Spawns a pig at the target's head when killing",
+  "gunsmithlib.attachment.ammo_mod_glow.name": "§6Glow Ammo (Attachment Durability Demo)",
+  "gunsmithlib.attachment.ammo_mod_glow.desc": "Has limited durability. Transform to Incendiary Ammo on exhaust",
   "gunsmithlib.attachment.scope_mk5hd_scripted.name": "§6Mark 5 HD with Logic Script",
   "gunsmithlib.attachment.scope_mk5hd_scripted.desc": "Attachment scripting example\n10x damage when aiming with max zoom.",
   "tacz.ammo.rpg_rocket.desc": "Foo\nBar"

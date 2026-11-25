@@ -1,7 +1,10 @@
 package mod.chloeprime.gunsmithlib.mixin.common.minecraft;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.attribute.GunAttachmentAttributeAggregator;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilityData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +50,44 @@ public abstract class MixinItemStack {
         }
     }
 
+    // 耐久条
 
+    /**
+     * 根据配置决定是否在耐久耗尽后销毁物品。
+     */
+    @ModifyReturnValue(method = "hurt", at = @At("TAIL"))
+    private boolean dontBreakIfDurabilityExhausted(boolean originalWillBreak) {
+        var self = (ItemStack) (Object) this;
+        if (!originalWillBreak) {
+            return false;
+        }
+        var durData = DurabilityData.of(self).orElse(null);
+        if (durData == null) {
+            return true;
+        }
+        var transformTo = durData.getTransformToOnDurabilityExhausted().orElse(null);
+        if (transformTo != null) {
+            Gunsmith.getGunInfo(self).ifPresent(gun -> gun.gunItem().setGunId(gun.gunStack(), transformTo));
+            // 配件耐久只能通过 Gunsmith 的 API 消耗，
+            // 且消耗后会写回，所以这里不写回武器也不要紧。
+            Gunsmith.getAttachmentInfo(self).ifPresent(attach -> attach.attachmentItem().setAttachmentId(attach.attachmentStack(), transformTo));
+            return false;
+        }
+        var unbreak = !durData.breaksOnDurabilityExhausted();
+        if (unbreak) {
+            var maxDamage = getMaxDamage();
+            if (getDamageValue() > maxDamage) {
+                setDamageValue(maxDamage);
+            }
+        }
+        return !unbreak;
+    }
+
+    //
+
+    @Shadow public abstract void setDamageValue(int pDamage);
+    @Shadow public abstract int getMaxDamage();
+    @Shadow public abstract int getDamageValue();
 
     @Shadow
     private static boolean shouldShowInTooltip(int pHideFlags, ItemStack.TooltipPart pPart) {

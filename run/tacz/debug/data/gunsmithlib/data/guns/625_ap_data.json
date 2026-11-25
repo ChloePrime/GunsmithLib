@@ -36,7 +36,17 @@
         "speed": 0.125,
         "count": 4
       }
-    ]
+    ],
+    "durability": {
+      "max_durability": 18000,
+      "repair_material": {
+        "type": "forge:partial_nbt",
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:50bmg"
+        }
+      }
+    }
   },
   "ammo": "tacz:50bmg",
   "can_crawl": false,

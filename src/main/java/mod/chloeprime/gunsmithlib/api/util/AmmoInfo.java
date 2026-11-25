@@ -23,8 +23,8 @@ public record AmmoInfo(
     /**
      * @since 4.12.0
      */
-    public static Optional<AmmoInfo> of(ItemStack gun) {
-        return Gunsmith.getAmmoInfo(gun);
+    public static Optional<AmmoInfo> of(ItemStack ammo) {
+        return Gunsmith.getAmmoInfo(ammo);
     }
 
     /**

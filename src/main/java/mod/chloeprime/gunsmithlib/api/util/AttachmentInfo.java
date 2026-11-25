@@ -26,8 +26,8 @@ public record AttachmentInfo(
     /**
      * @since 4.12.0
      */
-    public static Optional<AttachmentInfo> of(ItemStack gun) {
-        return Gunsmith.getAttachmentInfo(gun);
+    public static Optional<AttachmentInfo> of(ItemStack attachment) {
+        return Gunsmith.getAttachmentInfo(attachment);
     }
 
     /**

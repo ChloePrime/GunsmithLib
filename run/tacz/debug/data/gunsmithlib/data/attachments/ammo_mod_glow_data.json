@@ -1,0 +1,33 @@
+{
+  "gunsmithlib_extension": {
+    "area_effect_cloud_duration": 100,
+    "area_effect_cloud_min_size_rate": 0.0,
+    "potion_effects": [
+      {
+        "effect_id": "minecraft:glowing",
+        "duration": 200,
+        "level": 1,
+        "chance": 1,
+        "force": true
+      }
+    ],
+    "durability": {
+      "max_durability": 300,
+      "transform_to_on_durability_exhausted": "tacz:ammo_mod_i",
+      "repair_material": {
+        "tag": "forge:dusts/glowstone"
+      }
+    }
+  },
+  "weight": 0.6,
+  "ads": {
+    "addend": 0.02
+  },
+  "ignite": {
+    "entity": true
+  },
+  "armor_ignore": {
+    "multiplier": 0.75
+  },
+  "extended_mag_level": 3
+}

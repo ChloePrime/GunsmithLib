@@ -1,0 +1,8 @@
+{
+  "name": "gunsmithlib.attachment.ammo_mod_glow.name",
+  "tooltip": "gunsmithlib.attachment.ammo_mod_glow.desc",
+  "data": "gunsmithlib:ammo_mod_glow_data",
+  "display": "gunsmithlib:ammo_mod_glow_display",
+  "type": "extended_mag",
+  "sort": 1002
+}

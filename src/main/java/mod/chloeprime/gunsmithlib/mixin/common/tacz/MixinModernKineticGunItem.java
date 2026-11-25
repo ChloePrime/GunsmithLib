@@ -62,10 +62,11 @@ public abstract class MixinModernKineticGunItem extends AbstractGunItem {
             ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter,
             String luaMethodName, String id, Class<T> type, T initial
     ) {
-        return AttachmentScripting.modifyProperty(
+        var attachmentLuaMethodName = "gunsmithlib_attachment_" + luaMethodName;
+        return AttachmentScripting.modifyGunProperty(
                 original, this,
                 dataHolder, gunItem, shooter,
-                luaMethodName, id, type);
+                attachmentLuaMethodName, id, type);
     }
 
     @ApiStatus.Internal

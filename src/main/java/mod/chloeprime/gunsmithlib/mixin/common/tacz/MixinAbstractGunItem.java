@@ -1,20 +1,26 @@
 package mod.chloeprime.gunsmithlib.mixin.common.tacz;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import mod.chloeprime.gunsmithlib.common.compat.CapabilityBasedModCompat;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.HideFromCreativeTabSystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.ammo_variant.AmmoVariantSystem;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilityData;
+import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 
 @Mixin(value = AbstractGunItem.class, remap = false)
-public class MixinAbstractGunItem {
+public abstract class MixinAbstractGunItem implements IGun {
     @ModifyReturnValue(method = {"canReload", "hasInventoryAmmo"}, at = @At("TAIL"))
     private boolean canReloadIfHasAmmoInBackpacks(boolean original, LivingEntity shooter, ItemStack gunItem) {
         return original || (shooter.level().isClientSide
@@ -41,5 +47,18 @@ public class MixinAbstractGunItem {
         result.addAll(buffer);
 
         return result;
+    }
+
+    // 耐久条
+
+    /**
+     * 让配置过耐久 data 的武器耐久设置为配置中的值，或脚本修改后的值。
+     */
+    @Dynamic
+    @Inject(method = "getMaxDamage", remap = false, at = @At("HEAD"), cancellable = true)
+    public void getMaxDamage(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        GsHelper.unpack(this, stack).ifPresent(
+                gunInfo -> DurabilityData.of(gunInfo).ifPresent(
+                        durData -> cir.setReturnValue(durData.getGunMaxDurability(gunInfo))));
     }
 }

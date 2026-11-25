@@ -79,6 +79,26 @@ public final class GunsmithLibGunProperties {
     @SuppressWarnings("unused")
     public static final String MAX_ENERGY_OUTPUT_SPEED = EnergyWeaponV2Data.PROP_NAME_MAX_OUTPUT_SPEED;
 
+    /**
+     * 枪械的耐久度上限
+     * <p>
+     * {@code gunsmithlib_gun_max_durability}
+     *
+     * @since 7.2
+     */
+    public static final String GUN_MAX_DURABILITY = "%s_gun_max_durability".formatted(GunsmithLib.MOD_ID);
+
+    /**
+     * 配件的耐久度上限
+     * <p>
+     * {@code gunsmithlib_attachment_max_durability}
+     *
+     * @deprecated 因为计算配件最大耐久时无法获取枪械的上下文，而配件脚本需要枪械上下文，所以配件的最大耐久无法被 modify property。
+     * @since 7.2
+     */
+    @Deprecated
+    public static final String ATTACHMENT_MAX_DURABILITY = "%s_attachment_max_durability".formatted(GunsmithLib.MOD_ID);
+
     private GunsmithLibGunProperties() {
     }
 }
