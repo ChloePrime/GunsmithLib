@@ -11,6 +11,7 @@ import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.SyncedData;
 import mod.chloeprime.gunsmithlib.api.util.Gunsmith;
 import mod.chloeprime.gunsmithlib.common.AbstractCommonScriptingExtension;
 import mod.chloeprime.gunsmithlib.common.AbstractGunScriptAPIExtension;
+import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.durability.DurabilitySystem;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.hit_particle.HitParticleData;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.potion_effect.PotionEffectData;
 import mod.chloeprime.gunsmithlib.common.impl.scripting_v2.content.ItemSyncedDataImpl;
@@ -27,6 +28,7 @@ import org.joml.Vector3d;
 import org.luaj.vm2.LuaValue;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 /**
  * 示例用法：{@code api:gunsmithlib_extension():play_overheat_sound()}
@@ -200,6 +202,42 @@ public class GunsmithLibLogicScriptExtension extends GunsmithLibCommonScriptExte
 
     public final void spawn_particle(Vector3d position, @TableSchema(HitParticleData[].class) LuaValue[] effect) {
         v1.gunsmith_spawnParticle(position, effect);
+    }
+
+    /**
+     * 消耗武器耐久
+     *
+     * @param amount 希望消耗的耐久度
+     * @return 实际消耗的耐久
+     * @since 7.2
+     */
+    public final int damage_weapon(int amount) {
+        var shooter = v1.gunsmithlib$getShooter().orElse(null);
+        if (shooter == null) {
+            return 0;
+        }
+        return DurabilitySystem.damageGun(v1.gunsmithlib$getCurrentItem(), amount, shooter);
+    }
+
+    /**
+     * 消耗配件耐久
+     *
+     * @param amount 希望消耗的耐久度
+     * @param slot 配件槽位。可用值请参见 {@link AttachmentType}
+     * @return 实际消耗的耐久
+     * @since 7.2
+     */
+    public final int damage_attachment(String slot, int amount) {
+        var shooter = v1.gunsmithlib$getShooter().orElse(null);
+        if (shooter == null) {
+            return 0;
+        }
+        var gun = gunInfo().orElse(null);
+        if (gun == null) {
+            return 0;
+        }
+        var type = AttachmentType.valueOf(slot.toUpperCase(Locale.ROOT));
+        return DurabilitySystem.damageAttachment(gun, type, amount, shooter);
     }
 
     // 下面是内部 API

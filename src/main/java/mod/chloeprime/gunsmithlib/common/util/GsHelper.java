@@ -30,6 +30,8 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -45,10 +47,12 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
@@ -58,6 +62,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -557,5 +562,35 @@ public class GsHelper {
             entity = owner;
         }
         return Optional.empty();
+    }
+
+    /**
+     * 检查当前线程是否为服务端线程。如果是则返回主世界的引用
+     *
+     * @since 7.2.0
+     */
+    public static Optional<ServerLevel> checkThreadIsServerThreadAndGetOverworld() {
+        return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer())
+                .filter(server -> server.getRunningThread() == Thread.currentThread())
+                .map(MinecraftServer::overworld);
+    }
+
+    /**
+     * @param data {R, G, B, A}, 0-255
+     * @return (R, G, B, A), 0.0-1.0
+     *
+     * @since 7.2.0
+     */
+    public static @Nullable Vector4f parseDataColor(@Nullable int[] data) {
+        if (data == null) {
+            return null;
+        }
+        return switch (data.length) {
+            case 1 -> new Vector4f(data[0] / 255F, data[0] / 255F, data[0] / 255F, 1);
+            case 3 -> new Vector4f(data[0] / 255F, data[1] / 255F, data[2] / 255F, 1);
+            case 4 -> new Vector4f(data[0] / 255F, data[1] / 255F, data[2] / 255F, data[3] / 255F);
+            default -> throw new IllegalArgumentException(
+                    "Color array must contain 1, 3 or 4 elements, given array has %d elements.".formatted(data.length));
+        };
     }
 }

@@ -7,6 +7,7 @@ import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.scripting_v2.content.attachment.AttachmentScriptingAPI;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
+import mod.chloeprime.gunsmithlib.api.util.GunInfo;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.GsScriptingUtil;
@@ -38,10 +39,33 @@ public final class AttachmentScripting {
             AttachmentType.STOCK
     );
 
-    public static <T> T modifyProperty(
+    /**
+     * @since 7.2.0
+     */
+    public static <T> T modifyAttachmentProperty(GunInfo gun, AttachmentInfo attachment, LivingEntity shooter, String id, Class<T> type, T original) {
+        var luaMethodName = "gunsmithlib_modify_attachment_property";
+        var newValue = new MutableObject<>(original);
+        try {
+            GunsmithLibSharedDataExtension.forAttachment(attachment).ifPresent(data -> {
+                var gunApi = GsScriptingUtil.api(shooter, gun.gunStack());
+                var attachApi = new AttachmentScriptingAPI(gunApi, attachment.index().getType(), attachment, data.getScriptParams());
+                data.getScript()
+                        .map(script -> GsHelper.checkFunction(script.get(luaMethodName)))
+                        .map(func -> func.call(CoerceJavaToLua.coerce(attachApi), LuaValue.valueOf(id), CoerceJavaToLua.coerce(newValue.getValue())))
+                        .map(luaValue -> type.cast(CoerceLuaToJava.coerce(luaValue, type)))
+                        .ifPresent(newValue::setValue);
+            });
+            return newValue.getValue();
+        } catch (Exception exception) {
+            GunsmithLib.LOGGER.warn(MARKER, "Failed to modify attachment {}'s property {}", attachment.attachmentId(), id, exception);
+            return original;
+        }
+    }
+
+    public static <T> T modifyGunProperty(
             T original, IGun gunInterface,
             ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter,
-            String gunLuaMethodName, String id, Class<T> type
+            String luaMethodName, String id, Class<T> type
     ) {
         var gunApi = GsScriptingUtil.api(shooter, dataHolder, gunItem);
         var gunIndex = gunApi.getGunIndex();
@@ -49,7 +73,6 @@ public final class AttachmentScripting {
             return original;
         }
 
-        var luaMethodName = "gunsmithlib_attachment_" + gunLuaMethodName;
         var value = new MutableObject<>(original);
         for (var attachmentType : AttachmentScripting.SCRIPT_ORDER) {
             var attachmentInfo = Optional.of(gunInterface.getAttachment(shooter.registryAccess(), gunItem, attachmentType))
