@@ -43,6 +43,13 @@ public class GunVariantRegistry {
     static final ReadWriteLock SINGLEPLAYER_LOCK = new ReentrantReadWriteLock();
 
     /**
+     * @since 7.2.0
+     */
+    public static Map<ResourceLocation, GunAmmoVariantSet> all() {
+        return Collections.unmodifiableMap(BY_GUN_ID);
+    }
+
+    /**
      * Get an **unmerged** variant set by its id.
      *
      * @param key the key of the **unmerged** variant set
