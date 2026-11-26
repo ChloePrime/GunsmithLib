@@ -2,9 +2,9 @@ package mod.chloeprime.gunsmithlib.data;
 
 import mod.chloeprime.gunsmithlib.data.client.GunsmithLibBlockStateProvider;
 import mod.chloeprime.gunsmithlib.data.common.GunsmithLibBlockTagProvider;
-import mod.chloeprime.gunsmithlib.data.common.GunsmithLibItemTagProvider;
 import mod.chloeprime.gunsmithlib.data.common.GunsmithLibLootProvider;
 import mod.chloeprime.gunsmithlib.data.common.GunsmithLibRecipeProvider;
+import mod.chloeprime.gunsmithlib.data.common.mc1211.GunsmithLibItemTagProvider1211;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,7 +18,7 @@ public class GunsmithLibDatagen {
         if (event.includeServer()) {
             var bp = new GunsmithLibBlockTagProvider(generator.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper());
             generator.addProvider(true, bp);
-            generator.addProvider(true, new GunsmithLibItemTagProvider(generator.getPackOutput(), event.getLookupProvider(), bp.contentsGetter(), event.getExistingFileHelper()));
+            generator.addProvider(true, new GunsmithLibItemTagProvider1211(generator.getPackOutput(), event.getLookupProvider(), bp.contentsGetter(), event.getExistingFileHelper()));
             generator.addProvider(true, new GunsmithLibLootProvider(generator.getPackOutput(), event.getLookupProvider()));
             generator.addProvider(true, new GunsmithLibRecipeProvider(generator.getPackOutput(), event.getLookupProvider()));
         }
