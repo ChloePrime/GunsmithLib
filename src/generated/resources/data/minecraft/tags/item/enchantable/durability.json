@@ -1,6 +1,7 @@
 {
   "values": [
     "tacz:modern_kinetic_gun",
-    "tacz:attachment"
+    "tacz:attachment",
+    "gunsmithlib:durability_enchant_probe_1211"
   ]
 }

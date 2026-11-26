@@ -122,6 +122,7 @@ public class GunsmithLib {
         private static final DeferredRegister<Item> DFR = DeferredRegister.createItems(MOD_ID);
         public static final Supplier<BlockItem> GUN_STEEL_BLOCK = DFR.register("gun_steel_block", () -> new ParticleTextureBlockItem(Blocks.GUN_STEEL_BLOCK, new Item.Properties()));
         public static final Supplier<BlockItem> GIGA_AMMO_BLOCK = DFR.register("giga_ammo_block", () -> new ParticleTextureBlockItem(Blocks.GIGA_AMMO_BLOCK, new Item.Properties()));
+        public static final Supplier<Item> DURABILITY_ENCHANT_PROBE_1211 = DFR.register("durability_enchant_probe_1211", () -> new Item(new Item.Properties()));
 
         @SubscribeEvent
         public static void addToCreativeTabs(BuildCreativeModeTabContentsEvent event) {

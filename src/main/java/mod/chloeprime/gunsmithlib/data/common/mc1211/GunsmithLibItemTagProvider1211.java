@@ -1,6 +1,7 @@
 package mod.chloeprime.gunsmithlib.data.common.mc1211;
 
 import com.tacz.guns.init.ModItems;
+import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.data.common.GunsmithLibItemTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -32,5 +33,6 @@ public class GunsmithLibItemTagProvider1211 extends GunsmithLibItemTagProvider {
     protected void addTags(@Nonnull HolderLookup.Provider provider) {
         super.addTags(provider);
         tag(ItemTags.DURABILITY_ENCHANTABLE).add(ModItems.MODERN_KINETIC_GUN.get(), ModItems.ATTACHMENT.get());
+        tag(ItemTags.DURABILITY_ENCHANTABLE).add(GunsmithLib.Items.DURABILITY_ENCHANT_PROBE_1211.get());
     }
 }
