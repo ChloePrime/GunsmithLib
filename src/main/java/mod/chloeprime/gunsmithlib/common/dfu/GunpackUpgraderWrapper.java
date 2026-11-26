@@ -1,6 +1,5 @@
 package mod.chloeprime.gunsmithlib.common.dfu;
 
-import cn.chloeprime.commons.ContextUtil;
 import com.google.common.hash.Funnels;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
@@ -11,13 +10,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tacz.guns.resource.GunPackOverlayResolver;
 import com.tacz.guns.resource.PackMeta;
-import com.tacz.guns.resource.convert.PackConversionRules;
 import com.tacz.guns.resource.convert.UniversalPackConverter;
 import mod.chloeprime.gunsmithlib.GunsmithLib;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import org.apache.commons.io.file.PathUtils;
@@ -206,24 +201,10 @@ public final class GunpackUpgraderWrapper {
     private static UniversalPackConverter newConverter() {
         var installedVersions = new HashMap<String, String>();
         ModList.get().getMods().forEach(mod -> installedVersions.put(mod.getModId(), mod.getVersion().toString()));
-        return new UniversalPackConverter(registries(), installedVersions, rules());
-    }
-
-    private static HolderLookup.Provider registries() {
-        // 枪包扫描发生在注册表可用之前，此时只能退回内置注册表。
-        // 内置注册表足以校验物品 ID（含模组物品），数据包注册表（如附魔）不可用。
-        var current = ContextUtil.getRegistryAccessSafely();
-        return current != null ? current : RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-    }
-
-    private static PackConversionRules rules() {
-        var override = FMLPaths.CONFIGDIR.get().resolve("tacz/gunpack-conversion-rules.json");
-        try {
-            return PackConversionRules.load(override);
-        } catch (Exception ex) {
-            GunsmithLib.LOGGER.warn("Failed to load gunpack conversion rules from {}, using bundled defaults", override, ex);
-            return PackConversionRules.defaults();
-        }
+        return new UniversalPackConverter(
+                GunpackConversionSupport.registries(),
+                installedVersions,
+                GunpackConversionSupport.conversionRules());
     }
 
     private static boolean isAlreadyUpdated(JsonObject meta) {

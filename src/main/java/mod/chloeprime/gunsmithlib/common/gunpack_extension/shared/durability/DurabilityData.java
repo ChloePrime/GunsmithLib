@@ -13,12 +13,15 @@ import mod.chloeprime.gunsmithlib.GunsmithLib;
 import mod.chloeprime.gunsmithlib.api.common.GunsmithLibGunProperties;
 import mod.chloeprime.gunsmithlib.api.util.AttachmentInfo;
 import mod.chloeprime.gunsmithlib.api.util.GunInfo;
+import mod.chloeprime.gunsmithlib.common.dfu.GunpackConversionSupport;
+import mod.chloeprime.gunsmithlib.common.dfu.RepairMaterialMigrator;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.attachment.GunsmithLibAttachmentDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.gun.GunsmithLibGunDataExtension;
 import mod.chloeprime.gunsmithlib.common.gunpack_extension.shared.GunsmithLibSharedDataExtension;
 import mod.chloeprime.gunsmithlib.common.scripting.attachment.AttachmentScripting;
 import mod.chloeprime.gunsmithlib.common.util.GsHelper;
 import mod.chloeprime.gunsmithlib.common.util.GunpackProperty;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -114,7 +117,9 @@ public class DurabilityData {
     private final Supplier<@Nullable Vector4f> compiledMinBarColor = Suppliers.memoize(() -> GsHelper.parseDataColor(bar_color_at_min));
     private final Supplier<@Nullable Vector4f> compiledMaxBarColor = Suppliers.memoize(() -> GsHelper.parseDataColor(bar_color_at_max));
     private final Supplier<@Nullable Ingredient> compiledRepairMaterial = Suppliers.memoize(() -> Optional.ofNullable(repair_material)
-            .map(itemJson -> Ingredient.CODEC.decode(JsonOps.INSTANCE, itemJson))
+            // 1.21.1: Ingredient 需要升级
+            .map(RepairMaterialMigrator::migrate)
+            .map(itemJson -> Ingredient.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, GunpackConversionSupport.registries()), itemJson))
             .map(result -> result.map(Pair::getFirst))
             .flatMap(result -> {
                 result.ifError(err -> GunsmithLib.LOGGER.error("Failed to deserialize ingredient in durability system: {}", err.message()));

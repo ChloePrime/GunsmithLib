@@ -49,6 +49,7 @@
     "common.tacz.ReloadProcedureMixin",
     "common.tacz.bugfix.TracerStartPosFixDisableBulletTrackingMixin",
     "common.tacz.dfu.MixinGunPackLoader",
+    "common.tacz.dfu.UniversalPackConverterAccessor",
     "common.tacz.interactkey.StairBlockAccessor",
     "common.tacz.interactkey.TacInteractKeyAutoInferenceMixin"
   ],
